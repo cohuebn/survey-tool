@@ -1,0 +1,11 @@
+{
+  "name": "survey-tool",
+  "version": "1.0.0",
+  "description": "A tool for authoring surveys that can be taken anonymously",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cory Huebner (chuebner86@gmail.com)",
+  "license": "ISC"
+}
