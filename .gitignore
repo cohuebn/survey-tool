@@ -9,6 +9,8 @@ _SpecRunner.html
 __benchmarks__
 build/
 dist/
+tmp/
+out-tsc/
 remote-repo/
 coverage/
 .module-cache
@@ -37,3 +39,6 @@ packages/react-devtools-extensions/.tempUserDataDir
 packages/react-devtools-inline/dist
 packages/react-devtools-shell/dist
 packages/react-devtools-timeline/dist
+
+# nx files
+.nx/cache/
