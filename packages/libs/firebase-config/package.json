@@ -1,0 +1,17 @@
+{
+  "name": "@survey-tool/firebase-config",
+  "version": "1.0.0",
+  "description": "A library containing utilities for Firebase configuration",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint": "eslint ./",
+    "build": "tsc index.ts --outDir dist"
+  },
+  "dependencies": {
+    "@survey-tool/eslint-config": "*",
+    "@survey-tool/core": "*",
+    "firebase": "^9.22.1"
+  },
+  "author": "Cory Huebner <chuebner86@gmail.com>",
+  "license": "ISC"
+}

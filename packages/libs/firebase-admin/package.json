@@ -1,0 +1,19 @@
+{
+  "name": "@survey-tool/firebase-admin",
+  "version": "1.0.0",
+  "description": "A library for Firebase interaction from the survey-tool app using the Firebase admin SDK",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint": "eslint ./",
+    "build": "tsc index.ts --outDir dist"
+  },
+  "dependencies": {
+    "@survey-tool/eslint-config": "*",
+    "@survey-tool/core": "*",
+    "@survey-tool/firebase-config": "*",
+    "firebase": "^9.22.1",
+    "firebase-admin": "^11.11.0"
+  },
+  "author": "Cory Huebner <chuebner86@gmail.com>",
+  "license": "ISC"
+}

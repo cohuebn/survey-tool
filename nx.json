@@ -1,17 +1,26 @@
 {
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
+      }
+    }
+  },
   "targetDefaults": {
     "build": {
-      "cache": true,
       "dependsOn": ["^build"]
     },
-    "lint": {
-      "cache": true,
-      "dependsOn": ["^lint"]
+    "test": {
+      "dependsOn": ["^build", "build"]
     },
-    "e2e": {
-      "cache": true
+    "test:integration": {
+      "dependsOn": ["^build", "build"]
+    },
+    "dev": {
+      "dependsOn": ["^build", "build"]
     }
   }
 }
