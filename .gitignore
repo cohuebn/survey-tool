@@ -42,3 +42,9 @@ packages/react-devtools-timeline/dist
 
 # nx files
 .nx/cache/
+
+# .env files
+.env
+
+# next.js build output
+.next/
