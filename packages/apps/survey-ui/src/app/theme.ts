@@ -1,10 +1,10 @@
 "use client";
 
 import { Lato } from "next/font/google";
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
 const lato = Lato({
-  weight: ["300", "400", "700", "900"],
+  weight: ["100", "300", "400", "700"],
   subsets: ["latin"],
 });
 
@@ -13,5 +13,6 @@ const theme = createTheme({
     fontFamily: lato.style.fontFamily,
   },
 });
+const responsiveTheme = responsiveFontSizes(theme);
 
-export default theme;
+export default responsiveTheme;

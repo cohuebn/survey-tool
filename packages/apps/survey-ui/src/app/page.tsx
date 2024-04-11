@@ -1,5 +1,5 @@
-import { Typography } from "@mui/material";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <Typography variant="h1">Hello, Next.js!</Typography>;
+  return redirect("/landing");
 }

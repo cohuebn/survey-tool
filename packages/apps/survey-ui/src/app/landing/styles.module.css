@@ -1,0 +1,35 @@
+.firstSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 500px;
+  width: 100%;
+  background: black;
+}
+
+.firstSectionBackground {
+  object-fit: cover;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.firstSectionContent {
+  text-align: center;
+  color: white;
+  z-index: 2;
+}
+
+.logo {
+  width: 400px;
+  max-width: 75%;
+  height: auto;
+}
+
+.buttons {
+  display: flex;
+  margin-top: 2rem;
+  gap: 2rem;
+  justify-content: center;
+  z-index: 2;
+}
