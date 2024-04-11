@@ -23,10 +23,18 @@ export default function Page() {
               Empowering honesty, elevating healthcare
             </Typography>
             <div className={styles.buttons}>
-              <Button variant="contained" color="primary" size="large">
+              <Button
+                variant="contained"
+                color="primary"
+                className={styles.button}
+              >
                 Get started
               </Button>
-              <Button variant="contained" color="primary" size="large">
+              <Button
+                variant="contained"
+                color="primary"
+                className={styles.button}
+              >
                 Sign in
               </Button>
             </div>

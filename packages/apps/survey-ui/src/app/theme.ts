@@ -8,7 +8,16 @@ const lato = Lato({
   subsets: ["latin"],
 });
 
+const colors = {
+  primary: "#4789B2",
+};
+
 const theme = createTheme({
+  palette: {
+    primary: {
+      main: colors.primary,
+    },
+  },
   typography: {
     fontFamily: lato.style.fontFamily,
   },
