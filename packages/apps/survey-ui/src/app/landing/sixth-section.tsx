@@ -1,8 +1,9 @@
 import { Button, Typography } from "@mui/material";
 
+import headingStyles from "../styles/headings.module.css";
+import buttonStyles from "../styles/buttons.module.css";
+
 import styles from "./sixth-section.module.css";
-import buttonStyles from "./buttons.module.css";
-import headingStyles from "./headings.module.css";
 
 export function SixthSection() {
   return (

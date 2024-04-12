@@ -1,12 +1,18 @@
+"use client";
+
 import { Button, Typography } from "@mui/material";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import docTyping from "@assets/doc-typing.png";
 import logo from "@assets/logo.png";
 
+import buttonStyles from "../styles/buttons.module.css";
+
 import styles from "./first-section.module.css";
-import buttonStyles from "./buttons.module.css";
 
 export function FirstSection() {
+  const router = useRouter();
+
   return (
     <div className={styles.section}>
       <Image
@@ -33,6 +39,7 @@ export function FirstSection() {
             variant="contained"
             color="primary"
             className={buttonStyles.button}
+            onClick={() => router.push("/login")}
           >
             Sign in
           </Button>

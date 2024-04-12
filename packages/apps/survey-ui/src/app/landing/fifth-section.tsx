@@ -1,7 +1,8 @@
 import { Typography } from "@mui/material";
 
+import headingStyles from "../styles/headings.module.css";
+
 import styles from "./fifth-section.module.css";
-import headingStyles from "./headings.module.css";
 
 export function FifthSection() {
   return (
