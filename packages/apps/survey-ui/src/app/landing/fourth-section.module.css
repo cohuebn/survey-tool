@@ -1,0 +1,15 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.details {
+  max-width: 45rem;
+}

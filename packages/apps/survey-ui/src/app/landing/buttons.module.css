@@ -1,0 +1,15 @@
+.buttons {
+  display: flex;
+  margin-top: 1.5rem;
+  gap: 2rem;
+  justify-content: center;
+  z-index: 2;
+}
+
+button.button {
+  font-weight: 400;
+  font-size: 1.5rem;
+  width: 100%;
+  max-width: 15rem;
+  text-transform: none;
+}

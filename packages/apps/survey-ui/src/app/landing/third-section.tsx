@@ -4,11 +4,12 @@ import { Lock, Poll, PsychologyAlt } from "@mui/icons-material";
 import { productName } from "../constants";
 
 import styles from "./third-section.module.css";
+import headingStyles from "./headings.module.css";
 
 export function ThirdSection() {
   return (
     <div className={styles.section}>
-      <Typography className={styles.sectionHeader} variant="h3">
+      <Typography className={headingStyles.sectionHeader} variant="h3">
         Why choose {productName}?
       </Typography>
       <div className={styles.points}>

@@ -7,8 +7,7 @@
   width: 100%;
   background: black;
   box-sizing: border-box;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 1rem;
 }
 
 .section {
@@ -33,20 +32,4 @@
   width: 400px;
   max-width: 75%;
   height: auto;
-}
-
-.buttons {
-  display: flex;
-  margin-top: 2rem;
-  gap: 2rem;
-  justify-content: center;
-  z-index: 2;
-
-  .button {
-    font-weight: 400;
-    font-size: 1.5rem;
-    width: 100%;
-    max-width: 15rem;
-    text-transform: none;
-  }
 }

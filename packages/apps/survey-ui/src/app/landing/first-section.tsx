@@ -4,6 +4,7 @@ import docTyping from "@assets/doc-typing.png";
 import logo from "@assets/logo.png";
 
 import styles from "./first-section.module.css";
+import buttonStyles from "./buttons.module.css";
 
 export function FirstSection() {
   return (
@@ -20,11 +21,19 @@ export function FirstSection() {
         <Typography variant="h2">
           Empowering honesty, elevating healthcare
         </Typography>
-        <div className={styles.buttons}>
-          <Button variant="contained" color="primary" className={styles.button}>
+        <div className={buttonStyles.buttons}>
+          <Button
+            variant="contained"
+            color="primary"
+            className={buttonStyles.button}
+          >
             Get started
           </Button>
-          <Button variant="contained" color="primary" className={styles.button}>
+          <Button
+            variant="contained"
+            color="primary"
+            className={buttonStyles.button}
+          >
             Sign in
           </Button>
         </div>

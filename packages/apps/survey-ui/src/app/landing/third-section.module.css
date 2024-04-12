@@ -7,20 +7,15 @@
   position: relative;
   width: 100%;
   background: #f9fafa;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding: 2rem;
   box-sizing: border-box;
-}
-
-h3.sectionHeader {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 }
 
 .points {
   display: flex;
   align-items: flex-start;
   gap: 2rem;
+  margin-top: 1rem;
 }
 
 .points {
