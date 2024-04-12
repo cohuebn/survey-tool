@@ -10,23 +10,22 @@ import { Email, Lock } from "@mui/icons-material";
 import Link from "next/link";
 
 import buttonStyles from "../styles/buttons.module.css";
-
-import styles from "./styles.module.css";
+import authStyles from "../styles/auth.module.css";
 
 export default function Page() {
   return (
-    <div className={styles.container}>
-      <div className={styles.backgroundFooter}></div>
-      <Card className={styles.loginSection} elevation={3}>
+    <div className={authStyles.container}>
+      <div className={authStyles.backgroundFooter}></div>
+      <Card className={authStyles.primarySection} elevation={3}>
         <CardContent>
-          <Typography className={styles.loginHeader} variant="h2">
-            Sign in
+          <Typography className={authStyles.header} variant="h2">
+            Sign up
           </Typography>
-          <Typography className={styles.loginSubheader} variant="h3">
-            Welcome back!
+          <Typography className={authStyles.subheader} variant="h3">
+            We're glad you're here!
           </Typography>
 
-          <form className={styles.loginForm}>
+          <form className={authStyles.form}>
             <TextField
               placeholder="Email"
               fullWidth
@@ -51,15 +50,14 @@ export default function Page() {
                 ),
               }}
             ></TextField>
-            <Link href="/forgot-password">Forgot your password?</Link>
             <div className={buttonStyles.buttons}>
               <Button className={buttonStyles.button} variant="contained">
                 Login
               </Button>
             </div>
           </form>
-          <p className={styles.signup}>
-            Don't have an account? <Link href="/signup">Create one here.</Link>
+          <p className={authStyles.alternateActionLink}>
+            Already have an account? <Link href="/login">Login here.</Link>
           </p>
         </CardContent>
       </Card>

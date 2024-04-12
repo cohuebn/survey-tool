@@ -32,6 +32,7 @@ export function FirstSection() {
             variant="contained"
             color="primary"
             className={buttonStyles.button}
+            onClick={() => router.push("/signup")}
           >
             Get started
           </Button>
