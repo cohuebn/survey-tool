@@ -1,4 +1,4 @@
-.firstSection {
+.section {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -6,21 +6,24 @@
   height: 500px;
   width: 100%;
   background: black;
+  box-sizing: border-box;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-.firstSection {
+.section {
   @media screen and (max-width: 768px) {
     height: 400px;
   }
 }
 
-.firstSectionBackground {
+.background {
   object-fit: cover;
   opacity: 0.3;
   z-index: 1;
 }
 
-.firstSectionContent {
+.content {
   text-align: center;
   color: white;
   z-index: 2;
@@ -42,6 +45,8 @@
   .button {
     font-weight: 400;
     font-size: 1.5rem;
+    width: 100%;
+    max-width: 15rem;
     text-transform: none;
   }
 }

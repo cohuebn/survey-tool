@@ -1,0 +1,22 @@
+.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  background: white;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  box-sizing: border-box;
+}
+
+.section {
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.image {
+  width: 50%;
+  height: auto;
+}

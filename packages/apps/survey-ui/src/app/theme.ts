@@ -3,14 +3,12 @@
 import { Lato } from "next/font/google";
 import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-const lato = Lato({
+import { colors } from "./tokens";
+
+const latoFont = Lato({
   weight: ["100", "300", "400", "700"],
   subsets: ["latin"],
 });
-
-const colors = {
-  primary: "#4789B2",
-};
 
 const theme = createTheme({
   palette: {
@@ -19,9 +17,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: lato.style.fontFamily,
+    fontFamily: latoFont.style.fontFamily,
   },
 });
-const responsiveTheme = responsiveFontSizes(theme);
-
-export default responsiveTheme;
+export const responsiveTheme = responsiveFontSizes(theme);
