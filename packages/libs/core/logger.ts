@@ -17,7 +17,8 @@ function adaptConsoleLog(logMethod: typeof console.info): LogCall {
 export function createLogger(name: string): Logger {
   // Use pino within node environments
   const hasProcess = typeof process === "object";
-  if (hasProcess) {
+  const inBrowser = "browser" in process;
+  if (!inBrowser) {
     const level = hasProcess ? getOptional("LOG_LEVEL", defaultLogLevel) : defaultLogLevel;
     return pino({
       name,

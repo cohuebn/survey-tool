@@ -87,6 +87,12 @@ module.exports = {
       "warn",
       {
         "newlines-between": "always",
+        "pathGroups": [
+          {
+            "pattern": "@assets/**",
+            "group": "external"
+          }
+        ]
       },
     ],
     "no-return-await": "off",

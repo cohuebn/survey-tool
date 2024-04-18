@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash } from "crypto";
 
 /**
  * Create a key for the given fields using a standard hashing mechanism. This is
