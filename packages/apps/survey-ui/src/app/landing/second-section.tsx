@@ -21,13 +21,13 @@ export function SecondSection() {
         </p>
         <p>
           This can result in lack of feedback or worse yet, partial opinions
-          that aren&rsquo;t completely candid. {productName} is meant to put the
+          that aren&apos;t completely candid. {productName} is meant to put the
           power to effect change back into the hands of physicians, nurses, and
           other medical professionals.
         </p>
         <p>
           {productName} prevents misrepresented results by validating
-          physicians. It keeps those physicians&rsquo; identities safe by
+          physicians. It keeps those physicians&apos; identities safe by
           minimizing personally identifiable information required and never
           including that information with survey results.
         </p>

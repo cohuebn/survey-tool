@@ -1,9 +1,12 @@
 .buttons {
   display: flex;
-  margin-top: 1.5rem;
   gap: 2rem;
   justify-content: center;
   z-index: 2;
+}
+
+.buttons.withTopMargin {
+  margin-top: 1.5rem;
 }
 
 button.button {
@@ -12,4 +15,8 @@ button.button {
   width: 100%;
   max-width: 15rem;
   text-transform: none;
+}
+
+button.button.maxWidth20 {
+  max-width: 20rem;
 }

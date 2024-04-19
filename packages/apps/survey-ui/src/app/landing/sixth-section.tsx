@@ -2,6 +2,7 @@
 
 import { Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { clsx } from "clsx";
 
 import headingStyles from "../styles/headings.module.css";
 import buttonStyles from "../styles/buttons.module.css";
@@ -16,7 +17,7 @@ export function SixthSection() {
       <Typography className={headingStyles.sectionHeader} variant="h3">
         Ready to start creating and taking surveys?
       </Typography>
-      <div className={buttonStyles.buttons}>
+      <div className={clsx(buttonStyles.buttons, buttonStyles.withTopMargin)}>
         <Button
           variant="contained"
           color="primary"

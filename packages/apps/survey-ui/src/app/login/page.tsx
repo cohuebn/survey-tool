@@ -17,11 +17,10 @@ import { useCallback, useState } from "react";
 import { createLogger } from "@survey-tool/core";
 import { toast } from "react-toastify";
 
+import authStyles from "../styles/auth.module.css";
 import buttonStyles from "../styles/buttons.module.css";
 import { useFirebaseAuth } from "../firebase/use-firebase-auth";
 import { parseError } from "../errors/parse-error";
-
-import styles from "./styles.module.css";
 
 const logger = createLogger("login");
 
@@ -44,7 +43,13 @@ export default function Page() {
           _email,
           _password,
         );
-        logger.debug({ user: signinResponse.user });
+        if (!signinResponse.user.emailVerified) {
+          toast(
+            `Please verify your email address before logging in. Check your inbox for a verification email.`,
+            { type: "warning" },
+          );
+        }
+        logger.debug({ user: signinResponse.user }, "User signed in");
       } catch (err: unknown) {
         logger.error({ err }, "Error logging in");
         toast(parseError(err), { type: "error" });
@@ -56,18 +61,18 @@ export default function Page() {
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.backgroundFooter}></div>
-      <Card className={styles.loginSection} elevation={3}>
+    <div className={authStyles.container}>
+      <div className={authStyles.backgroundFooter}></div>
+      <Card className={authStyles.primarySection} elevation={3}>
         <CardContent>
-          <Typography className={styles.loginHeader} variant="h2">
+          <Typography className={authStyles.header} variant="h2">
             Sign in
           </Typography>
-          <Typography className={styles.loginSubheader} variant="h3">
+          <Typography className={authStyles.subheader} variant="h3">
             Welcome back!
           </Typography>
 
-          <form className={styles.loginForm}>
+          <form className={authStyles.form}>
             <TextField
               placeholder="Email"
               fullWidth
@@ -83,7 +88,7 @@ export default function Page() {
               }}
             ></TextField>
             <TextField
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               fullWidth
               value={password}
@@ -123,7 +128,7 @@ export default function Page() {
               </Button>
             </div>
           </form>
-          <p className={styles.signup}>
+          <p className={authStyles.alternateActionLink}>
             Don&apos;t have an account?{" "}
             <Link href="/signup">Create one here.</Link>
           </p>

@@ -18,6 +18,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 import { createLogger } from "@survey-tool/core";
 
 import buttonStyles from "../styles/buttons.module.css";
@@ -29,6 +30,7 @@ const logger = createLogger("signup");
 
 export default function Page() {
   const firebaseAuth = useFirebaseAuth();
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -46,9 +48,12 @@ export default function Page() {
           _email,
           _password,
         );
-        if (!user.emailVerified) {
-          await sendEmailVerification(user);
-        }
+        await sendEmailVerification(user);
+        toast(
+          `Verification email sent to ${_email}. After verifying, you can log in.`,
+          { type: "success" },
+        );
+        router.push("/login");
       } catch (err: unknown) {
         logger.error({ err }, "Error signing up");
         toast(parseError(err), { type: "error" });
@@ -56,7 +61,7 @@ export default function Page() {
         setSigningIn(false);
       }
     },
-    [firebaseAuth],
+    [firebaseAuth, router],
   );
 
   return (
@@ -68,7 +73,7 @@ export default function Page() {
             Sign up
           </Typography>
           <Typography className={authStyles.subheader} variant="h3">
-            We&rsquo;re glad you&rsquo;re here!
+            We&apos;re glad you&apos;re here!
           </Typography>
 
           <form className={authStyles.form}>

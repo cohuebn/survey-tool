@@ -11,7 +11,7 @@ const defaultLogLevel = "info";
  * (object, message) signature as Pino's log methods.
  */
 function adaptConsoleLog(logMethod: typeof console.info): LogCall {
-  return (obj: unknown, message?: string) => logMethod(message, { obj });
+  return (obj: unknown, message?: string) => logMethod(message, obj);
 }
 
 export function createLogger(name: string): Logger {
