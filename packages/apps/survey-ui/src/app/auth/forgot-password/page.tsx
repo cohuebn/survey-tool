@@ -16,11 +16,11 @@ import { useCallback, useState } from "react";
 import { createLogger } from "@survey-tool/core";
 import { toast } from "react-toastify";
 import { clsx } from "clsx";
+import authStyles from "@styles/auth.module.css";
+import buttonStyles from "@styles/buttons.module.css";
 
-import authStyles from "../styles/auth.module.css";
-import buttonStyles from "../styles/buttons.module.css";
-import { useFirebaseAuth } from "../firebase/use-firebase-auth";
-import { parseError } from "../errors/parse-error";
+import { useFirebaseAuth } from "../../firebase/use-firebase-auth";
+import { parseError } from "../../errors/parse-error";
 
 const logger = createLogger("forgot-password");
 
@@ -46,7 +46,7 @@ export default function Page() {
           `Recovery message sent to ${_email}. After changing your password, you can login here`,
           { type: "success" },
         );
-        router.push("/login");
+        router.push("/auth/login");
       } catch (err: unknown) {
         logger.error({ err }, "Error sending recovery message");
         toast(parseError(err), { type: "error" });
@@ -54,7 +54,7 @@ export default function Page() {
         setSendingRecoveryMessage(false);
       }
     },
-    [firebaseAuth],
+    [firebaseAuth, router],
   );
 
   return (
@@ -95,7 +95,7 @@ export default function Page() {
           </form>
           <p className={authStyles.alternateActionLink}>
             Need a new account instead?{" "}
-            <Link href="/signup">Create one here.</Link>
+            <Link href="/auth/signup">Create one here.</Link>
           </p>
         </CardContent>
       </Card>

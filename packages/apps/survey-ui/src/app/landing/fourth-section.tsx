@@ -1,6 +1,5 @@
 import { Typography } from "@mui/material";
-
-import headingStyles from "../styles/headings.module.css";
+import headingStyles from "@styles/headings.module.css";
 
 import styles from "./fourth-section.module.css";
 

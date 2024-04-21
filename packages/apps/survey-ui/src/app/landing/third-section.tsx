@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material";
 import { Lock, Poll, PsychologyAlt } from "@mui/icons-material";
+import headingStyles from "@styles/headings.module.css";
 
 import { productName } from "../constants";
-import headingStyles from "../styles/headings.module.css";
 
 import styles from "./third-section.module.css";
 

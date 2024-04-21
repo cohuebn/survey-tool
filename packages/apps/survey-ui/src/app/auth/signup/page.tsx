@@ -20,11 +20,11 @@ import {
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createLogger } from "@survey-tool/core";
+import buttonStyles from "@styles/buttons.module.css";
+import authStyles from "@styles/auth.module.css";
 
-import buttonStyles from "../styles/buttons.module.css";
-import authStyles from "../styles/auth.module.css";
-import { useFirebaseAuth } from "../firebase/use-firebase-auth";
-import { parseError } from "../errors/parse-error";
+import { useFirebaseAuth } from "../../firebase/use-firebase-auth";
+import { parseError } from "../../errors/parse-error";
 
 const logger = createLogger("signup");
 
@@ -53,7 +53,7 @@ export default function Page() {
           `Verification email sent to ${_email}. After verifying, you can log in.`,
           { type: "success" },
         );
-        router.push("/login");
+        router.push("/auth/login");
       } catch (err: unknown) {
         logger.error({ err }, "Error signing up");
         toast(parseError(err), { type: "error" });
@@ -132,7 +132,7 @@ export default function Page() {
             </div>
           </form>
           <p className={authStyles.alternateActionLink}>
-            Already have an account? <Link href="/login">Login here.</Link>
+            Already have an account? <Link href="/auth/login">Login here.</Link>
           </p>
         </CardContent>
       </Card>

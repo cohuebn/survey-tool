@@ -10,6 +10,7 @@ import "./global.css";
 import { FavIcons } from "./favicons";
 import { responsiveTheme } from "./theme";
 import { FirebaseAppProvider } from "./firebase/firebase-app-context";
+import { UserSessionContextProvider } from "./auth/user-session-context-provider";
 
 const latoFont = Lato({
   weight: ["100", "300", "400", "700"],
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AppRouterCacheProvider>
           <ThemeProvider theme={responsiveTheme}>
             <FirebaseAppProvider>
-              {children}
+              <UserSessionContextProvider>
+                {children}
+              </UserSessionContextProvider>
               <ToastContainer position="bottom-left" />
             </FirebaseAppProvider>
           </ThemeProvider>

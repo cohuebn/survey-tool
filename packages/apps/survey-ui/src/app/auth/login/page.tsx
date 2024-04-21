@@ -16,16 +16,21 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useCallback, useState } from "react";
 import { createLogger } from "@survey-tool/core";
 import { toast } from "react-toastify";
+import authStyles from "@styles/auth.module.css";
+import buttonStyles from "@styles/buttons.module.css";
+import { useRouter } from "next/navigation";
 
-import authStyles from "../styles/auth.module.css";
-import buttonStyles from "../styles/buttons.module.css";
-import { useFirebaseAuth } from "../firebase/use-firebase-auth";
-import { parseError } from "../errors/parse-error";
+import { useFirebaseAuth } from "../../firebase/use-firebase-auth";
+import { parseError } from "../../errors/parse-error";
+import { useUserSession } from "../use-user-session";
+import { isAuthenticatedUser } from "../authenticated-user";
 
 const logger = createLogger("login");
 
 export default function Page() {
   const firebaseAuth = useFirebaseAuth();
+  const router = useRouter();
+  const { setAuthenticatedUser } = useUserSession();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -44,12 +49,15 @@ export default function Page() {
           _password,
         );
         if (!signinResponse.user.emailVerified) {
-          toast(
-            `Please verify your email address before logging in. Check your inbox for a verification email.`,
-            { type: "warning" },
+          throw new Error(
+            "Please verify your email address before logging in. Check your inbox for a verification email.",
           );
         }
-        logger.debug({ user: signinResponse.user }, "User signed in");
+        if (!isAuthenticatedUser(signinResponse.user)) {
+          throw new Error("User is not authenticated");
+        }
+        setAuthenticatedUser(signinResponse.user);
+        router.push("/home");
       } catch (err: unknown) {
         logger.error({ err }, "Error logging in");
         toast(parseError(err), { type: "error" });
@@ -57,7 +65,7 @@ export default function Page() {
         setSigningIn(false);
       }
     },
-    [firebaseAuth],
+    [firebaseAuth, router, setAuthenticatedUser],
   );
 
   return (
@@ -116,7 +124,7 @@ export default function Page() {
                 ),
               }}
             ></TextField>
-            <Link href="/forgot-password">Forgot your password?</Link>
+            <Link href="/auth/forgot-password">Forgot your password?</Link>
             <div className={buttonStyles.buttons}>
               <Button
                 className={buttonStyles.button}
@@ -130,7 +138,7 @@ export default function Page() {
           </form>
           <p className={authStyles.alternateActionLink}>
             Don&apos;t have an account?{" "}
-            <Link href="/signup">Create one here.</Link>
+            <Link href="/auth/signup">Create one here.</Link>
           </p>
         </CardContent>
       </Card>

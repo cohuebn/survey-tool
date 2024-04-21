@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import docTyping from "@assets/doc-typing.png";
 import logo from "@assets/logo.png";
-
-import buttonStyles from "../styles/buttons.module.css";
+import buttonStyles from "@styles/buttons.module.css";
 
 import styles from "./first-section.module.css";
 
@@ -33,7 +32,7 @@ export function FirstSection() {
             variant="contained"
             color="primary"
             className={buttonStyles.button}
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push("/auth/signup")}
           >
             Get started
           </Button>
@@ -41,7 +40,7 @@ export function FirstSection() {
             variant="contained"
             color="primary"
             className={buttonStyles.button}
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/auth/login")}
           >
             Sign in
           </Button>

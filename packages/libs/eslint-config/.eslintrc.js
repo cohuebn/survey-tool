@@ -91,7 +91,11 @@ module.exports = {
           {
             "pattern": "@assets/**",
             "group": "external"
-          }
+          },
+          {
+            "pattern": "@styles/**",
+            "group": "external"
+          },
         ]
       },
     ],

@@ -3,9 +3,8 @@
 import { Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
-
-import headingStyles from "../styles/headings.module.css";
-import buttonStyles from "../styles/buttons.module.css";
+import headingStyles from "@styles/headings.module.css";
+import buttonStyles from "@styles/buttons.module.css";
 
 import styles from "./sixth-section.module.css";
 
@@ -22,7 +21,7 @@ export function SixthSection() {
           variant="contained"
           color="primary"
           className={buttonStyles.button}
-          onClick={() => router.push("/signup")}
+          onClick={() => router.push("/auth/signup")}
         >
           Get started
         </Button>
