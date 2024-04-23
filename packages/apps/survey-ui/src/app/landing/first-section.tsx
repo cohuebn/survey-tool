@@ -23,7 +23,7 @@ export function FirstSection() {
       />
       <div className={styles.content}>
         <Image src={logo} alt="Doc Voice logo" className={styles.logo} />
-        <Typography variant="h1">Doc Voice</Typography>
+        <Typography variant="h1">DocVoice</Typography>
         <Typography variant="h2">
           Empowering honesty, elevating healthcare
         </Typography>
