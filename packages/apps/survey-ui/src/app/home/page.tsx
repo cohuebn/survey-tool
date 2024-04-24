@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 import { useUserSession } from "../auth/use-user-session";
+import { Navbar } from "../navbar/navbar";
 
 export default function Page() {
   const { user, userLoaded, removeAuthenticatedUser } = useUserSession();
@@ -19,6 +20,11 @@ export default function Page() {
     return <CircularProgress />;
   }
 
+  return (
+    <main>
+      <Navbar />
+    </main>
+  );
   return (
     <>
       <Typography variant="h1">Placeholder for home page</Typography>
