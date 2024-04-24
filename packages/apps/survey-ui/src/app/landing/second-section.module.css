@@ -10,8 +10,8 @@
   box-sizing: border-box;
 }
 
-.section {
-  @media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {
+  .section {
     display: none;
   }
 }

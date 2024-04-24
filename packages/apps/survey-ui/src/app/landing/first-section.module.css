@@ -10,8 +10,8 @@
   padding: 1rem;
 }
 
-.section {
-  @media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {
+  .section {
     height: 400px;
   }
 }

@@ -7,6 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 import "./global.css";
 
+// import { Viewport } from "next";
+
 import { FavIcons } from "./favicons";
 import { responsiveTheme } from "./theme";
 import { FirebaseAppProvider } from "./firebase/firebase-app-context";
@@ -17,12 +19,15 @@ const latoFont = Lato({
   subsets: ["latin"],
 });
 
+// export const viewport: Viewport = {
+//   width: "device-width",
+//   initialScale: 1,
+// };
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-
         <FavIcons />
         <title>DocVoice</title>
       </head>
