@@ -7,8 +7,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 import "./global.css";
 
-// import { Viewport } from "next";
-
 import { FavIcons } from "./favicons";
 import { responsiveTheme } from "./theme";
 import { FirebaseAppProvider } from "./firebase/firebase-app-context";
@@ -18,11 +16,6 @@ const latoFont = Lato({
   weight: ["100", "300", "400", "700"],
   subsets: ["latin"],
 });
-
-// export const viewport: Viewport = {
-//   width: "device-width",
-//   initialScale: 1,
-// };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
