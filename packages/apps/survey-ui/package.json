@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@survey-tool/eslint-config": "*",
-    "@types/react": "^18.2.75"
+    "@types/react": "^18.2.75",
+    "firebase-tools": "^13.7.3"
   }
 }
