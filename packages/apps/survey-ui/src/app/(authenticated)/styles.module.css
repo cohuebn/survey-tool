@@ -1,0 +1,17 @@
+.appHeaderContent {
+  padding-left: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.productName {
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.mainContent {
+  padding: 2rem;
+}

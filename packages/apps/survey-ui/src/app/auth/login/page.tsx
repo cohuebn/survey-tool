@@ -14,7 +14,7 @@ import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useCallback, useState } from "react";
-import { createLogger } from "@survey-tool/core";
+import { createLogger, isNullOrUndefined } from "@survey-tool/core";
 import { toast } from "react-toastify";
 import authStyles from "@styles/auth.module.css";
 import buttonStyles from "@styles/buttons.module.css";
@@ -43,6 +43,9 @@ export default function Page() {
       }
       setSigningIn(true);
       try {
+        if (!_email || !_password) {
+          throw new Error("Email and password are required");
+        }
         const signinResponse = await signInWithEmailAndPassword(
           firebaseAuth,
           _email,
@@ -80,7 +83,10 @@ export default function Page() {
             Welcome back!
           </Typography>
 
-          <form className={authStyles.form}>
+          <form
+            className={authStyles.form}
+            action={() => signIn(email, password)}
+          >
             <TextField
               placeholder="Email"
               fullWidth
@@ -129,7 +135,7 @@ export default function Page() {
               <Button
                 className={buttonStyles.button}
                 variant="contained"
-                onClick={() => signIn(email, password)}
+                type="submit"
                 disabled={signingIn}
               >
                 Login

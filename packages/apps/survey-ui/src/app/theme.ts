@@ -10,6 +10,13 @@ const latoFont = Lato({
   subsets: ["latin"],
 });
 
+/** Patching of MUI types */
+declare module "@mui/material/IconButton" {
+  interface IconButtonOwnProps {
+    variant?: "outlined" | "default";
+  }
+}
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -19,5 +26,21 @@ const theme = createTheme({
   typography: {
     fontFamily: latoFont.style.fontFamily,
   },
+  components: {
+    MuiIconButton: {
+      variants: [
+        {
+          props: { variant: "outlined" },
+          style: ({ theme: _theme }) => ({
+            color: "inherit",
+            border: `1px solid`,
+            borderRadius: 4,
+            padding: `calc(${_theme.spacing(1)} - 4px)}`,
+          }),
+        },
+      ],
+    },
+  },
 });
+
 export const responsiveTheme = responsiveFontSizes(theme);

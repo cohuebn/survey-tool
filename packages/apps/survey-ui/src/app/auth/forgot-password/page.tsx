@@ -67,7 +67,10 @@ export default function Page() {
             your password.
           </Typography>
 
-          <form className={authStyles.form}>
+          <form
+            className={authStyles.form}
+            action={() => sendRecoveryMessage(email)}
+          >
             <TextField
               placeholder="Email"
               fullWidth
@@ -84,9 +87,9 @@ export default function Page() {
             ></TextField>
             <div className={buttonStyles.buttons}>
               <Button
+                type="submit"
                 className={clsx(buttonStyles.button, buttonStyles.maxWidth20)}
                 variant="contained"
-                onClick={() => sendRecoveryMessage(email)}
                 disabled={sendingRecoveryMessage}
               >
                 Send recovery message

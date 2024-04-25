@@ -76,7 +76,10 @@ export default function Page() {
             We&apos;re glad you&apos;re here!
           </Typography>
 
-          <form className={authStyles.form}>
+          <form
+            className={authStyles.form}
+            action={() => signUp(email, password)}
+          >
             <TextField
               placeholder="Email"
               fullWidth
@@ -122,9 +125,9 @@ export default function Page() {
             ></TextField>
             <div className={buttonStyles.buttons}>
               <Button
+                type="submit"
                 className={buttonStyles.button}
                 variant="contained"
-                onClick={() => signUp(email, password)}
                 disabled={signingIn}
               >
                 Sign up
