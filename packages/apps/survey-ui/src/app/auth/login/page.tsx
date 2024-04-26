@@ -14,7 +14,7 @@ import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useCallback, useState } from "react";
-import { createLogger, isNullOrUndefined } from "@survey-tool/core";
+import { createLogger } from "@survey-tool/core";
 import { toast } from "react-toastify";
 import authStyles from "@styles/auth.module.css";
 import buttonStyles from "@styles/buttons.module.css";

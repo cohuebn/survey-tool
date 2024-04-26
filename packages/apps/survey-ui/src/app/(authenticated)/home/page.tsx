@@ -1,33 +1,20 @@
 "use client";
 
-import { Button, CircularProgress, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { CircularProgress, Typography } from "@mui/material";
+import layoutStyles from "@styles/layout.module.css";
 
 import { useUserSession } from "../../auth/use-user-session";
 
 export default function Page() {
-  const { user, userLoaded, removeAuthenticatedUser } = useUserSession();
-  const router = useRouter();
-
-  const logout = useCallback(() => {
-    removeAuthenticatedUser();
-    router.push("/auth/login");
-  }, [removeAuthenticatedUser, router]);
+  const { userLoaded } = useUserSession();
 
   if (!userLoaded) {
     return <CircularProgress />;
   }
 
   return (
-    <>
+    <div className={layoutStyles.centeredContent}>
       <Typography variant="h2">Placeholder for the home page</Typography>
-      <Typography variant="body1">
-        Logged in as {user?.email ?? "no one"}
-      </Typography>
-      <Button variant="contained" onClick={logout}>
-        {user ? "Logout" : "Return to login page"}
-      </Button>
-    </>
+    </div>
   );
 }
