@@ -8,9 +8,16 @@ import { UserSessionContext } from "./user-session-context";
 const logger = createLogger("use-user-session");
 
 export function useUserSession() {
-  const userSession = useContext(UserSessionContext);
+  const userSessionContext = useContext(UserSessionContext);
   useEffect(() => {
-    logger.debug({ email: userSession.user?.email }, "Loaded user session");
-  }, [userSession]);
-  return userSession;
+    if (userSessionContext.userSession.loggedIn) {
+      logger.debug(
+        { email: userSessionContext.userSession.user.email },
+        "Loaded user session",
+      );
+    } else {
+      logger.debug("No user session found");
+    }
+  }, [userSessionContext]);
+  return userSessionContext;
 }

@@ -2,13 +2,12 @@
 
 import { createContext } from "react";
 
-import { AuthenticatedUser } from "./authenticated-user";
+import { UserSession, unauthenticatedUserSession } from "./user-session";
 
 type UserSessionContextData = {
-  user: AuthenticatedUser | null;
-  userLoaded: boolean;
-  setAuthenticatedUser: (user: AuthenticatedUser) => void;
-  removeAuthenticatedUser: () => void;
+  userSession: UserSession;
+  setUserSession: (user: UserSession) => void;
+  removeUserSession: () => void;
 };
 
 /**
@@ -18,8 +17,7 @@ type UserSessionContextData = {
  * 3. A function to remove the authenticated user
  */
 export const UserSessionContext = createContext<UserSessionContextData>({
-  user: null,
-  userLoaded: true,
-  setAuthenticatedUser: () => {},
-  removeAuthenticatedUser: () => {},
+  userSession: unauthenticatedUserSession,
+  setUserSession: () => {},
+  removeUserSession: () => {},
 });

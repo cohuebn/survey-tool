@@ -6,9 +6,9 @@ import layoutStyles from "@styles/layout.module.css";
 import { useUserSession } from "../../auth/use-user-session";
 
 export default function Page() {
-  const { userLoaded } = useUserSession();
+  const { userSession } = useUserSession();
 
-  if (!userLoaded) {
+  if (!userSession.loggedIn) {
     return <CircularProgress />;
   }
 

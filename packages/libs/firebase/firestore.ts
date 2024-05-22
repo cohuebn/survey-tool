@@ -1,12 +1,15 @@
 import { createLogger } from "@survey-tool/core";
-import { getAuth, connectAuthEmulator, Auth } from "firebase/auth";
+import {
+  getFirestore as coreGetFirestore,
+  connectFirestoreEmulator,
+} from "firebase/firestore";
 import { FirebaseApp } from "firebase/app";
 import { getFirebaseEmulatorConfig } from "@survey-tool/firebase-config";
 
 import { defaultFirebaseApp } from "./app";
 import { EmulatorConfigResult } from "./types";
 
-const logger = createLogger("firebase/auth");
+const logger = createLogger("firebase/firestore");
 
 /** Initialize Firebase auth for application use:
  * 1. If the Firebase emulator option is enabled, connect auth to the emulator
@@ -19,21 +22,20 @@ const logger = createLogger("firebase/auth");
  * the default provider will be used to get emulator config
  * @returns The Firebase auth object to use for interacting with Firebase's auth services
  */
-export async function getFirebaseAuth(
+export async function getFirestore(
   app?: FirebaseApp,
   emulatorConfigProvider: () => EmulatorConfigResult = getFirebaseEmulatorConfig,
-): Promise<Auth> {
+) {
   const defaultedApp = app ?? defaultFirebaseApp();
   const emulatorConfig = await emulatorConfigProvider();
-  const auth = getAuth(defaultedApp);
-  if (!emulatorConfig.useEmulator) return auth;
+  const firestore = coreGetFirestore(defaultedApp);
+  if (!emulatorConfig.useEmulator) return firestore;
 
-  const { emulatorHost } = emulatorConfig;
-  const emulatorUrl = `http://${emulatorHost}`;
+  const { emulatorHost, emulatorFirestorePort } = emulatorConfig;
   logger.debug(
-    { emulatorHost, emulatorUrl },
+    { emulatorHost, emulatorFirestorePort },
     "Using Firebase emulator for auth",
   );
-  connectAuthEmulator(auth, emulatorUrl);
-  return auth;
+  connectFirestoreEmulator(firestore, emulatorHost, emulatorFirestorePort);
+  return firestore;
 }

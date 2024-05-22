@@ -1,7 +1,7 @@
 {
-  "name": "@survey-tool/firebase-config",
+  "name": "@survey-tool/supabase",
   "version": "1.0.0",
-  "description": "A library containing utilities for Firebase configuration",
+  "description": "A library containing utilities for Supabase interaction",
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint ./",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@survey-tool/eslint-config": "*",
     "@survey-tool/core": "*",
-    "firebase": "^10.11.1"
+    "@supabase/supabase-js": "^2.43.1"
   },
   "author": "Cory Huebner <chuebner86@gmail.com>",
   "license": "ISC"

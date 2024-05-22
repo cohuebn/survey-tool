@@ -11,7 +11,7 @@
     "@survey-tool/eslint-config": "*",
     "@survey-tool/core": "*",
     "@survey-tool/firebase-config": "*",
-    "firebase": "^9.22.1"
+    "firebase": "^10.11.1"
   },
   "author": "Cory Huebner <chuebner86@gmail.com>",
   "license": "ISC"

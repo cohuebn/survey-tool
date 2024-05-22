@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  InputAdornment,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { Email } from "@mui/icons-material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -17,43 +9,53 @@ import { toast } from "react-toastify";
 import { clsx } from "clsx";
 import authStyles from "@styles/auth.module.css";
 import buttonStyles from "@styles/buttons.module.css";
+import { AuthSessionMissingError } from "@supabase/supabase-js";
 
 import { parseError } from "../../errors/parse-error";
 import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
+import { PasswordTextField } from "../password-text-field";
 
 const logger = createLogger("forgot-password");
+
+function handleChangePasswordError(err: unknown) {
+  if (err instanceof AuthSessionMissingError) {
+    throw new Error(
+      "It appears that you have not accessed this page via a password reset link. Please request a password reset from the 'Forgot password' page.",
+    );
+  }
+  throw err;
+}
 
 export default function Page() {
   const supabaseAuth = useSupabaseAuth();
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
-  const [sendingRecoveryMessage, setSendingRecoveryMessage] =
-    useState<boolean>(false);
+  const [password, setPassword] = useState<string>("");
+  const [confirmedPassword, setConfirmedPassword] = useState<string>("");
+  const [changingPassword, setChangingPassword] = useState<boolean>(false);
+  const passwordMismatch = password !== confirmedPassword;
 
-  const sendRecoveryMessage = useCallback(
-    async (_email: string) => {
+  const changePassword = useCallback(
+    async (_password: string) => {
       if (!supabaseAuth.clientLoaded) {
         throw new Error(
           `Supabase auth initialization error. Cannot recover password.`,
         );
       }
-      setSendingRecoveryMessage(true);
+      setChangingPassword(true);
       try {
-        const response = await supabaseAuth.auth.resetPasswordForEmail(_email, {
-          redirectTo: `${window.location.origin}/auth/change-password`,
-        });
-        if (response.error) throw response.error;
-        logger.debug({ response }, "Recovery message sent");
-        toast(
-          `Recovery message sent to ${_email}. After changing your password, you can login here`,
-          { type: "success" },
+        const response = await supabaseAuth.auth.updateUser(
+          { password: _password },
+          { emailRedirectTo: `${window.location.origin}/auth/login` },
         );
+        if (response.error) handleChangePasswordError(response.error);
+        logger.debug({ response }, "Password changed");
+        toast("Password changed successfully", { type: "success" });
         router.push("/auth/login");
       } catch (err: unknown) {
         logger.error({ err }, "Error sending recovery message");
         toast(parseError(err), { type: "error" });
       } finally {
-        setSendingRecoveryMessage(false);
+        setChangingPassword(false);
       }
     },
     [router, supabaseAuth],
@@ -65,36 +67,32 @@ export default function Page() {
       <Card className={authStyles.primarySection} elevation={3}>
         <CardContent>
           <Typography className={authStyles.leadSentence} variant="subtitle1">
-            Enter your email and we&apos;ll send you a recovery message to reset
-            your password.
+            Change your password
           </Typography>
 
           <form
             className={authStyles.form}
-            action={() => sendRecoveryMessage(email)}
+            action={() => changePassword(password)}
           >
-            <TextField
-              placeholder="Email"
-              fullWidth
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email />
-                  </InputAdornment>
-                ),
-              }}
-            ></TextField>
+            <PasswordTextField
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              error={passwordMismatch}
+              helperText={passwordMismatch ? "Passwords do not match" : ""}
+            />
+            <PasswordTextField
+              placeholder="Confirm password"
+              value={confirmedPassword}
+              onChange={(e) => setConfirmedPassword(e.target.value)}
+            />
             <div className={buttonStyles.buttons}>
               <Button
                 type="submit"
                 className={clsx(buttonStyles.button, buttonStyles.maxWidth20)}
                 variant="contained"
-                disabled={sendingRecoveryMessage}
+                disabled={changingPassword || !password || passwordMismatch}
               >
-                Send recovery message
+                Change password
               </Button>
             </div>
           </form>

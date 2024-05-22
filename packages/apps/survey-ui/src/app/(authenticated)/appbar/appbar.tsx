@@ -19,23 +19,31 @@ import { useRouter } from "next/navigation";
 
 import { NavbarContext } from "../navbar/navbar-context";
 import { UserSessionContext } from "../../auth/user-session-context";
+import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
 
 import styles from "./styles.module.css";
 
 export function AppBar() {
-  const { user, removeAuthenticatedUser } = useContext(UserSessionContext);
+  const supabaseAuth = useSupabaseAuth();
+  const { userSession, removeUserSession: removeAuthenticatedUser } =
+    useContext(UserSessionContext);
   const { setOpen: setNavbarOpen } = useContext(NavbarContext);
   const [profileAnchorElement, setProfileAnchorElement] =
     useState<null | HTMLElement>(null);
   const router = useRouter();
+  const email = userSession.loggedIn ? userSession.user.email : undefined;
 
-  const logout = useCallback(() => {
-    router.push("/auth/login");
+  const logout = useCallback(async () => {
+    if (!supabaseAuth.clientLoaded) {
+      throw new Error("Supabase auth initialization error. Cannot log out.");
+    }
+    await supabaseAuth.auth.signOut();
     removeAuthenticatedUser();
-  }, [removeAuthenticatedUser, router]);
+    router.push("/auth/login");
+  }, [removeAuthenticatedUser, router, supabaseAuth]);
 
   const userEmailFirstLetter =
-    user?.email?.substring(0, 1).toLocaleUpperCase() ?? "no one";
+    email?.substring(0, 1).toLocaleUpperCase() ?? "no one";
 
   const onProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorElement(event.currentTarget);
@@ -85,7 +93,7 @@ export function AppBar() {
           open={Boolean(profileAnchorElement)}
           onClose={onProfileClose}
         >
-          <MenuItem disabled>Logged in as {user?.email}</MenuItem>
+          <MenuItem disabled>Logged in as {email}</MenuItem>
           <MenuItem onClick={goToProfile}>
             <ListItemIcon>
               <Person />

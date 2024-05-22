@@ -3,20 +3,23 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
 import { UserSessionContext } from "./user-session-context";
-import { AuthenticatedUser } from "./authenticated-user";
+import {
+  LoggedInUserSession,
+  UserSession,
+  unauthenticatedUserSession,
+} from "./user-session";
 
 const sessionStorageKey = "docVoice.user";
 
-function getUserSessionFromStorage(): AuthenticatedUser | null {
+function getUserSessionFromStorage(): LoggedInUserSession | null {
   const storedUser = sessionStorage.getItem(sessionStorageKey);
   return storedUser ? JSON.parse(storedUser) : null;
 }
 
 type UserSessionContextProps = {
-  user: AuthenticatedUser | null;
-  userLoaded: boolean;
-  setAuthenticatedUser: (user: AuthenticatedUser) => void;
-  removeAuthenticatedUser: () => void;
+  userSession: UserSession;
+  setUserSession: (user: UserSession) => void;
+  removeUserSession: () => void;
 };
 
 /** A context provider that reads/writes authenticated user details to session storage * */
@@ -25,43 +28,41 @@ export const UserSessionContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [userLoaded, setUserLoaded] = useState(false);
-  const [authenticatedUser, setAuthenticatedUser] =
-    useState<AuthenticatedUser | null>(null);
+  const [userSession, setUserSession] = useState<UserSession>(
+    unauthenticatedUserSession,
+  );
 
   useEffect(() => {
-    if (!authenticatedUser) {
+    if (!userSession.loggedIn) {
       const storedUser = getUserSessionFromStorage();
       if (storedUser) {
-        setAuthenticatedUser(storedUser);
+        setUserSession(storedUser);
       }
     }
-    setUserLoaded(true);
-  }, [authenticatedUser]);
+  }, [userSession]);
 
   // External hook to store user in session storage and state
-  const setUserInSession = useCallback(
-    (_user: AuthenticatedUser) => {
-      sessionStorage.setItem(sessionStorageKey, JSON.stringify(_user));
-      setAuthenticatedUser(_user);
+  const setStoredUserSession = useCallback(
+    (_userSession: UserSession) => {
+      sessionStorage.setItem(sessionStorageKey, JSON.stringify(_userSession));
+      setUserSession(_userSession);
     },
-    [setAuthenticatedUser],
+    [setUserSession],
   );
 
   // External hook to remove user in session storage and state
-  const removeUserInSession = useCallback(() => {
+  const removeStoredUserSession = useCallback(() => {
     sessionStorage.removeItem(sessionStorageKey);
-    setAuthenticatedUser(null);
-  }, [setAuthenticatedUser]);
+    setUserSession(unauthenticatedUserSession);
+  }, [setUserSession]);
 
   const userSessionContext: UserSessionContextProps = useMemo(() => {
     return {
-      user: authenticatedUser,
-      userLoaded,
-      setAuthenticatedUser: setUserInSession,
-      removeAuthenticatedUser: removeUserInSession,
+      userSession,
+      setUserSession: setStoredUserSession,
+      removeUserSession: removeStoredUserSession,
     };
-  }, [authenticatedUser, userLoaded, setUserInSession, removeUserInSession]);
+  }, [userSession, setStoredUserSession, removeStoredUserSession]);
 
   return (
     <UserSessionContext.Provider value={userSessionContext}>

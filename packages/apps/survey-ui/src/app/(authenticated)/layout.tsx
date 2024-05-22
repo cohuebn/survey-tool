@@ -16,9 +16,9 @@ type AuthenticatedLayoutProps = {
 export default function AuthenticatedLayout({
   children,
 }: AuthenticatedLayoutProps) {
-  const { userLoaded } = useUserSession();
+  const { userSession } = useUserSession();
 
-  if (!userLoaded) {
+  if (!userSession.loggedIn) {
     return <CircularProgress />;
   }
 

@@ -1,54 +1,47 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import Link from "next/link";
 import { useCallback, useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from "firebase/auth";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createLogger } from "@survey-tool/core";
 import buttonStyles from "@styles/buttons.module.css";
 import authStyles from "@styles/auth.module.css";
 
-import { useFirebaseAuth } from "../../firebase/use-firebase-auth";
 import { parseError } from "../../errors/parse-error";
+import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
+import { PasswordTextField } from "../password-text-field";
+import { EmailTextField } from "../email-text-field";
 
 const logger = createLogger("signup");
 
 export default function Page() {
-  const firebaseAuth = useFirebaseAuth();
+  const supabaseAuth = useSupabaseAuth();
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [signingIn, setSigningIn] = useState<boolean>(false);
+  const [confirmedPassword, setConfirmedPassword] = useState<string>("");
+  const [signingUp, setSigningUp] = useState<boolean>(false);
+
+  const passwordMismatch = password !== confirmedPassword;
 
   const signUp = useCallback(
     async (_email: string, _password: string) => {
-      if (!firebaseAuth) {
-        throw new Error(`Firebase auth initialization error. Cannot sign in.`);
+      if (!supabaseAuth.clientLoaded) {
+        throw new Error(`Supabase auth initialization error. Cannot sign up.`);
       }
-      setSigningIn(true);
+      setSigningUp(true);
       try {
-        const { user } = await createUserWithEmailAndPassword(
-          firebaseAuth,
-          _email,
-          _password,
-        );
-        await sendEmailVerification(user);
+        const { error, data } = await supabaseAuth.auth.signUp({
+          email: _email,
+          password: _password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/login`,
+          },
+        });
+        if (error) throw error;
+        logger.info({ error, data });
         toast(
           `Verification email sent to ${_email}. After verifying, you can log in.`,
           { type: "success" },
@@ -58,10 +51,10 @@ export default function Page() {
         logger.error({ err }, "Error signing up");
         toast(parseError(err), { type: "error" });
       } finally {
-        setSigningIn(false);
+        setSigningUp(false);
       }
     },
-    [firebaseAuth, router],
+    [supabaseAuth, router],
   );
 
   return (
@@ -80,55 +73,27 @@ export default function Page() {
             className={authStyles.form}
             action={() => signUp(email, password)}
           >
-            <TextField
-              placeholder="Email"
-              fullWidth
-              autoFocus
+            <EmailTextField
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email />
-                  </InputAdornment>
-                ),
-              }}
-            ></TextField>
-            <TextField
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              fullWidth
+            />
+            <PasswordTextField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Tooltip
-                      title={showPassword ? "Hide password" : "Show password"}
-                    >
-                      <IconButton
-                        aria-label="Toggle password visibility"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex={-1}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </Tooltip>
-                  </InputAdornment>
-                ),
-              }}
-            ></TextField>
+              error={passwordMismatch}
+              helperText={passwordMismatch ? "Passwords do not match" : ""}
+            />
+            <PasswordTextField
+              placeholder="Confirm password"
+              value={confirmedPassword}
+              onChange={(e) => setConfirmedPassword(e.target.value)}
+            />
             <div className={buttonStyles.buttons}>
               <Button
+                disabled={signingUp || !email || !password || passwordMismatch}
                 type="submit"
                 className={buttonStyles.button}
                 variant="contained"
-                disabled={signingIn}
               >
                 Sign up
               </Button>

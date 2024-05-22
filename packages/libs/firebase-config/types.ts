@@ -5,6 +5,7 @@ export type FirebaseEmulatorDisabledConfig = {
 export type FirebaseEmulatorEnabledConfig = {
   useEmulator: true;
   emulatorHost: string;
+  emulatorFirestorePort: number;
 };
 
 export type FirebaseEmulatorConfig =

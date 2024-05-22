@@ -1,4 +1,8 @@
-import { getOptionalBool, getRequired } from "@survey-tool/core";
+import {
+  getOptionalBool,
+  getRequired,
+  getTransformedOptional,
+} from "@survey-tool/core";
 
 import { FirebaseEmulatorConfig } from "./types";
 
@@ -15,6 +19,11 @@ export function getFirebaseEmulatorConfig(): FirebaseEmulatorConfig {
     ? {
         useEmulator: true,
         emulatorHost: getRequired("FIREBASE_AUTH_EMULATOR_HOST"),
+        emulatorFirestorePort: getTransformedOptional(
+          "FIREBASE_FIRESTORE_EMULATOR_PORT",
+          parseInt,
+          8080,
+        ),
       }
     : { useEmulator: false };
 }

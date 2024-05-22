@@ -1,18 +1,7 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import Link from "next/link";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useCallback, useState } from "react";
 import { createLogger } from "@survey-tool/core";
 import { toast } from "react-toastify";
@@ -20,46 +9,44 @@ import authStyles from "@styles/auth.module.css";
 import buttonStyles from "@styles/buttons.module.css";
 import { useRouter } from "next/navigation";
 
-import { useFirebaseAuth } from "../../firebase/use-firebase-auth";
 import { parseError } from "../../errors/parse-error";
 import { useUserSession } from "../use-user-session";
-import { isAuthenticatedUser } from "../authenticated-user";
+import { toUserSession } from "../user-session";
+import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
+import { PasswordTextField } from "../password-text-field";
+import { EmailTextField } from "../email-text-field";
 
 const logger = createLogger("login");
 
 export default function Page() {
-  const firebaseAuth = useFirebaseAuth();
+  const supabaseAuth = useSupabaseAuth();
   const router = useRouter();
-  const { setAuthenticatedUser } = useUserSession();
+  const { setUserSession } = useUserSession();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [signingIn, setSigningIn] = useState<boolean>(false);
 
   const signIn = useCallback(
     async (_email: string, _password: string) => {
-      if (!firebaseAuth) {
-        throw new Error(`Firebase auth initialization error. Cannot sign in.`);
+      if (!supabaseAuth.clientLoaded) {
+        throw new Error(`Supabase auth initialization error. Cannot sign in.`);
       }
       setSigningIn(true);
       try {
         if (!_email || !_password) {
           throw new Error("Email and password are required");
         }
-        const signinResponse = await signInWithEmailAndPassword(
-          firebaseAuth,
-          _email,
-          _password,
-        );
-        if (!signinResponse.user.emailVerified) {
+        const { data, error } = await supabaseAuth.auth.signInWithPassword({
+          email: _email,
+          password: _password,
+        });
+        if (error) throw error;
+        if (!data.user.confirmed_at) {
           throw new Error(
             "Please verify your email address before logging in. Check your inbox for a verification email.",
           );
         }
-        if (!isAuthenticatedUser(signinResponse.user)) {
-          throw new Error("User is not authenticated");
-        }
-        setAuthenticatedUser(signinResponse.user);
+        setUserSession(toUserSession(data.user, data.session));
         router.push("/home");
       } catch (err: unknown) {
         logger.error({ err }, "Error logging in");
@@ -68,7 +55,7 @@ export default function Page() {
         setSigningIn(false);
       }
     },
-    [firebaseAuth, router, setAuthenticatedUser],
+    [router, setUserSession, supabaseAuth],
   );
 
   return (
@@ -87,49 +74,14 @@ export default function Page() {
             className={authStyles.form}
             action={() => signIn(email, password)}
           >
-            <TextField
-              placeholder="Email"
-              fullWidth
-              autoFocus
+            <EmailTextField
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email />
-                  </InputAdornment>
-                ),
-              }}
-            ></TextField>
-            <TextField
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              fullWidth
+            />
+            <PasswordTextField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Tooltip
-                      title={showPassword ? "Hide password" : "Show password"}
-                    >
-                      <IconButton
-                        aria-label="Toggle password visibility"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex={-1}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </Tooltip>
-                  </InputAdornment>
-                ),
-              }}
-            ></TextField>
+            />
             <Link href="/auth/forgot-password">Forgot your password?</Link>
             <div className={buttonStyles.buttons}>
               <Button
