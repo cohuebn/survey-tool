@@ -6,3 +6,16 @@
   max-width: 30rem;
   width: 100%;
 }
+
+li.locationAutocompleteOption {
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+li.locationAutocompleteOption:hover {
+  cursor: pointer;
+  background-color: var(--hover-highlight);
+}

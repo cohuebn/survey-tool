@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { isNullOrUndefined } from "@survey-tool/core";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -22,10 +22,12 @@ type UseSupabaseDbResult = SupabaseLoadingResult | SupabaseLoadedResult;
  */
 export function useSupabaseDb(): UseSupabaseDbResult {
   const supabaseClient = useContext(SupabaseContext);
-  return isNullOrUndefined(supabaseClient)
-    ? { clientLoaded: false }
-    : {
-        clientLoaded: true,
-        client: supabaseClient,
-      };
+  return useMemo(() => {
+    return isNullOrUndefined(supabaseClient)
+      ? { clientLoaded: false }
+      : {
+          clientLoaded: true,
+          client: supabaseClient,
+        };
+  }, [supabaseClient]);
 }

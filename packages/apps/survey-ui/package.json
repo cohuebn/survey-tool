@@ -26,11 +26,13 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@mui/material-nextjs": "^5.15.11",
+    "@supabase/supabase-js": "^2.43.1",
     "@survey-tool/core": "*",
     "@survey-tool/firebase": "*",
     "@survey-tool/firebase-config": "*",
     "@survey-tool/supabase": "*",
     "clsx": "^2.1.0",
+    "convert-keys": "^1.3.4",
     "eslint-config-next": "^14.2.2",
     "firebase": "^10.11.1",
     "next": "^14.1.4",
@@ -38,12 +40,13 @@
     "react-dom": "^18.2.0",
     "react-toastify": "^10.0.5",
     "sharp": "^0.33.3",
-    "@supabase/supabase-js": "^2.43.1",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.4",
+    "use-debounce": "^10.0.0"
   },
   "devDependencies": {
     "@survey-tool/eslint-config": "*",
     "@types/react": "^18.2.75",
-    "firebase-tools": "^13.7.3"
+    "firebase-tools": "^13.7.3",
+    "type-fest": "^4.18.2"
   }
 }
