@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  survey-tool:
+    image: postgres:16.3
+    ports:
+      - "${SURVEY_TOOL_DB_PORT}:${SURVEY_TOOL_DB_PORT}"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${SURVEY_TOOL_DB_NAME}
+    networks:
+      - survey-tool
+  surveytool-migrations:
+    depends_on:
+      - survey-tool
+    build: .
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://${SURVEY_TOOL_DB_INTERNAL_HOST}:${SURVEY_TOOL_DB_PORT}/${SURVEY_TOOL_DB_NAME}
+      - FLYWAY_USER=${POSTGRES_USER}
+      - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+      - FLYWAY_PLACEHOLDERS_APPUSER=${APP_USER}
+      - FLYWAY_PLACEHOLDERS_APPPASSWORD=${APP_PASSWORD}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+    networks:
+      - survey-tool
+
+networks:
+  survey-tool:
