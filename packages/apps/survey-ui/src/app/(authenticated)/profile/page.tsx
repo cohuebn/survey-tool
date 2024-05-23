@@ -12,13 +12,18 @@ import layoutStyles from "@styles/layout.module.css";
 import { useMemo } from "react";
 
 import { useUserSession } from "../../auth/use-user-session";
+import { useUserProfile } from "../../users/use-user-profile";
 
 import styles from "./styles.module.css";
 
 export default function Page() {
   const { userSession } = useUserSession();
+  const userProfile = useUserProfile();
 
-  const loading = useMemo(() => !userSession.loggedIn, [userSession.loggedIn]);
+  const loading = useMemo(
+    () => !userSession.loggedIn || !userProfile,
+    [userProfile, userSession.loggedIn],
+  );
 
   if (loading) {
     return <CircularProgress />;
