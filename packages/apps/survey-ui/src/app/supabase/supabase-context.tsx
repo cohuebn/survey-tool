@@ -1,7 +1,7 @@
 "use client";
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import { createLogger } from "@survey-tool/core";
+import { createLogger, lazyLoad } from "@survey-tool/core";
 import {
   SupabaseConfig,
   getLazyLoadedSupabaseClient,
@@ -18,6 +18,8 @@ async function getSupabaseClient() {
   return getLazyLoadedSupabaseClient(config);
 }
 
+const sharedSupabaseClient = lazyLoad(getSupabaseClient);
+
 export const SupabaseContext = createContext<SupabaseClient | null>(null);
 
 type SupabaseAppProviderProps = {
@@ -32,7 +34,7 @@ export const SupabaseContextProvider = ({
   );
 
   useEffect(() => {
-    getSupabaseClient().then(setSupabaseClient);
+    sharedSupabaseClient().then(setSupabaseClient);
   }, []);
 
   return (

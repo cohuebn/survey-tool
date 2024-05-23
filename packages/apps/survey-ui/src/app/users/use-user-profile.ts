@@ -1,27 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
-import { UserProfile } from "firebase/auth";
+import { toCamel } from "convert-keys";
 
 import { useUserSession } from "../auth/use-user-session";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 
-type DBUser = {
-  user_id: string;
-  validated_timestamp: Date;
-};
+import { DBUser, User } from "./types";
 
 function dbUserToUserProfile(
   userId: string,
   dbUser: DBUser | null,
-): UserProfile | null {
-  return {
-    userId,
-    validatedTimestamp: dbUser?.validated_timestamp,
-  };
+): User | null {
+  return toCamel({ ...dbUser, userId });
 }
 
 export function useUserProfile() {
   const [userProfileLoaded, setUserProfileLoaded] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<User | null>(null);
   const userSession = useUserSession();
   const supabaseDb = useSupabaseDb();
 
@@ -45,7 +39,16 @@ export function useUserProfile() {
     } else {
       supabaseDb.client
         .from("users")
-        .select()
+        .select(
+          `
+          user_id,
+          validated_timestamp,
+          location,
+          hospitals(id, name, city, state),
+          department,
+          employment_type
+        `,
+        )
         .eq("user_id", userId)
         .maybeSingle<DBUser>()
         .then((dbResult) => {

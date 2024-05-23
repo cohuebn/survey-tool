@@ -10,13 +10,19 @@ import { DBHospital, Hospital } from "./types";
 
 const logger = createLogger("useHospitalSearch");
 
+type UseHospitalSearchResults = {
+  loading: boolean;
+  searchResults: Hospital[];
+};
+
 export function useHospitalSearch(
-  searchTerm: string,
+  searchTerm: string | null,
   debounceTime: number = 0,
-): Hospital[] {
+): UseHospitalSearchResults {
   const db = useSupabaseDb();
-  const [debouncedSearchTerm] = useDebounce(searchTerm, debounceTime);
+  const [debouncedSearchTerm] = useDebounce(searchTerm ?? "", debounceTime);
   const [searchResults, setSearchResults] = useState<Hospital[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const parsedSearchTerm = useMemo(() => {
     return debouncedSearchTerm.trim().split(/\s+/g).join(" & ");
@@ -34,9 +40,11 @@ export function useHospitalSearch(
     }
 
     logger.debug({ parsedSearchTerm }, "Running search");
+    setLoading(true);
     db.client
       .rpc("search_hospitals", { search_term: parsedSearchTerm })
       .then((result) => {
+        setLoading(false);
         if (result.error) throw asPostgresError(result.error);
         const dbHospitals: DBHospital[] = result.data;
         const hospitals = dbHospitals.map((dbHospital) =>
@@ -46,5 +54,5 @@ export function useHospitalSearch(
       });
   }, [db, parsedSearchTerm, searchResults.length]);
 
-  return searchResults;
+  return { loading, searchResults };
 }
