@@ -1,5 +1,5 @@
 export const departmentOptions = [
-  "Accident and emergency",
+  "Accident and Emergency",
   "Admissions",
   "Anesthetics",
   "Breast Screening",
@@ -19,6 +19,7 @@ export const departmentOptions = [
   "Gynecology",
   "Hematology",
   "Health & Safety",
+  "Hospitalist",
   "Human Resources",
   "Infection Control",
   "Information Management",

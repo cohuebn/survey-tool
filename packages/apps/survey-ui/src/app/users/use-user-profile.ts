@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toCamel } from "convert-keys";
 
-import { useUserSession } from "../auth/use-user-session";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
+import { useUserId } from "../auth/use-user-id";
 
 import { DBUser, User } from "./types";
 
@@ -16,16 +16,8 @@ function dbUserToUserProfile(
 export function useUserProfile() {
   const [userProfileLoaded, setUserProfileLoaded] = useState(false);
   const [userProfile, setUserProfile] = useState<User | null>(null);
-  const userSession = useUserSession();
+  const userId = useUserId();
   const supabaseDb = useSupabaseDb();
-
-  const userId = useMemo(
-    () =>
-      userSession.userSession.loggedIn
-        ? userSession.userSession.user.id
-        : undefined,
-    [userSession.userSession],
-  );
 
   useEffect(() => {
     setUserProfileLoaded(false);

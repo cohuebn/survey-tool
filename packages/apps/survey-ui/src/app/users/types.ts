@@ -1,3 +1,5 @@
+import { SnakeCasedPropertiesDeep } from "type-fest";
+
 import { DBHospital, Hospital } from "../hospitals/types";
 
 export type User = {
@@ -18,3 +20,11 @@ export type DBUser = {
   department?: string;
   employment_type?: string;
 };
+
+export type UserValidation = {
+  userId: string;
+  submittedTimestamp: Date;
+  npiNumber?: string;
+};
+
+export type DBUserValidation = SnakeCasedPropertiesDeep<UserValidation>;

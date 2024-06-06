@@ -1,0 +1,12 @@
+.container {
+  min-height: 100vh;
+}
+
+.header {
+  color: var(--primary-color);
+}
+
+.questions {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
