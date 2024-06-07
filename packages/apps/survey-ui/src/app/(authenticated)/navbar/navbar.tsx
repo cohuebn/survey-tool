@@ -58,7 +58,7 @@ export function Navbar({ userScopes }: NavbarProps) {
           {userScopes.includes("admin") && (
             <li>
               <NavbarLink
-                href="/validate-new-users"
+                href="/users/needing-validation"
                 icon={<PendingActions fontSize="large" />}
                 text="Validate new users"
               />

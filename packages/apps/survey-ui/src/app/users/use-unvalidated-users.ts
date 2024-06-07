@@ -35,7 +35,7 @@ export function useUnvalidatedUsers() {
           hospitals(id, name, city, state),
           department,
           employment_type,
-          user_validation(npi_number, submitted_timestamp)
+          user_validation(npi_number, email_address, submitted_timestamp)
         `,
         )
         .is("validated_timestamp", null)

@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { toSnake } from "convert-keys";
 import { Help } from "@mui/icons-material";
+import { isNullOrUndefined } from "@survey-tool/core";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
@@ -23,9 +24,8 @@ import { useHospitalSearch } from "../../hospitals/use-hospital-search";
 import { departmentOptions } from "../../hospitals/department-options";
 import { employmentTypeOptions } from "../../hospitals/employment-type-options";
 import {
-  DBUser,
   DBUserValidation,
-  User,
+  UserProfile,
   UserValidation,
 } from "../../users/types";
 import { useSupabaseDb } from "../../supabase/use-supabase-db";
@@ -33,13 +33,15 @@ import { asPostgresError } from "../../errors/postgres-error";
 import { parseError } from "../../errors/parse-error";
 import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
+import { saveUserProfile as coreSaveUserProfile } from "../../users/save-user-profile";
 
 import styles from "./styles.module.css";
 
 export default function Page() {
-  const { userSession } = useUserSession();
-  const userProfile = useUserProfile();
-  const { userValidation, userValidationLoaded } = useUserValidationData();
+  const { userSession, userId } = useUserSession();
+  const userProfile = useUserProfile(userId);
+  const { userValidation, userValidationLoaded } =
+    useUserValidationData(userId);
   const [locationSearchText, setLocationSearchText] = useState<string>("");
   const [location, setLocation] = useState<Hospital | null>(null);
   const [department, setDepartment] = useState<string | null>(null);
@@ -119,12 +121,11 @@ export default function Page() {
   }, [userValidation]);
 
   const getValidatedUserId = useCallback(() => {
-    const userId = userProfile?.userId;
     if (!userId) {
       throw new Error("User unknown; cannot save profile without user ID");
     }
     return userId;
-  }, [userProfile]);
+  }, [userId]);
 
   const getLoadedDBClient = useCallback(() => {
     if (!dbClient.clientLoaded) {
@@ -134,8 +135,17 @@ export default function Page() {
   }, [dbClient]);
 
   const saveUserValidation = useCallback(async () => {
+    if (!userSession.loggedIn) {
+      throw new Error("User not logged in; cannot save profile");
+    }
+    if (isNullOrUndefined(userSession.user.email)) {
+      throw new Error(
+        "User does not have an associated email; cannot save profile",
+      );
+    }
     const updatedUserValidation: UserValidation = {
       userId: getValidatedUserId(),
+      emailAddress: userSession.user.email,
       npiNumber: npiNumber ?? undefined,
       submittedTimestamp: new Date(),
     };
@@ -147,25 +157,18 @@ export default function Page() {
     if (validationSaveResult.error) {
       throw asPostgresError(validationSaveResult.error);
     }
-  }, [getLoadedDBClient, getValidatedUserId, npiNumber]);
+  }, [getLoadedDBClient, getValidatedUserId, npiNumber, userSession]);
 
   const saveUserProfile = useCallback(async () => {
     const validatedUserId = getValidatedUserId();
 
-    const updatedProfile: User = {
+    const updatedProfile: UserProfile = {
       userId: validatedUserId,
       location: location?.id ?? undefined,
       department: department ?? undefined,
       employmentType: employmentType ?? undefined,
     };
-    const loadedDbClient = getLoadedDBClient();
-    const dbUserProfile = toSnake<DBUser>(updatedProfile);
-    const profileSaveResult = await loadedDbClient
-      .from("users")
-      .upsert(dbUserProfile);
-    if (profileSaveResult.error) {
-      throw asPostgresError(profileSaveResult.error);
-    }
+    await coreSaveUserProfile(getLoadedDBClient(), updatedProfile);
   }, [
     department,
     employmentType,

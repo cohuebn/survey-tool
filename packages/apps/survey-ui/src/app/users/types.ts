@@ -2,13 +2,18 @@ import { SnakeCasedPropertiesDeep } from "type-fest";
 
 import { DBHospital, Hospital } from "../hospitals/types";
 
-export type User = {
+export type UserProfile = {
   userId: string;
   validatedTimestamp?: Date;
   location?: string;
-  hospitals?: Hospital;
   department?: string;
   employmentType?: string;
+};
+
+export type DBUserProfile = SnakeCasedPropertiesDeep<UserProfile>;
+
+export type User = UserProfile & {
+  hospitals?: Hospital;
 };
 
 export type DBUser = {
@@ -24,16 +29,13 @@ export type DBUser = {
 export type UserValidation = {
   userId: string;
   submittedTimestamp: Date;
+  deniedTimestamp?: Date;
+  emailAddress: string;
   npiNumber?: string;
 };
 
 export type DBUserValidation = SnakeCasedPropertiesDeep<UserValidation>;
 
-export type UnvalidatedUser = User & {
-  userValidation: {
-    npiNumber: string;
-    submittedTimestamp: Date;
-  };
-};
+export type UnvalidatedUser = User & { userValidation: UserValidation };
 
 export type DBUnvalidatedUser = SnakeCasedPropertiesDeep<UnvalidatedUser>;

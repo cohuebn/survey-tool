@@ -18,6 +18,10 @@ async function getSupabaseClient() {
   return getLazyLoadedSupabaseClient(config);
 }
 
+export type AppSupabaseClient = ReturnType<
+  Awaited<ReturnType<typeof getSupabaseClient>>
+>;
+
 const sharedSupabaseClient = lazyLoad(getSupabaseClient);
 
 export const SupabaseContext = createContext<SupabaseClient | null>(null);

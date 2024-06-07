@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { toCamel } from "convert-keys";
 
 import { useSupabaseDb } from "../supabase/use-supabase-db";
-import { useUserId } from "../auth/use-user-id";
 
 import { DBUser, User } from "./types";
 
@@ -13,10 +12,9 @@ export function dbUserToUserProfile(
   return toCamel({ ...dbUser, userId });
 }
 
-export function useUserProfile() {
+export function useUserProfile(userId: string | undefined) {
   const [userProfileLoaded, setUserProfileLoaded] = useState(false);
   const [userProfile, setUserProfile] = useState<User | null>(null);
-  const userId = useUserId();
   const supabaseDb = useSupabaseDb();
 
   useEffect(() => {

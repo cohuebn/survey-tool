@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { toCamel } from "convert-keys";
 
-import { useUserId } from "../auth/use-user-id";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 
 import { DBUserValidation, UserValidation } from "./types";
@@ -13,12 +12,12 @@ function dbUserValidationToUserValidation(
   return toCamel({ ...dbUserValidation, userId });
 }
 
-export function useUserValidationData() {
+export function useUserValidationData(userId: string | undefined) {
   const [userValidationLoaded, setUserValidationLoaded] = useState(false);
   const [userValidation, setUserValidation] = useState<UserValidation | null>(
     null,
   );
-  const userId = useUserId();
+  // const userId = useUserId();
   const supabaseDb = useSupabaseDb();
 
   useEffect(() => {
@@ -37,6 +36,8 @@ export function useUserValidationData() {
           `
           user_id,
           submitted_timestamp,
+          denied_timestamp,
+          email_address,
           npi_number
         `,
         )

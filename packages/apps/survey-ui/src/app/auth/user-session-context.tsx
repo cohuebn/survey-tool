@@ -4,8 +4,10 @@ import { createContext } from "react";
 
 import { UserSession, unauthenticatedUserSession } from "./user-session";
 
-type UserSessionContextData = {
+export type UserSessionContextData = {
   userSession: UserSession;
+  userId: string | undefined;
+  email: string | undefined;
   setUserSession: (user: UserSession) => void;
   removeUserSession: () => void;
 };
@@ -18,6 +20,8 @@ type UserSessionContextData = {
  */
 export const UserSessionContext = createContext<UserSessionContextData>({
   userSession: unauthenticatedUserSession,
+  userId: undefined,
+  email: undefined,
   setUserSession: () => {},
   removeUserSession: () => {},
 });

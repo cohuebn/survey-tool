@@ -35,6 +35,7 @@ export const departmentOptions = [
   "Oncology",
   "Ophthalmology",
   "Orthopedics",
+  "Other",
   "Otolaryngology",
   "Pain Management",
   "Patient Services",

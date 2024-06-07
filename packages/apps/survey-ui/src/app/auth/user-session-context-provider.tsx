@@ -2,7 +2,10 @@
 
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
-import { UserSessionContext } from "./user-session-context";
+import {
+  UserSessionContext,
+  UserSessionContextData,
+} from "./user-session-context";
 import {
   LoggedInUserSession,
   UserSession,
@@ -15,12 +18,6 @@ function getUserSessionFromStorage(): LoggedInUserSession | null {
   const storedUser = sessionStorage.getItem(sessionStorageKey);
   return storedUser ? JSON.parse(storedUser) : null;
 }
-
-type UserSessionContextProps = {
-  userSession: UserSession;
-  setUserSession: (user: UserSession) => void;
-  removeUserSession: () => void;
-};
 
 /** A context provider that reads/writes authenticated user details to session storage * */
 export const UserSessionContextProvider = ({
@@ -56,9 +53,11 @@ export const UserSessionContextProvider = ({
     setUserSession(unauthenticatedUserSession);
   }, [setUserSession]);
 
-  const userSessionContext: UserSessionContextProps = useMemo(() => {
+  const userSessionContext: UserSessionContextData = useMemo(() => {
     return {
       userSession,
+      userId: userSession.loggedIn ? userSession.user.id : undefined,
+      email: userSession.loggedIn ? userSession.user.email : undefined,
       setUserSession: setStoredUserSession,
       removeUserSession: removeStoredUserSession,
     };
