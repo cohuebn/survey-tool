@@ -3,6 +3,7 @@
 import { CircularProgress } from "@mui/material";
 
 import { useUserSession } from "../auth/use-user-session";
+import { useUserScopes } from "../auth/use-user-scopes";
 
 import styles from "./styles.module.css";
 import { NavbarContextProvider } from "./navbar/navbar-context";
@@ -17,8 +18,9 @@ export default function AuthenticatedLayout({
   children,
 }: AuthenticatedLayoutProps) {
   const { userSession } = useUserSession();
+  const { userScopes, userScopesLoaded } = useUserScopes();
 
-  if (!userSession.loggedIn) {
+  if (!userSession.loggedIn || !userScopesLoaded) {
     return <CircularProgress />;
   }
 
@@ -27,7 +29,7 @@ export default function AuthenticatedLayout({
       <NavbarContextProvider>
         <AppBar />
         <main className={styles.mainContent}>
-          <Navbar />
+          <Navbar userScopes={userScopes ?? []} />
           {children}
         </main>
       </NavbarContextProvider>

@@ -28,3 +28,12 @@ export type UserValidation = {
 };
 
 export type DBUserValidation = SnakeCasedPropertiesDeep<UserValidation>;
+
+export type UnvalidatedUser = User & {
+  userValidation: {
+    npiNumber: string;
+    submittedTimestamp: Date;
+  };
+};
+
+export type DBUnvalidatedUser = SnakeCasedPropertiesDeep<UnvalidatedUser>;

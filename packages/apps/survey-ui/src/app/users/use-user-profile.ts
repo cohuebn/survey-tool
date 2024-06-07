@@ -6,7 +6,7 @@ import { useUserId } from "../auth/use-user-id";
 
 import { DBUser, User } from "./types";
 
-function dbUserToUserProfile(
+export function dbUserToUserProfile(
   userId: string,
   dbUser: DBUser | null,
 ): User | null {

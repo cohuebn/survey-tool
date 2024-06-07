@@ -1,6 +1,6 @@
 "use client";
 
-import { Edit, Insights, Quiz } from "@mui/icons-material";
+import { Edit, Insights, PendingActions, Quiz } from "@mui/icons-material";
 import { useContext } from "react";
 import { Drawer, useMediaQuery } from "@mui/material";
 
@@ -8,7 +8,11 @@ import { NavbarLink } from "./navbar-link";
 import styles from "./styles.module.css";
 import { NavbarContext } from "./navbar-context";
 
-export function Navbar() {
+type NavbarProps = {
+  userScopes: string[];
+};
+
+export function Navbar({ userScopes }: NavbarProps) {
   const { open, setOpen } = useContext(NavbarContext);
 
   // Not my favorite thing, but it's the only way I've found to style
@@ -51,6 +55,15 @@ export function Navbar() {
               text="Author surveys"
             />
           </li>
+          {userScopes.includes("admin") && (
+            <li>
+              <NavbarLink
+                href="/validate-new-users"
+                icon={<PendingActions fontSize="large" />}
+                text="Validate new users"
+              />
+            </li>
+          )}
         </ul>
       </nav>
     </Drawer>
