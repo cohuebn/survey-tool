@@ -48,14 +48,16 @@ export function Navbar({ userScopes }: NavbarProps) {
               text="Take surveys"
             />
           </li>
-          <li>
-            <NavbarLink
-              href="/home"
-              icon={<Edit fontSize="large" />}
-              text="Author surveys"
-            />
-          </li>
-          {userScopes.includes("admin") && (
+          {userScopes.includes("author") ? (
+            <li>
+              <NavbarLink
+                href="/authoring"
+                icon={<Edit fontSize="large" />}
+                text="Author surveys"
+              />
+            </li>
+          ) : null}
+          {userScopes.includes("admin") ? (
             <li>
               <NavbarLink
                 href="/users/needing-validation"
@@ -63,7 +65,7 @@ export function Navbar({ userScopes }: NavbarProps) {
                 text="Validate new users"
               />
             </li>
-          )}
+          ) : null}
         </ul>
       </nav>
     </Drawer>
