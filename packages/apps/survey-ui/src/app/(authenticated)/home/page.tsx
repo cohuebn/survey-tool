@@ -18,6 +18,10 @@ export default function Page() {
     () => isNotNullOrUndefined(userProfile?.validatedTimestamp),
     [userProfile?.validatedTimestamp],
   );
+  const hasUserBeenDenied = useMemo(
+    () => isNotNullOrUndefined(userValidation?.deniedTimestamp),
+    [userValidation?.deniedTimestamp],
+  );
 
   if (!userSession.loggedIn || !userProfile || !userValidationLoaded) {
     return <CircularProgress />;
@@ -31,6 +35,27 @@ export default function Page() {
           Before beginning, please <a href="/profile">setup your profile</a>. In
           order to ensure legitimacy of our surveys, we require validation of
           your identity before you can participate in surveys.
+        </Typography>
+      </div>
+    );
+  }
+
+  if (hasUserBeenDenied) {
+    return (
+      <div className={layoutStyles.centeredContent}>
+        <Typography variant="h2">Home</Typography>
+        <Typography variant="body1">
+          It looks like your profile has been denied for the following reason:{" "}
+          {userValidation?.deniedReason}
+        </Typography>
+        <Typography variant="body1">
+          If you believe this is an error, please{" "}
+          <a
+            href="https://github.com/cohuebn/survey-tool/issues"
+            target="_blank"
+          >
+            file a new issue here
+          </a>
         </Typography>
       </div>
     );

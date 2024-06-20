@@ -33,7 +33,7 @@ import { asPostgresError } from "../../errors/postgres-error";
 import { parseError } from "../../errors/parse-error";
 import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
-import { saveUserProfile as coreSaveUserProfile } from "../../users/save-user-profile";
+import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profiles";
 
 import styles from "./styles.module.css";
 
@@ -179,7 +179,9 @@ export default function Page() {
 
   const saveAllChanges = useCallback(async () => {
     try {
-      await Promise.all([saveUserProfile(), saveUserValidation()]);
+      // User profile must be saved before validation due to foreign key constraint
+      await saveUserProfile();
+      await saveUserValidation();
       toast("Profile saved successfully", { type: "success" });
     } catch (err: unknown) {
       toast(parseError(err), { type: "error" });
@@ -268,7 +270,7 @@ export default function Page() {
       <Typography variant="body1">
         Is something missing from our hospital or department lists? Let us know
         by{" "}
-        <a href="https://github.com/cohuebn/survey-tool/issues">
+        <a href="https://github.com/cohuebn/survey-tool/issues" target="_blank">
           filing a new issue here
         </a>
       </Typography>

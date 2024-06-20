@@ -1,67 +1,68 @@
 "use client";
 
 import {
+  Autocomplete,
   CircularProgress,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import layoutStyles from "@styles/layout.module.css";
-import Link from "next/link";
+import { useState } from "react";
 
 import { useUnvalidatedUsers } from "../../../users/use-unvalidated-users";
+import { useDeclinedUsers } from "../../../users/use-declined-users";
+
+import styles from "./styles.module.css";
+import { UsersNeedingValidation } from "./users-needing-validation";
+import { DeniedUsers } from "./denied-users";
 
 export default function Page() {
   const { unvalidatedUsers, unvalidatedUsersLoaded } = useUnvalidatedUsers();
+  const { declinedUsers, declinedUsersLoaded } = useDeclinedUsers();
+  const validatePendingOptionValue = "validatePending";
+  const reviewDeclinedOptionValue = "reviewDeclined";
+  const whatToDoOptions = [
+    { label: "Validate pending users", value: validatePendingOptionValue },
+    { label: "Review declined users", value: reviewDeclinedOptionValue },
+  ];
+  const [whatToDo, setWhatToDo] = useState<string>(validatePendingOptionValue);
 
-  if (!unvalidatedUsersLoaded) {
+  if (!unvalidatedUsersLoaded || !declinedUsersLoaded) {
     return <CircularProgress />;
   }
 
+  const validatePendingUsersSection = unvalidatedUsers.length ? (
+    <UsersNeedingValidation unvalidatedUsers={unvalidatedUsers} />
+  ) : (
+    <Typography variant="body1">
+      No users currently require validation
+    </Typography>
+  );
+
+  const declinedUsersSection = declinedUsers.length ? (
+    <DeniedUsers deniedUsers={declinedUsers} />
+  ) : (
+    <Typography variant="body1">No users have been declined yet</Typography>
+  );
+
   return (
     <div className={layoutStyles.centeredContent}>
-      <Typography variant="h2">Users requiring validation</Typography>
+      <Typography variant="h2">User validation</Typography>
 
-      <TableContainer component={Paper}>
-        <Table aria-label="New users needing validation">
-          <TableHead>
-            <TableRow>
-              <TableCell>Email</TableCell>
-              <TableCell>Hospital</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Department</TableCell>
-              <TableCell>Employment Type</TableCell>
-              <TableCell align="right">NPI Number</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {unvalidatedUsers.map((user) => (
-              <TableRow
-                key={user.userId}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  <Link href={`/users/needing-validation/${user.userId}`}>
-                    {user.userValidation.emailAddress}
-                  </Link>
-                </TableCell>
-                <TableCell>{user.hospitals?.name}</TableCell>
-                <TableCell>{`${user.hospitals?.city}, ${user.hospitals?.state}`}</TableCell>
-                <TableCell>{user.department}</TableCell>
-                <TableCell>{user.employmentType}</TableCell>
-                <TableCell align="right">
-                  {user.userValidation.npiNumber}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Autocomplete
+        className={styles.whatDoYouWantToDo}
+        options={whatToDoOptions}
+        renderInput={(params) => (
+          <TextField {...params} label="What do you want to do?" />
+        )}
+        value={whatToDoOptions.find((x) => x.value === whatToDo)}
+        onChange={(_, newValue) => {
+          setWhatToDo(newValue?.value ?? validatePendingOptionValue);
+        }}
+      />
+      {whatToDo === reviewDeclinedOptionValue
+        ? declinedUsersSection
+        : validatePendingUsersSection}
     </div>
   );
 }

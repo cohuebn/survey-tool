@@ -1,0 +1,9 @@
+div.whatDoYouWantToDo {
+  min-width: 30rem;
+}
+
+@media screen and (max-width: 768px) {
+  div.whatDoYouWantToDo {
+    min-width: 20rem;
+  }
+}

@@ -5,9 +5,18 @@
 @media screen and (min-width: 1200px) {
   .validationData {
     min-width: 30rem;
+    max-width: 40rem;
   }
 }
 
 div.validationField {
   margin-bottom: 0.75rem;
+}
+
+div.denyModal {
+  padding: 2rem;
+}
+
+.deniedReason {
+  min-width: 30rem;
 }

@@ -9,6 +9,7 @@ function dbUserValidationToUserValidation(
   userId: string,
   dbUserValidation: DBUserValidation | null,
 ): UserValidation | null {
+  if (!dbUserValidation) return null;
   return toCamel({ ...dbUserValidation, userId });
 }
 
@@ -37,6 +38,7 @@ export function useUserValidationData(userId: string | undefined) {
           user_id,
           submitted_timestamp,
           denied_timestamp,
+          denied_reason,
           email_address,
           npi_number
         `,
@@ -44,11 +46,11 @@ export function useUserValidationData(userId: string | undefined) {
         .eq("user_id", userId)
         .maybeSingle<DBUserValidation>()
         .then((dbResult) => {
-          const loadedProfile = dbUserValidationToUserValidation(
+          const loadedUserValidation = dbUserValidationToUserValidation(
             userId,
             dbResult.data,
           );
-          setUserValidation(loadedProfile);
+          setUserValidation(loadedUserValidation);
           setUserValidationLoaded(true);
         });
     }

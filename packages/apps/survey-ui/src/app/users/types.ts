@@ -29,13 +29,30 @@ export type DBUser = {
 export type UserValidation = {
   userId: string;
   submittedTimestamp: Date;
-  deniedTimestamp?: Date;
   emailAddress: string;
   npiNumber?: string;
+  deniedTimestamp?: Date;
+  deniedReason?: string;
 };
 
 export type DBUserValidation = SnakeCasedPropertiesDeep<UserValidation>;
 
-export type UnvalidatedUser = User & { userValidation: UserValidation };
+export type UserWithValidationData = User & { userValidation: UserValidation };
 
-export type DBUnvalidatedUser = SnakeCasedPropertiesDeep<UnvalidatedUser>;
+export type DBUserWithValidationData =
+  SnakeCasedPropertiesDeep<UserWithValidationData>;
+
+export type DBDeniedUser = {
+  user_id: string;
+  submitted_timestamp: Date;
+  npi_number: string;
+  email_address: string;
+  denied_timestamp: Date;
+  denied_reason?: string;
+  hospital_location?: string;
+  hospital_name?: string;
+  hospital_city?: string;
+  hospital_state?: string;
+  department?: string;
+  employment_type?: string;
+};

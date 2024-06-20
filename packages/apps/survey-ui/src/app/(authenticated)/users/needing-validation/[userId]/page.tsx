@@ -1,24 +1,32 @@
 "use client";
 
 import {
+  Alert,
   Button,
   Card,
   CardActions,
   CardContent,
   CircularProgress,
+  Dialog,
+  TextField,
   Typography,
 } from "@mui/material";
 import layoutStyles from "@styles/layout.module.css";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
+import clsx from "clsx";
+import { isNotNullOrUndefined } from "@survey-tool/core";
 
 import { useUserValidationData } from "../../../../users/use-user-validation-data";
 import { useUserProfile } from "../../../../users/use-user-profile";
 import { useSupabaseDb } from "../../../../supabase/use-supabase-db";
 import { UserProfile } from "../../../../users/types";
-import { saveUserProfile } from "../../../../users/save-user-profile";
+import { saveUserProfile } from "../../../../users/user-profiles";
 import { convertUserToProfile } from "../../../../users/convert-user-to-profile";
-import { deleteUserValidation } from "../../../../users/delete-user-validation";
+import {
+  deleteUserValidation,
+  saveUserValidation,
+} from "../../../../users/user-validation";
 
 import styles from "./styles.module.css";
 import ValidationField from "./validation-field";
@@ -33,6 +41,11 @@ export default function Page({ params }: PageProps) {
     useUserValidationData(userId);
   const userProfile = useUserProfile(userId);
   const dbClient = useSupabaseDb();
+  const userAlreadyDenied = isNotNullOrUndefined(
+    userValidation?.deniedTimestamp,
+  );
+  const [denyModalOpen, setDenyModalOpen] = useState(false);
+  const [deniedReason, setDeniedReason] = useState("");
 
   const approveUser = useCallback(async () => {
     if (!dbClient.clientLoaded || !userProfile) return;
@@ -51,8 +64,18 @@ export default function Page({ params }: PageProps) {
         "Attempted to deny user, but the database client is not loaded",
       );
     }
+    if (!userValidation) {
+      throw new Error(
+        `User validation data appers to be missing for ${userId} cannot deny user`,
+      );
+    }
+    await saveUserValidation(dbClient.client, {
+      ...userValidation,
+      deniedTimestamp: new Date(),
+      deniedReason,
+    });
     toast("User denied", { type: "success" });
-  }, [dbClient]);
+  }, [dbClient, userId, deniedReason, userValidation]);
 
   if (!userValidationLoaded || !userProfile || !dbClient.clientLoaded) {
     return <CircularProgress />;
@@ -86,12 +109,43 @@ export default function Page({ params }: PageProps) {
             label="Submitted time"
             value={userValidation?.submittedTimestamp}
           />
+          {userAlreadyDenied ? (
+            <Alert severity="warning">
+              This user has been denied for the following reason:{" "}
+              {userValidation?.deniedReason}
+              <br />
+              If you would like to approve this user instead, just click the
+              approve button below.
+            </Alert>
+          ) : null}
         </CardContent>
         <CardActions>
           <Button onClick={() => approveUser()}>Approve</Button>
-          <Button onClick={() => denyUser()}>Deny</Button>
+          {userAlreadyDenied ? null : (
+            <Button onClick={() => setDenyModalOpen(true)}>Deny</Button>
+          )}
         </CardActions>
       </Card>
+      <Dialog open={denyModalOpen} onClose={() => setDenyModalOpen(false)}>
+        <div className={clsx(layoutStyles.centeredContent, styles.denyModal)}>
+          Please add a reason for denying {userValidation?.emailAddress}.
+          <TextField
+            placeholder="Reason for denial"
+            fullWidth
+            multiline
+            minRows={3}
+            className={styles.deniedReason}
+            value={deniedReason}
+            onChange={(e) => setDeniedReason(e.target.value)}
+          />
+          <Button
+            onClick={() => denyUser().then(() => setDenyModalOpen(false))}
+            disabled={!deniedReason.trim()}
+          >
+            Confirm user denied
+          </Button>
+        </div>
+      </Dialog>
     </div>
   );
 }

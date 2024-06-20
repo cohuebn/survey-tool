@@ -6,12 +6,12 @@ import { toCamel } from "convert-keys";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 import { useUserScopes } from "../auth/use-user-scopes";
 
-import { UnvalidatedUser } from "./types";
+import { UserWithValidationData } from "./types";
 
 export function useUnvalidatedUsers() {
   const [unvalidatedUsersLoaded, setUnvalidatedUsersLoaded] = useState(false);
   const [unvalidatedUsers, setUnvalidatedUsers] = useState<
-    UnvalidatedUser[] | null
+    UserWithValidationData[] | null
   >(null);
   const { userScopesLoaded, userHasScope } = useUserScopes();
   const supabaseDb = useSupabaseDb();
@@ -35,13 +35,14 @@ export function useUnvalidatedUsers() {
           hospitals(id, name, city, state),
           department,
           employment_type,
-          user_validation(npi_number, email_address, submitted_timestamp)
+          user_validation!inner(npi_number, email_address, submitted_timestamp)
         `,
         )
         .is("validated_timestamp", null)
+        .is("user_validation.denied_timestamp", null)
         .then((dbResult) => {
           const loadedUsers =
-            dbResult.data?.map((x) => toCamel<UnvalidatedUser>(x)) ?? [];
+            dbResult.data?.map((x) => toCamel<UserWithValidationData>(x)) ?? [];
           setUnvalidatedUsers(loadedUsers);
           setUnvalidatedUsersLoaded(true);
         });
