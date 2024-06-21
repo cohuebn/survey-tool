@@ -1,0 +1,32 @@
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Typography,
+} from "@mui/material";
+
+import { Survey } from "./types";
+
+type SurveyCardProps = {
+  survey: Survey;
+};
+
+export function SurveyCard({ survey }: SurveyCardProps) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h5">{survey.name}</Typography>
+        {survey.subtitle ? (
+          <Typography variant="caption">{survey.subtitle}</Typography>
+        ) : null}
+        {survey.description ? (
+          <Typography variant="body1">{survey.description}</Typography>
+        ) : null}
+      </CardContent>
+      <CardActions>
+        <Button onClick={() => {}}>Author survey</Button>
+      </CardActions>
+    </Card>
+  );
+}

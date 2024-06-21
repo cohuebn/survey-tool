@@ -8,6 +8,7 @@ import { isNotNullOrUndefined } from "@survey-tool/core";
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
 import { useUserValidationData } from "../../users/use-user-validation-data";
+import { FileIssueLink } from "../../issues/file-issue-link";
 
 export default function Page() {
   const { userSession, userId } = useUserSession();
@@ -49,13 +50,7 @@ export default function Page() {
           {userValidation?.deniedReason}
         </Typography>
         <Typography variant="body1">
-          If you believe this is an error, please{" "}
-          <a
-            href="https://github.com/cohuebn/survey-tool/issues"
-            target="_blank"
-          >
-            file a new issue here
-          </a>
+          If you believe this is an error, please <FileIssueLink />
         </Typography>
       </div>
     );

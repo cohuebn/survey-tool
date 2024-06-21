@@ -5,6 +5,7 @@ import { toCamel } from "convert-keys";
 
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 import { useUserScopes } from "../auth/use-user-scopes";
+import { asPostgresError } from "../errors/postgres-error";
 
 import { UserWithValidationData } from "./types";
 
@@ -41,8 +42,11 @@ export function useUnvalidatedUsers() {
         .is("validated_timestamp", null)
         .is("user_validation.denied_timestamp", null)
         .then((dbResult) => {
+          if (dbResult.error) {
+            throw asPostgresError(dbResult.error);
+          }
           const loadedUsers =
-            dbResult.data?.map((x) => toCamel<UserWithValidationData>(x)) ?? [];
+            dbResult.data.map((x) => toCamel<UserWithValidationData>(x)) ?? [];
           setUnvalidatedUsers(loadedUsers);
           setUnvalidatedUsersLoaded(true);
         });

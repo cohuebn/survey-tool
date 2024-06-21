@@ -20,3 +20,12 @@ button.button {
 button.button.maxWidth20 {
   max-width: 20rem;
 }
+
+button.actionButton,
+a.actionButton {
+  min-width: 10rem;
+}
+
+.actionButtonIcon {
+  margin-right: 0.5rem;
+}

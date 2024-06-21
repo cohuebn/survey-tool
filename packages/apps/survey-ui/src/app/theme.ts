@@ -22,6 +22,9 @@ const theme = createTheme({
     primary: {
       main: colors.primary,
     },
+    secondary: {
+      main: colors.secondary,
+    },
   },
   typography: {
     fontFamily: latoFont.style.fontFamily,
