@@ -5426,4 +5426,4 @@ values
 ('1a979cdb-d243-4797-ad93-17100a2c7bf5', 'SE Texas ER & Hospital', 'Humble', 'TX'),
 ('75b7b1ae-4fc7-4459-a90f-24d14a9a861f', 'St Michaels Medical Hospital LLC', 'Sugar Land', 'TX'),
 ('1ce20f57-62f9-48e2-85f2-74969469b360', 'Trinity Regional Hospital Sachse', 'Sachse', 'TX')
-    
+on conflict (id) do nothing;

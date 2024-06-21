@@ -5,3 +5,4 @@ values
   ('st.', '(st. | st | saint)'),
   ('st', '(st. | st | saint)'),
   ('saint', '(st. | st | saint)')
+on conflict (search_in) do nothing;
