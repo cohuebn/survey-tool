@@ -1,9 +1,9 @@
-import { toCamel } from "convert-keys";
+import { toCamel, toSnake } from "convert-keys";
 
 import { AppSupabaseClient } from "../supabase/supabase-context";
 import { asPostgresError } from "../errors/postgres-error";
 
-import { SurveySummary, SurveyFilters } from "./types";
+import { SurveySummary, SurveyFilters, DBSurveySummary } from "./types";
 
 function getQuery(dbClient: AppSupabaseClient, filters: SurveyFilters) {
   const baseQuery = dbClient.from("surveys").select(`
@@ -18,7 +18,7 @@ function getQuery(dbClient: AppSupabaseClient, filters: SurveyFilters) {
     : baseQuery;
 }
 
-export async function getSurveys(
+export async function getSurveySummaries(
   dbClient: AppSupabaseClient,
   filters: SurveyFilters,
 ): Promise<SurveySummary[]> {
@@ -28,11 +28,11 @@ export async function getSurveys(
   return dbResult.data.map(toCamel<SurveySummary>);
 }
 
-export async function getSurvey(
+export async function getSurveySummary(
   dbClient: AppSupabaseClient,
   surveyId: string,
 ): Promise<SurveySummary | null> {
-  const survey = await dbClient
+  const dbResult = await dbClient
     .from("surveys")
     .select(
       `
@@ -45,5 +45,15 @@ export async function getSurvey(
     )
     .eq("id", surveyId)
     .maybeSingle();
-  return survey ? toCamel(survey) : null;
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+  return dbResult.data ? toCamel(dbResult.data) : null;
+}
+
+export async function saveSurveySummary(
+  dbClient: AppSupabaseClient,
+  summary: SurveySummary,
+) {
+  const dbSummary = toSnake<DBSurveySummary>(summary);
+  const dbResult = await dbClient.from("surveys").upsert(dbSummary);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
 }

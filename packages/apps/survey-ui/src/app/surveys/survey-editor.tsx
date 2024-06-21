@@ -1,18 +1,22 @@
 "use client";
 
-import { Box, Fab, Tab, Tabs } from "@mui/material";
-import React, { useReducer } from "react";
+import { Box, CircularProgress, Fab, Tab, Tabs } from "@mui/material";
+import React, { useCallback, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import layoutStyles from "@styles/layout.module.css";
 import { Cancel, Save } from "@mui/icons-material";
+import { toast } from "react-toastify";
+import { usePathname, useRouter } from "next/navigation";
 
 import { TabPanel } from "../core-components/tab-panel";
+import { useSupabaseDb } from "../supabase/use-supabase-db";
 
-import { SurveyEditorState } from "./types";
+import { SurveyEditorState, ValidatedSurveyEditorState } from "./types";
 import styles from "./styles.module.css";
 import { surveyEditorReducer } from "./survey-editor-reducer";
 import { SurveySummaryEditor } from "./survey-summary-editor";
 import { getValidatedSurveyState } from "./survey-editor-validation";
+import { saveEditedSurvey } from "./save-edited-survey";
 
 type SurveyEditorProps = {
   initialEditorState: SurveyEditorState;
@@ -32,9 +36,34 @@ export function SurveyEditor(props: SurveyEditorProps) {
     getValidatedSurveyState(props.initialEditorState),
   );
   const [selectedTab, setSelectedTab] = React.useState("summary");
+  const dbClient = useSupabaseDb();
+  const currentPath = usePathname();
+  const router = useRouter();
 
   const onTabChange = (_event: React.SyntheticEvent, newValue: string) =>
     setSelectedTab(newValue);
+
+  // Using callback here to avoid rebuilding on editor state changes; only
+  // changes when the dbClient changes
+  const save = useCallback(
+    async (_editorState: ValidatedSurveyEditorState) => {
+      if (!dbClient.clientLoaded) {
+        toast.error("Database client not loaded; cannot save survey");
+        return;
+      }
+      await saveEditedSurvey(dbClient.client, _editorState);
+      toast.success("Saved survey");
+      if (!currentPath.includes(editorState.surveyId)) {
+        router.push(`/authoring/${editorState.surveyId}`);
+        window.location.href = "/authoring";
+      }
+    },
+    [dbClient, editorState.surveyId, currentPath, router],
+  );
+
+  if (!dbClient.clientLoaded) {
+    return <CircularProgress />;
+  }
 
   return (
     <>
@@ -85,8 +114,8 @@ export function SurveyEditor(props: SurveyEditorProps) {
         <Fab
           variant="extended"
           color="secondary"
-          href="/authoring/new"
           className={buttonStyles.actionButton}
+          onClick={() => window.location.reload()}
         >
           <Cancel className={buttonStyles.actionButtonIcon} />
           Cancel
@@ -94,9 +123,9 @@ export function SurveyEditor(props: SurveyEditorProps) {
         <Fab
           variant="extended"
           color="primary"
-          href="/authoring/new"
           className={buttonStyles.actionButton}
           disabled={!editorState.isSurveyValid}
+          onClick={() => save(editorState)}
         >
           <Save className={buttonStyles.actionButtonIcon} />
           Save

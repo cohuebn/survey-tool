@@ -42,6 +42,8 @@ export function surveyEditorReducer(
         "description",
         action.value,
       );
+    case "saveSurvey":
+      return editorState;
     default:
       throw new Error(
         `The survey editor has been given an unknown action: ${action}`,

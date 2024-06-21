@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 
 import { SurveySummary } from "./types";
-import { getSurvey } from "./surveys";
+import { getSurveySummary } from "./surveys";
 
 export function useSurveySummary(surveyId: string) {
   const [surveySummaryLoaded, setSurveySummaryLoaded] = useState(false);
@@ -21,7 +21,7 @@ export function useSurveySummary(surveyId: string) {
     if (surveySummaryLoaded) return;
     if (!supabaseDb.clientLoaded) return;
 
-    getSurvey(supabaseDb.client, surveyId).then((loadedSurveys) => {
+    getSurveySummary(supabaseDb.client, surveyId).then((loadedSurveys) => {
       setSurvey(loadedSurveys);
       setSurveySummaryLoaded(true);
     });

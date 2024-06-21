@@ -25,7 +25,7 @@ export function SurveyCard({ survey }: SurveyCardProps) {
         ) : null}
       </CardContent>
       <CardActions>
-        <Button onClick={() => {}}>Author survey</Button>
+        <Button href={`/authoring/${survey.id}`}>Author survey</Button>
       </CardActions>
     </Card>
   );

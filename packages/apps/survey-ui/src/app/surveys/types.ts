@@ -1,5 +1,7 @@
 import { SnakeCasedPropertiesDeep } from "type-fest";
 
+import { AppSupabaseClient } from "../supabase/supabase-context";
+
 import { SurveyValidationError } from "./survey-validation-error";
 
 export type SurveySummary = {
@@ -55,7 +57,7 @@ export type ValidatedSurveyEditorState =
 
 /** All allowed actions for editing a survey */
 export type SurveyEditorAction =
-  | { type: "saveSurvey" }
+  | { type: "saveSurvey"; dbClient: AppSupabaseClient }
   | { type: "setSurveyName"; value: EditableSummary["name"] }
   | { type: "setSurveySubtitle"; value: EditableSummary["subtitle"] }
   | { type: "setSurveyDescription"; value: EditableSummary["description"] };
