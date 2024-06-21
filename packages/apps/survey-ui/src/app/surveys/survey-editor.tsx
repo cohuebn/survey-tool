@@ -1,21 +1,18 @@
 "use client";
 
 import { Box, Tab, Tabs } from "@mui/material";
-import { v4 as uuidV4 } from "uuid";
-import { createLogger } from "@survey-tool/core";
-import React from "react";
+import React, { useReducer } from "react";
 
 import { TabPanel } from "../core-components/tab-panel";
 
-import { Survey } from "./types";
+import { SurveyEditorState } from "./types";
 import styles from "./styles.module.css";
+import { surveyEditorReducer } from "./survey-editor-reducer";
+import { SurveySummaryEditor } from "./survey-summary-editor";
 
 type SurveyEditorProps = {
-  surveyId?: string;
-  survey?: Survey;
+  initialEditorState: SurveyEditorState;
 };
-
-const logger = createLogger("survey-editor");
 
 /** Props to ensure tabs are accessible */
 function a11yTabProps(name: string) {
@@ -26,8 +23,10 @@ function a11yTabProps(name: string) {
 }
 
 export function SurveyEditor(props: SurveyEditorProps) {
-  const surveyId = props.surveyId ?? uuidV4();
-  logger.info({ surveyId }, "Editing survey");
+  const [editorState, dispatch] = useReducer(
+    surveyEditorReducer,
+    props.initialEditorState,
+  );
   const [selectedTab, setSelectedTab] = React.useState("summary");
 
   const onTabChange = (_event: React.SyntheticEvent, newValue: string) =>
@@ -58,7 +57,10 @@ export function SurveyEditor(props: SurveyEditorProps) {
         tabValue="summary"
         selectedValue={selectedTab}
       >
-        Summary
+        <SurveySummaryEditor
+          summary={editorState.summary}
+          dispatch={dispatch}
+        />
       </TabPanel>
       <TabPanel
         id="survey-questions-tab-panel"

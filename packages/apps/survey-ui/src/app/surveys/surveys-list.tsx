@@ -1,8 +1,8 @@
-import { Survey } from "./types";
+import { SurveySummary } from "./types";
 import { SurveyCard } from "./survey-card";
 
 type SurveysListProps = {
-  surveys: Survey[];
+  surveys: SurveySummary[];
 };
 
 export function SurveysList({ surveys }: SurveysListProps) {

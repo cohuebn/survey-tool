@@ -7,3 +7,16 @@ div.surveyTabsContainer {
     min-width: 0;
   }
 }
+
+form.surveyEditorForm {
+  min-width: 40rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media screen and (max-width: 1024px) {
+  form.surveyEditorForm {
+    min-width: 20rem;
+  }
+}

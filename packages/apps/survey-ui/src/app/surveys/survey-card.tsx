@@ -6,10 +6,10 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Survey } from "./types";
+import { SurveySummary } from "./types";
 
 type SurveyCardProps = {
-  survey: Survey;
+  survey: SurveySummary;
 };
 
 export function SurveyCard({ survey }: SurveyCardProps) {

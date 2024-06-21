@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { Create } from "@mui/icons-material";
 
 import { useUserSession } from "../../auth/use-user-session";
-import { useSurveys } from "../../surveys/use-surveys";
+import { useSurveySummaries } from "../../surveys/use-survey-summaries";
 import { SurveyFilters } from "../../surveys/types";
 import { SurveysList } from "../../surveys/surveys-list";
 import { FileIssueLink } from "../../issues/file-issue-link";
@@ -21,9 +21,10 @@ export default function Authoring() {
     () => ({ ownerId: userId }),
     [userId],
   );
-  const { surveys, surveysLoaded } = useSurveys(surveyFilters);
+  const { surveySummaries, surveySummariesLoaded } =
+    useSurveySummaries(surveyFilters);
 
-  if (!surveysLoaded) {
+  if (!surveySummariesLoaded) {
     return <CircularProgress />;
   }
 
@@ -32,8 +33,8 @@ export default function Authoring() {
       <div className={layoutStyles.centeredContent}>
         <Typography variant="h2">Surveys</Typography>
 
-        {surveys.length ? (
-          <SurveysList surveys={surveys} />
+        {surveySummaries.length ? (
+          <SurveysList surveys={surveySummaries} />
         ) : (
           <Alert severity="info">
             No surveys found that you can author. If you believe you should have
