@@ -6,6 +6,7 @@ import { toCamel } from "convert-keys";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 import { useUserScopes } from "../auth/use-user-scopes";
 import { asPostgresError } from "../errors/postgres-error";
+import { adminScope } from "../auth/scopes";
 
 import { UserWithValidationData } from "./types";
 
@@ -23,7 +24,7 @@ export function useUnvalidatedUsers() {
       setUnvalidatedUsers(null);
       return;
     }
-    if (!userHasScope("admin")) {
+    if (!userHasScope(adminScope)) {
       throw new Error("User does not have admin scope. Cannot load user data");
     } else {
       supabaseDb.client

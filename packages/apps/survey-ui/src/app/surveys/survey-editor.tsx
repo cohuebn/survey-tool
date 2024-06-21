@@ -1,7 +1,10 @@
 "use client";
 
-import { Box, Tab, Tabs } from "@mui/material";
+import { Box, Fab, Tab, Tabs } from "@mui/material";
 import React, { useReducer } from "react";
+import buttonStyles from "@styles/buttons.module.css";
+import { Cancel, Save } from "@mui/icons-material";
+import clsx from "clsx";
 
 import { TabPanel } from "../core-components/tab-panel";
 
@@ -9,6 +12,7 @@ import { SurveyEditorState } from "./types";
 import styles from "./styles.module.css";
 import { surveyEditorReducer } from "./survey-editor-reducer";
 import { SurveySummaryEditor } from "./survey-summary-editor";
+import { getValidatedSurveyState } from "./survey-editor-validation";
 
 type SurveyEditorProps = {
   initialEditorState: SurveyEditorState;
@@ -25,7 +29,7 @@ function a11yTabProps(name: string) {
 export function SurveyEditor(props: SurveyEditorProps) {
   const [editorState, dispatch] = useReducer(
     surveyEditorReducer,
-    props.initialEditorState,
+    getValidatedSurveyState(props.initialEditorState),
   );
   const [selectedTab, setSelectedTab] = React.useState("summary");
 
@@ -59,6 +63,7 @@ export function SurveyEditor(props: SurveyEditorProps) {
       >
         <SurveySummaryEditor
           summary={editorState.summary}
+          validationErrors={editorState.validationErrors.summary}
           dispatch={dispatch}
         />
       </TabPanel>
@@ -76,6 +81,27 @@ export function SurveyEditor(props: SurveyEditorProps) {
       >
         Permissions
       </TabPanel>
+      <div className={clsx(styles.bottomActions)}>
+        <Fab
+          variant="extended"
+          color="secondary"
+          href="/authoring/new"
+          className={buttonStyles.actionButton}
+        >
+          <Cancel className={buttonStyles.actionButtonIcon} />
+          Cancel
+        </Fab>
+        <Fab
+          variant="extended"
+          color="primary"
+          href="/authoring/new"
+          className={buttonStyles.actionButton}
+          disabled={!editorState.isSurveyValid}
+        >
+          <Save className={buttonStyles.actionButtonIcon} />
+          Save
+        </Fab>
+      </div>
     </>
   );
 }

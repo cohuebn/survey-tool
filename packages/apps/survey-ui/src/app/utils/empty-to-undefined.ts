@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "@survey-tool/core";
+
 /**
  * Sometimes in our UI, we want to convert an empty text box value
  * into undefined in our data model. This function trims the input string
@@ -6,6 +8,8 @@
  * Otherwise, it'll be returned as-is
  * @returns The value, or undefined if the value was an empty string
  */
-export function emptyToUndefined(value: string): string | undefined {
-  return value?.trim() === "" ? undefined : value;
+export function emptyToUndefined(
+  value: string | undefined,
+): string | undefined {
+  return isNullOrUndefined(value) || value.trim() === "" ? undefined : value;
 }

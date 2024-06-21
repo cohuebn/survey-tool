@@ -5,9 +5,11 @@ import { emptyToUndefined } from "../utils/empty-to-undefined";
 
 import { EditableSummary, SurveyEditorAction } from "./types";
 import styles from "./styles.module.css";
+import { SurveyValidationError } from "./survey-validation-error";
 
 type SurveySummaryEditorProps = {
-  summary?: EditableSummary;
+  summary: EditableSummary;
+  validationErrors: SurveyValidationError[];
   dispatch: Dispatch<SurveyEditorAction>;
 };
 
@@ -17,6 +19,7 @@ export function SurveySummaryEditor(props: SurveySummaryEditorProps) {
       <TextField
         autoFocus
         label="Name"
+        placeholder="The name of the survey"
         value={props.summary?.name ?? ""}
         onChange={(event) =>
           props.dispatch({
@@ -28,6 +31,7 @@ export function SurveySummaryEditor(props: SurveySummaryEditorProps) {
       />
       <TextField
         label="Subtitle"
+        placeholder="An optional subtitle to add a little context"
         value={props.summary?.subtitle ?? ""}
         onChange={(event) =>
           props.dispatch({
@@ -39,6 +43,8 @@ export function SurveySummaryEditor(props: SurveySummaryEditorProps) {
       />
       <TextField
         label="Description"
+        multiline
+        placeholder="An optional description to add more detail about what a survey covers, its purpose, etc."
         value={props.summary?.description ?? ""}
         onChange={(event) =>
           props.dispatch({

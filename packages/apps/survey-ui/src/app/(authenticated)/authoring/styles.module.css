@@ -1,8 +1,0 @@
-div.bottomActions {
-  position: fixed;
-  display: flex;
-  gap: 1rem;
-  bottom: 0;
-  padding-bottom: 1rem;
-  right: 1rem;
-}

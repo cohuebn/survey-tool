@@ -6,6 +6,7 @@ import { CamelCasedPropertiesDeep } from "type-fest";
 import { useUserScopes } from "../auth/use-user-scopes";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 import { Hospital } from "../hospitals/types";
+import { adminScope } from "../auth/scopes";
 
 import { DBDeniedUser, UserWithValidationData } from "./types";
 
@@ -63,7 +64,7 @@ export function useDeclinedUsers() {
       setDeclinedUsers(null);
       return;
     }
-    if (!userHasScope("admin")) {
+    if (!userHasScope(adminScope)) {
       throw new Error("User does not have admin scope. Cannot load user data");
     } else {
       supabaseDb.client

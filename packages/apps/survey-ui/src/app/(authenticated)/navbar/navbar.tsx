@@ -4,6 +4,8 @@ import { Edit, Insights, PendingActions, Quiz } from "@mui/icons-material";
 import { useContext } from "react";
 import { Drawer, useMediaQuery } from "@mui/material";
 
+import { adminScope, authorScope } from "../../auth/scopes";
+
 import { NavbarLink } from "./navbar-link";
 import styles from "./styles.module.css";
 import { NavbarContext } from "./navbar-context";
@@ -48,7 +50,7 @@ export function Navbar({ userScopes }: NavbarProps) {
               text="Take surveys"
             />
           </li>
-          {userScopes.includes("author") ? (
+          {userScopes.includes(authorScope) ? (
             <li>
               <NavbarLink
                 href="/authoring"
@@ -57,7 +59,7 @@ export function Navbar({ userScopes }: NavbarProps) {
               />
             </li>
           ) : null}
-          {userScopes.includes("admin") ? (
+          {userScopes.includes(adminScope) ? (
             <li>
               <NavbarLink
                 href="/users/needing-validation"
