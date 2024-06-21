@@ -12,8 +12,6 @@ import { SurveyFilters } from "../../surveys/types";
 import { SurveysList } from "../../surveys/surveys-list";
 import { FileIssueLink } from "../../issues/file-issue-link";
 
-import styles from "./styles.module.css";
-
 export default function Authoring() {
   const { userId } = useUserSession();
   // A silly little memoized object to avoid the filters changing on every render
@@ -42,7 +40,7 @@ export default function Authoring() {
           </Alert>
         )}
       </div>
-      <div className={styles.bottomActions}>
+      <div className={layoutStyles.bottomActions}>
         <Fab
           className={buttonStyles.actionButton}
           variant="extended"

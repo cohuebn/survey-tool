@@ -3,8 +3,8 @@
 import { Box, Fab, Tab, Tabs } from "@mui/material";
 import React, { useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
+import layoutStyles from "@styles/layout.module.css";
 import { Cancel, Save } from "@mui/icons-material";
-import clsx from "clsx";
 
 import { TabPanel } from "../core-components/tab-panel";
 
@@ -72,16 +72,16 @@ export function SurveyEditor(props: SurveyEditorProps) {
         tabValue="questions"
         selectedValue={selectedTab}
       >
-        Questions
+        Questions placeholder
       </TabPanel>
       <TabPanel
         id="survey-permissions-tab-panel"
         tabValue="permissions"
         selectedValue={selectedTab}
       >
-        Permissions
+        Permissions placeholder
       </TabPanel>
-      <div className={clsx(styles.bottomActions)}>
+      <div className={layoutStyles.bottomActions}>
         <Fab
           variant="extended"
           color="secondary"

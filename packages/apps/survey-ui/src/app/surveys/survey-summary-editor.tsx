@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import { TextField } from "@mui/material";
+import { Alert, TextField } from "@mui/material";
 
 import { emptyToUndefined } from "../utils/empty-to-undefined";
 
@@ -54,6 +54,9 @@ export function SurveySummaryEditor(props: SurveySummaryEditorProps) {
         }
         fullWidth
       />
+      {props.validationErrors.length ? (
+        <Alert severity="error">{props.validationErrors[0].message}</Alert>
+      ) : null}
     </form>
   );
 }
