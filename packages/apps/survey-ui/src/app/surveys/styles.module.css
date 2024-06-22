@@ -49,11 +49,15 @@ p.surveyCardDescription {
 .questionCard p.questionNumber {
   font-size: 1.2rem;
   font-weight: 300;
-  margin-bottom: 1rem;
+  margin-bottom: 1.3rem;
 }
 
 .questionCard .dragArea {
   display: flex;
   justify-content: center;
   cursor: move;
+}
+
+.questionInput {
+  margin-bottom: 1rem;
 }
