@@ -1,22 +1,6 @@
-import { SnakeCasedPropertiesDeep } from "type-fest";
-
-import { AppSupabaseClient } from "../supabase/supabase-context";
-
+import { EditableQuestion, Question } from "./questions";
+import { SurveySummary } from "./summaries";
 import { SurveyValidationError } from "./survey-validation-error";
-
-export type SurveySummary = {
-  id: string;
-  name: string;
-  subtitle?: string;
-  description?: string;
-  ownerId: string;
-};
-
-export type DBSurveySummary = SnakeCasedPropertiesDeep<SurveySummary>;
-
-export type SurveyFilters = {
-  ownerId?: string;
-};
 
 export type EditableSummary = Partial<SurveySummary>;
 
@@ -27,14 +11,17 @@ export type EditableSummary = Partial<SurveySummary>;
 export type SurveyEditorState = {
   surveyId: string;
   summary: EditableSummary;
+  questions: EditableQuestion[];
 };
 
 export type ValidSurveyEditorState = {
   surveyId: string;
   isSurveyValid: true;
   summary: SurveySummary;
+  questions: Question[];
   validationErrors: {
     summary: [];
+    questions: [];
   };
 };
 
@@ -42,6 +29,7 @@ export type InvalidSurveyEditorState = SurveyEditorState & {
   isSurveyValid: false;
   validationErrors: {
     summary: SurveyValidationError[];
+    questions: SurveyValidationError[];
   };
 };
 
@@ -57,7 +45,17 @@ export type ValidatedSurveyEditorState =
 
 /** All allowed actions for editing a survey */
 export type SurveyEditorAction =
-  | { type: "saveSurvey"; dbClient: AppSupabaseClient }
   | { type: "setSurveyName"; value: EditableSummary["name"] }
   | { type: "setSurveySubtitle"; value: EditableSummary["subtitle"] }
-  | { type: "setSurveyDescription"; value: EditableSummary["description"] };
+  | { type: "setSurveyDescription"; value: EditableSummary["description"] }
+  | { type: "addQuestion" }
+  | {
+      type: "setQuestionText";
+      questionId: string;
+      value: EditableQuestion["question"];
+    }
+  | {
+      type: "moveQuestion";
+      questionId: string;
+      targetIndex: number;
+    };

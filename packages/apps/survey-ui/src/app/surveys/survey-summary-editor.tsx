@@ -3,9 +3,12 @@ import { Alert, TextField } from "@mui/material";
 
 import { emptyToUndefined } from "../utils/empty-to-undefined";
 
-import { EditableSummary, SurveyEditorAction } from "./types";
+import {
+  EditableSummary,
+  SurveyEditorAction,
+  SurveyValidationError,
+} from "./types";
 import styles from "./styles.module.css";
-import { SurveyValidationError } from "./survey-validation-error";
 
 type SurveySummaryEditorProps = {
   summary: EditableSummary;

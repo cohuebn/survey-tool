@@ -1,5 +1,9 @@
+import { arrayMove } from "@dnd-kit/sortable";
+
+import { createNewEditableQuestion } from "./questions";
 import { getValidatedSurveyState } from "./survey-editor-validation";
 import {
+  EditableQuestion,
   EditableSummary,
   SurveyEditorAction,
   SurveyEditorState,
@@ -23,6 +27,53 @@ function updateSummaryAndValidateState<TFieldKey extends keyof EditableSummary>(
   return getValidatedSurveyState({ ...editorState, summary: updatedSummary });
 }
 
+function updateQuestionAndValidateState<
+  TFieldKey extends keyof EditableQuestion,
+>(
+  editorState: SurveyEditorState,
+  questionId: string,
+  field: TFieldKey,
+  value: EditableQuestion[TFieldKey],
+) {
+  const updatedQuestions = editorState.questions.map((question) => {
+    return question.id === questionId
+      ? { ...question, [field]: value }
+      : question;
+  });
+  return getValidatedSurveyState({
+    ...editorState,
+    questions: updatedQuestions,
+  });
+}
+
+/**
+ * Move the question with the given id to the specified index
+ * @param editorState The current survey editor state
+ * @param questionId The id of the question to move
+ * @param targetIndex The index to move the question to
+ * @returns The updated survey editor state
+ */
+function moveQuestion(
+  editorState: SurveyEditorState,
+  questionId: string,
+  targetIndex: number,
+) {
+  const { questions } = editorState;
+  const existingIndex = questions.findIndex(
+    (question) => question.id === questionId,
+  );
+  if (existingIndex < 0) {
+    throw new Error(`Question with id ${questionId} not found`);
+  }
+  if (targetIndex < 0 || targetIndex >= questions.length) {
+    throw new Error(
+      `Invalid target index; can't move question. Index: ${targetIndex}, Question count: ${questions.length}`,
+    );
+  }
+  const updatedQuestions = arrayMove(questions, existingIndex, targetIndex);
+  return { ...editorState, questions: updatedQuestions };
+}
+
 export function surveyEditorReducer(
   editorState: ValidatedSurveyEditorState,
   action: SurveyEditorAction,
@@ -42,8 +93,25 @@ export function surveyEditorReducer(
         "description",
         action.value,
       );
-    case "saveSurvey":
-      return editorState;
+    case "addQuestion":
+      return getValidatedSurveyState({
+        ...editorState,
+        questions: [
+          ...editorState.questions,
+          createNewEditableQuestion(editorState.surveyId),
+        ],
+      });
+    case "setQuestionText":
+      return updateQuestionAndValidateState(
+        editorState,
+        action.questionId,
+        "question",
+        action.value,
+      );
+    case "moveQuestion":
+      return getValidatedSurveyState(
+        moveQuestion(editorState, action.questionId, action.targetIndex),
+      );
     default:
       throw new Error(
         `The survey editor has been given an unknown action: ${action}`,

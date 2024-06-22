@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  surveytool-migrations:
+    build: .
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://${SURVEY_TOOL_DB_HOST}:${SURVEY_TOOL_DB_PORT}/${SURVEY_TOOL_DB_NAME}
+      - FLYWAY_USER=${POSTGRES_USER}
+      - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+      - FLYWAY_PLACEHOLDERS_APPUSER=${APP_USER}
+      - FLYWAY_PLACEHOLDERS_APPPASSWORD=${APP_PASSWORD}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+    networks:
+      - prod-survey-tool
+
+networks:
+  prod-survey-tool:

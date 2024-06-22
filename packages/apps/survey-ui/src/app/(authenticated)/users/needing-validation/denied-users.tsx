@@ -40,9 +40,7 @@ export function DeniedUsers({ deniedUsers }: DeniedUsersProps) {
               </TableCell>
               <TableCell>{user.hospitals?.name}</TableCell>
               <TableCell>{`${user.hospitals?.city}, ${user.hospitals?.state}`}</TableCell>
-              <TableCell>
-                {typeof user.userValidation.deniedTimestamp}
-              </TableCell>
+              <TableCell>{`${user.userValidation.deniedTimestamp}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>

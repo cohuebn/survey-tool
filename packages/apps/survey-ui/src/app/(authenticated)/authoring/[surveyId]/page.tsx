@@ -6,17 +6,26 @@ import { useMemo } from "react";
 
 import { SurveyEditor } from "../../../surveys/survey-editor";
 import { useUserId } from "../../../auth/use-user-id";
-import { SurveyEditorState, SurveySummary } from "../../../surveys/types";
+import {
+  Question,
+  SurveyEditorState,
+  SurveySummary,
+} from "../../../surveys/types";
 import { useSurveySummary } from "../../../surveys/use-survey-summary";
+import { useQuestions } from "../../../surveys/use-questions";
 
 type PageProps = {
   params: { surveyId: string };
 };
 
-function getExistingSurveyState(summary: SurveySummary): SurveyEditorState {
+function getExistingSurveyState(
+  summary: SurveySummary,
+  questions: Question[],
+): SurveyEditorState {
   return {
     surveyId: summary.id,
     summary,
+    questions,
   };
 }
 
@@ -24,12 +33,14 @@ export default function Page({ params }: PageProps) {
   const { surveyId } = params;
   const userId = useUserId();
   const { surveySummary, surveySummaryLoaded } = useSurveySummary(surveyId);
+  const { questions, questionsLoaded } = useQuestions(surveyId);
   const initialEditorState = useMemo(
-    () => (surveySummary ? getExistingSurveyState(surveySummary) : null),
-    [surveySummary],
+    () =>
+      surveySummary ? getExistingSurveyState(surveySummary, questions) : null,
+    [surveySummary, questions],
   );
 
-  if (!userId || !surveySummaryLoaded) {
+  if (!userId || !surveySummaryLoaded || !questionsLoaded) {
     return <CircularProgress />;
   }
 

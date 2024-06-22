@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 
 import { SurveySummary } from "./types";
+import styles from "./styles.module.css";
 
 type SurveyCardProps = {
   survey: SurveySummary;
@@ -14,14 +15,20 @@ type SurveyCardProps = {
 
 export function SurveyCard({ survey }: SurveyCardProps) {
   return (
-    <Card>
+    <Card className={styles.surveyCard}>
       <CardContent>
-        <Typography variant="h5">{survey.name}</Typography>
+        <Typography variant="body1" className={styles.surveyCardTitle}>
+          {survey.name}
+        </Typography>
         {survey.subtitle ? (
-          <Typography variant="caption">{survey.subtitle}</Typography>
+          <Typography variant="body1" className={styles.surveyCardSubtitle}>
+            {survey.subtitle}
+          </Typography>
         ) : null}
         {survey.description ? (
-          <Typography variant="body1">{survey.description}</Typography>
+          <Typography variant="body1" className={styles.surveyCardDescription}>
+            {survey.description}
+          </Typography>
         ) : null}
       </CardContent>
       <CardActions>

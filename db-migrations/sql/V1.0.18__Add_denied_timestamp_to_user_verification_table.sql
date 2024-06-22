@@ -1,2 +1,2 @@
 alter table ${flyway:defaultSchema}.user_validation
-  add column denied_timestamp timestamptz;
+  add column if not exists denied_timestamp timestamptz;

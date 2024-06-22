@@ -45,6 +45,7 @@ packages/react-devtools-timeline/dist
 
 # .env files
 .env
+prod.env
 
 # next.js build output
 .next/

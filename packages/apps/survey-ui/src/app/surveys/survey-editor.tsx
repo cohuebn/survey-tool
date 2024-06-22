@@ -4,7 +4,7 @@ import { Box, CircularProgress, Fab, Tab, Tabs } from "@mui/material";
 import React, { useCallback, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import layoutStyles from "@styles/layout.module.css";
-import { Cancel, Save } from "@mui/icons-material";
+import { Add, Cancel, Save } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -17,6 +17,7 @@ import { surveyEditorReducer } from "./survey-editor-reducer";
 import { SurveySummaryEditor } from "./survey-summary-editor";
 import { getValidatedSurveyState } from "./survey-editor-validation";
 import { saveEditedSurvey } from "./save-edited-survey";
+import { QuestionsEditor } from "./questions-editor";
 
 type SurveyEditorProps = {
   initialEditorState: SurveyEditorState;
@@ -61,6 +62,10 @@ export function SurveyEditor(props: SurveyEditorProps) {
     [dbClient, editorState.surveyId, currentPath, router],
   );
 
+  const addQuestion = useCallback(() => {
+    dispatch({ type: "addQuestion" });
+  }, [dispatch]);
+
   if (!dbClient.clientLoaded) {
     return <CircularProgress />;
   }
@@ -101,7 +106,11 @@ export function SurveyEditor(props: SurveyEditorProps) {
         tabValue="questions"
         selectedValue={selectedTab}
       >
-        Questions placeholder
+        <QuestionsEditor
+          questions={editorState.questions}
+          validationErrors={editorState.validationErrors.questions}
+          dispatch={dispatch}
+        />
       </TabPanel>
       <TabPanel
         id="survey-permissions-tab-panel"
@@ -120,6 +129,18 @@ export function SurveyEditor(props: SurveyEditorProps) {
           <Cancel className={buttonStyles.actionButtonIcon} />
           Cancel
         </Fab>
+        {selectedTab === "questions" ? (
+          <Fab
+            variant="extended"
+            color="primary"
+            className={buttonStyles.actionButton}
+            disabled={!editorState.isSurveyValid}
+            onClick={() => addQuestion()}
+          >
+            <Add className={buttonStyles.actionButtonIcon} />
+            Add a question
+          </Fab>
+        ) : null}
         <Fab
           variant="extended"
           color="primary"

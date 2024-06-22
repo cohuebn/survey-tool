@@ -1,2 +1,2 @@
 alter table ${flyway:defaultSchema}.user_validation
-  add column denied_reason text;
+  add column if not exists denied_reason text;

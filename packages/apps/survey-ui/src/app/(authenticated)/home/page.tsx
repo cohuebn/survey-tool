@@ -1,6 +1,6 @@
 "use client";
 
-import { CircularProgress, Typography } from "@mui/material";
+import { Alert, CircularProgress, Typography } from "@mui/material";
 import layoutStyles from "@styles/layout.module.css";
 import { useMemo } from "react";
 import { isNotNullOrUndefined } from "@survey-tool/core";
@@ -45,13 +45,12 @@ export default function Page() {
     return (
       <div className={layoutStyles.centeredContent}>
         <Typography variant="h2">Home</Typography>
-        <Typography variant="body1">
+        <Alert severity="error">
           It looks like your profile has been denied for the following reason:{" "}
           {userValidation?.deniedReason}
-        </Typography>
-        <Typography variant="body1">
+          <br />
           If you believe this is an error, please <FileIssueLink />
-        </Typography>
+        </Alert>
       </div>
     );
   }
