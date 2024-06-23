@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { useSupabaseDb } from "../supabase/use-supabase-db";
+import { useSupabaseDb } from "../../supabase/use-supabase-db";
+import { SurveySummary, SurveyFilters } from "../types";
 
-import { SurveySummary, SurveyFilters } from "./types";
-import { getSurveySummaries } from "./surveys";
+import { getSurveySummaries } from "./database";
 
 export function useSurveySummaries(filters: SurveyFilters) {
   const [surveySummariesLoaded, setSurveySummariesLoaded] = useState(false);

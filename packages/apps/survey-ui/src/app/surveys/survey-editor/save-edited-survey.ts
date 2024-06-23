@@ -1,7 +1,7 @@
-import { AppSupabaseClient } from "../supabase/supabase-context";
-
-import { saveSurveySummary } from "./surveys";
-import { ValidatedSurveyEditorState } from "./types";
+import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { saveQuestions } from "../questions";
+import { saveSurveySummary } from "../summaries";
+import { ValidatedSurveyEditorState } from "../types";
 
 /** Save an editable survey; if the survey isn't valid throw an error */
 export async function saveEditedSurvey(
@@ -13,4 +13,5 @@ export async function saveEditedSurvey(
   }
 
   await saveSurveySummary(dbClient, editorState.summary);
+  await saveQuestions(dbClient, editorState.questions);
 }

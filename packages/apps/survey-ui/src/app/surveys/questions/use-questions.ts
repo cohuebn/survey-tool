@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { useSupabaseDb } from "../supabase/use-supabase-db";
+import { useSupabaseDb } from "../../supabase/use-supabase-db";
+import { Question } from "../types";
 
-import { Question } from "./types";
-import { getQuestionsForSurvey } from "./questions";
+import { getQuestionsForSurvey } from "./database";
 
 export function useQuestions(surveyId: string) {
   const [questionsLoaded, setQuestionsLoaded] = useState(false);

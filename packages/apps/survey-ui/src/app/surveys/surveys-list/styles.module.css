@@ -1,0 +1,24 @@
+.surveyCard {
+  min-width: 40rem;
+}
+
+@media screen and (max-width: 768px) {
+  .surveyCard {
+    min-width: 0;
+  }
+}
+
+.surveyCard p.surveyCardTitle {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+p.surveyCardSubtitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+p.surveyCardDescription {
+  white-space: pre-line;
+}

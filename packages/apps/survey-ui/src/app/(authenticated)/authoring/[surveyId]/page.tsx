@@ -4,15 +4,15 @@ import { CircularProgress, Typography } from "@mui/material";
 import layoutStyles from "@styles/layout.module.css";
 import { useMemo } from "react";
 
-import { SurveyEditor } from "../../../surveys/survey-editor";
-import { useUserId } from "../../../auth/use-user-id";
 import {
+  SurveyEditor,
   Question,
   SurveyEditorState,
   SurveySummary,
-} from "../../../surveys/types";
-import { useSurveySummary } from "../../../surveys/use-survey-summary";
-import { useQuestions } from "../../../surveys/use-questions";
+  useSurveySummary,
+  useQuestions,
+} from "../../../surveys";
+import { useUserId } from "../../../auth/use-user-id";
 
 type PageProps = {
   params: { surveyId: string };

@@ -1,4 +1,4 @@
-import { EditableQuestion, Question } from "./questions";
+import { EditableQuestion, Question, QuestionType } from "./questions";
 import { SurveySummary } from "./summaries";
 import { SurveyValidationError } from "./survey-validation-error";
 
@@ -58,4 +58,9 @@ export type SurveyEditorAction =
       type: "moveQuestion";
       questionId: string;
       targetIndex: number;
+    }
+  | {
+      type: "setQuestionType";
+      questionId: string;
+      value?: QuestionType;
     };

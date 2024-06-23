@@ -1,22 +1,22 @@
 "use client";
 
 import { Box, CircularProgress, Fab, Tab, Tabs } from "@mui/material";
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useMemo, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import layoutStyles from "@styles/layout.module.css";
 import { Add, Cancel, Save } from "@mui/icons-material";
 import { toast } from "react-toastify";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { TabPanel } from "../core-components/tab-panel";
-import { useSupabaseDb } from "../supabase/use-supabase-db";
+import { TabPanel } from "../../core-components/tab-panel";
+import { useSupabaseDb } from "../../supabase/use-supabase-db";
+import { SurveyEditorState, ValidatedSurveyEditorState } from "../types";
 
-import { SurveyEditorState, ValidatedSurveyEditorState } from "./types";
+import { saveEditedSurvey } from "./save-edited-survey";
 import styles from "./styles.module.css";
 import { surveyEditorReducer } from "./survey-editor-reducer";
 import { SurveySummaryEditor } from "./survey-summary-editor";
 import { getValidatedSurveyState } from "./survey-editor-validation";
-import { saveEditedSurvey } from "./save-edited-survey";
 import { QuestionsEditor } from "./questions-editor";
 
 type SurveyEditorProps = {
@@ -32,17 +32,24 @@ function a11yTabProps(name: string) {
 }
 
 export function SurveyEditor(props: SurveyEditorProps) {
+  const searchParams = useSearchParams();
+  const initialTab = useMemo(
+    () => searchParams.get("tab") ?? "summary",
+    [searchParams],
+  );
   const [editorState, dispatch] = useReducer(
     surveyEditorReducer,
     getValidatedSurveyState(props.initialEditorState),
   );
-  const [selectedTab, setSelectedTab] = React.useState("summary");
+  const [selectedTab, setSelectedTab] = React.useState(initialTab);
   const dbClient = useSupabaseDb();
   const currentPath = usePathname();
   const router = useRouter();
 
-  const onTabChange = (_event: React.SyntheticEvent, newValue: string) =>
+  const onTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setSelectedTab(newValue);
+    router.push(`/authoring/${editorState.surveyId}?tab=${newValue}`);
+  };
 
   // Using callback here to avoid rebuilding on editor state changes; only
   // changes when the dbClient changes

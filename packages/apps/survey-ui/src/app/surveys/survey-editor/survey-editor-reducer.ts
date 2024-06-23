@@ -1,14 +1,15 @@
 import { arrayMove } from "@dnd-kit/sortable";
 
-import { createNewEditableQuestion } from "./questions";
-import { getValidatedSurveyState } from "./survey-editor-validation";
+import { createNewEditableQuestion } from "../questions";
 import {
   EditableQuestion,
   EditableSummary,
   SurveyEditorAction,
   SurveyEditorState,
   ValidatedSurveyEditorState,
-} from "./types";
+} from "../types";
+
+import { getValidatedSurveyState } from "./survey-editor-validation";
 
 function getUpdatedSummary<TFieldKey extends keyof EditableSummary>(
   existingSummary: EditableSummary,
@@ -46,6 +47,27 @@ function updateQuestionAndValidateState<
   });
 }
 
+function findQuestionWithIndex(
+  editorState: SurveyEditorState,
+  questionId: string,
+) {
+  const { questions } = editorState;
+  const questionIndex = questions.findIndex(
+    (question) => question.id === questionId,
+  );
+  if (questionIndex < 0) {
+    throw new Error(`Question with id ${questionId} not found`);
+  }
+  return { index: questionIndex, question: questions[questionIndex] };
+}
+
+function reindexQuestions(questions: EditableQuestion[]): EditableQuestion[] {
+  return questions.map((question, index) => ({
+    ...question,
+    sortOrder: index,
+  }));
+}
+
 /**
  * Move the question with the given id to the specified index
  * @param editorState The current survey editor state
@@ -59,19 +81,17 @@ function moveQuestion(
   targetIndex: number,
 ) {
   const { questions } = editorState;
-  const existingIndex = questions.findIndex(
-    (question) => question.id === questionId,
+  const { index: existingIndex } = findQuestionWithIndex(
+    editorState,
+    questionId,
   );
-  if (existingIndex < 0) {
-    throw new Error(`Question with id ${questionId} not found`);
-  }
   if (targetIndex < 0 || targetIndex >= questions.length) {
     throw new Error(
       `Invalid target index; can't move question. Index: ${targetIndex}, Question count: ${questions.length}`,
     );
   }
   const updatedQuestions = arrayMove(questions, existingIndex, targetIndex);
-  return { ...editorState, questions: updatedQuestions };
+  return { ...editorState, questions: reindexQuestions(updatedQuestions) };
 }
 
 export function surveyEditorReducer(
@@ -98,7 +118,10 @@ export function surveyEditorReducer(
         ...editorState,
         questions: [
           ...editorState.questions,
-          createNewEditableQuestion(editorState.surveyId),
+          createNewEditableQuestion(
+            editorState.surveyId,
+            editorState.questions.length,
+          ),
         ],
       });
     case "setQuestionText":
@@ -111,6 +134,13 @@ export function surveyEditorReducer(
     case "moveQuestion":
       return getValidatedSurveyState(
         moveQuestion(editorState, action.questionId, action.targetIndex),
+      );
+    case "setQuestionType":
+      return updateQuestionAndValidateState(
+        editorState,
+        action.questionId,
+        "questionType",
+        action.value,
       );
     default:
       throw new Error(

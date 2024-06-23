@@ -1,9 +1,8 @@
 import { toCamel, toSnake } from "convert-keys";
 
-import { AppSupabaseClient } from "../supabase/supabase-context";
-import { asPostgresError } from "../errors/postgres-error";
-
-import { SurveySummary, SurveyFilters, DBSurveySummary } from "./types";
+import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { asPostgresError } from "../../errors/postgres-error";
+import { SurveySummary, SurveyFilters, DBSurveySummary } from "../types";
 
 function getQuery(dbClient: AppSupabaseClient, filters: SurveyFilters) {
   const baseQuery = dbClient.from("surveys").select(`

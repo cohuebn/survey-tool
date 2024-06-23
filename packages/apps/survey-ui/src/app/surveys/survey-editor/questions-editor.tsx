@@ -21,7 +21,8 @@ import {
   EditableQuestion,
   SurveyEditorAction,
   SurveyValidationError,
-} from "./types";
+} from "../types";
+
 import styles from "./styles.module.css";
 import { QuestionEditor } from "./question-editor";
 

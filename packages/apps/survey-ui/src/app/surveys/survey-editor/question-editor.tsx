@@ -11,9 +11,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DragHandle } from "@mui/icons-material";
 
-import { EditableQuestion, QuestionType, SurveyEditorAction } from "./types";
+import { EditableQuestion, QuestionType, SurveyEditorAction } from "../types";
+import { useQuestionTypes } from "../questions";
+
 import styles from "./styles.module.css";
-import { useQuestionTypes } from "./use-question-types";
 
 type QuestionEditorProps = {
   question: EditableQuestion;
@@ -36,7 +37,9 @@ export function QuestionEditor({
     isDragging,
   } = useSortable({ id: question.id });
   const { questionTypes, questionTypesLoaded } = useQuestionTypes();
-  const [questionType, setQuestionType] = useState<QuestionType | null>(null);
+  const [questionType, setQuestionType] = useState<QuestionType | null>(
+    question.questionType ?? null,
+  );
 
   const dragStyles = {
     opacity: isDragging ? 0.4 : undefined,
@@ -71,6 +74,11 @@ export function QuestionEditor({
           value={questionType}
           onChange={(_, newQuestionType) => {
             setQuestionType(newQuestionType);
+            dispatch({
+              type: "setQuestionType",
+              questionId: question.id,
+              value: newQuestionType ?? undefined,
+            });
           }}
           className={styles.questionInput}
         />

@@ -1,5 +1,4 @@
-import { emptyToUndefined } from "../utils/empty-to-undefined";
-
+import { emptyToUndefined } from "../../utils/empty-to-undefined";
 import {
   SurveyValidationError,
   EditableSummary,
@@ -8,7 +7,7 @@ import {
   ValidatedSurveyEditorState,
   EditableQuestion,
   Question,
-} from "./types";
+} from "../types";
 
 function getSurveySummaryErrors(
   summary: EditableSummary,

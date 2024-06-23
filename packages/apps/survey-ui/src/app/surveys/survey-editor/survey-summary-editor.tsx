@@ -1,13 +1,13 @@
 import { Dispatch } from "react";
 import { Alert, TextField } from "@mui/material";
 
-import { emptyToUndefined } from "../utils/empty-to-undefined";
-
+import { emptyToUndefined } from "../../utils/empty-to-undefined";
 import {
   EditableSummary,
   SurveyEditorAction,
   SurveyValidationError,
-} from "./types";
+} from "../types";
+
 import styles from "./styles.module.css";
 
 type SurveySummaryEditorProps = {

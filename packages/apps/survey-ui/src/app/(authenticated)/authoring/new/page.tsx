@@ -5,9 +5,8 @@ import layoutStyles from "@styles/layout.module.css";
 import { v4 as uuidV4 } from "uuid";
 import { useMemo } from "react";
 
-import { SurveyEditor } from "../../../surveys/survey-editor";
+import { SurveyEditor, SurveyEditorState } from "../../../surveys";
 import { useUserId } from "../../../auth/use-user-id";
-import { SurveyEditorState } from "../../../surveys/types";
 
 function getNewSurveyState(ownerId: string): SurveyEditorState {
   const surveyId = uuidV4();

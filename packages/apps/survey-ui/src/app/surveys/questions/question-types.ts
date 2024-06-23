@@ -1,9 +1,8 @@
 import { toCamel } from "convert-keys";
 
-import { AppSupabaseClient } from "../supabase/supabase-context";
-import { asPostgresError } from "../errors/postgres-error";
-
-import { QuestionType } from "./types";
+import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { asPostgresError } from "../../errors/postgres-error";
+import { QuestionType } from "../types";
 
 export async function getQuestionTypes(
   dbClient: AppSupabaseClient,

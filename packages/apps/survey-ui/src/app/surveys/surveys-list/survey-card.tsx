@@ -6,7 +6,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import { SurveySummary } from "./types";
+import { SurveySummary } from "../types";
+
 import styles from "./styles.module.css";
 
 type SurveyCardProps = {

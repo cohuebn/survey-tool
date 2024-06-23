@@ -7,9 +7,7 @@ import { useMemo } from "react";
 import { Create } from "@mui/icons-material";
 
 import { useUserSession } from "../../auth/use-user-session";
-import { useSurveySummaries } from "../../surveys/use-survey-summaries";
-import { SurveyFilters } from "../../surveys/types";
-import { SurveysList } from "../../surveys/surveys-list";
+import { useSurveySummaries, SurveyFilters, SurveysList } from "../../surveys";
 import { FileIssueLink } from "../../issues/file-issue-link";
 
 export default function Authoring() {

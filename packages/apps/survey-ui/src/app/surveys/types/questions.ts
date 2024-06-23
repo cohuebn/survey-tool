@@ -12,7 +12,17 @@ type BaseQuestion = {
   surveyId: string;
   question: string;
   questionType: QuestionType;
+  sortOrder: number;
 };
+
+export type DBQuestion = SnakeCasedPropertiesDeep<{
+  id: string;
+  surveyId: string;
+  questionTypeId: string;
+  question: string;
+  sortOrder: number;
+  definition: Record<string, unknown>;
+}>;
 
 export type Question = BaseQuestion;
 export type EditableQuestion = Omit<Partial<Question>, "id" | "surveyId"> & {
