@@ -48,7 +48,7 @@ export function toDbQuestion(question: Question): DBQuestion {
     question_type_id: question.questionType.id,
     question: question.question,
     sort_order: question.sortOrder,
-    definition: {},
+    definition: question.definition,
   };
 }
 

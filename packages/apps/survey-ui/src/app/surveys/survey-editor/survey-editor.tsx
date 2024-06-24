@@ -78,7 +78,7 @@ export function SurveyEditor(props: SurveyEditorProps) {
   }
 
   return (
-    <>
+    <div className={layoutStyles.contentWithBottomActions}>
       <Box
         className={styles.surveyTabsContainer}
         sx={{ borderBottom: 1, borderColor: "divider" }}
@@ -159,6 +159,6 @@ export function SurveyEditor(props: SurveyEditorProps) {
           Save
         </Fab>
       </div>
-    </>
+    </div>
   );
 }

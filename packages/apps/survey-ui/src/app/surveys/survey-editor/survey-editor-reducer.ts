@@ -142,6 +142,13 @@ export function surveyEditorReducer(
         "questionType",
         action.value,
       );
+    case "updateQuestionDefinition":
+      return updateQuestionAndValidateState(
+        editorState,
+        action.questionId,
+        "definition",
+        action.value,
+      );
     default:
       throw new Error(
         `The survey editor has been given an unknown action: ${action}`,

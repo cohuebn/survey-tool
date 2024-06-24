@@ -1,11 +1,31 @@
 import { SnakeCasedPropertiesDeep } from "type-fest";
 
+export type QuestionTypeLabel =
+  | "Yes/no"
+  | "Rating"
+  | "Free-form"
+  | "Multiple choice"
+  | "Ranking";
+
 export type QuestionType = {
   id: string;
-  questionType: string;
+  questionType: QuestionTypeLabel;
 };
 
 export type DBQuestionType = SnakeCasedPropertiesDeep<QuestionType>;
+
+export type DBQuestion = Omit<
+  SnakeCasedPropertiesDeep<{
+    id: string;
+    surveyId: string;
+    questionTypeId: string;
+    question: string;
+    sortOrder: number;
+  }>,
+  "definition"
+> & {
+  definition: Record<string, unknown>;
+};
 
 type BaseQuestion = {
   id: string;
@@ -13,16 +33,8 @@ type BaseQuestion = {
   question: string;
   questionType: QuestionType;
   sortOrder: number;
-};
-
-export type DBQuestion = SnakeCasedPropertiesDeep<{
-  id: string;
-  surveyId: string;
-  questionTypeId: string;
-  question: string;
-  sortOrder: number;
   definition: Record<string, unknown>;
-}>;
+};
 
 export type Question = BaseQuestion;
 export type EditableQuestion = Omit<Partial<Question>, "id" | "surveyId"> & {

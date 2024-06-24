@@ -18,10 +18,28 @@
 }
 
 div.bottomActions {
-  position: fixed;
   display: flex;
   gap: 1rem;
-  bottom: 0;
   padding-bottom: 1rem;
-  right: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+  /* Associate this with the content on a page that contains bottom actions;
+  it allows content to remain fully visible with fixed bottom actions */
+  div.contentWithBottomActions {
+    padding-bottom: 2rem;
+  }
+
+  div.bottomActions {
+    position: fixed;
+    bottom: 0;
+    right: 1rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  div.bottomActions {
+    flex-direction: column;
+    align-items: center;
+  }
 }

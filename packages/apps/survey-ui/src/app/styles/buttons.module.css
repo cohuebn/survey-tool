@@ -29,3 +29,8 @@ a.actionButton {
 .actionButtonIcon {
   margin-right: 0.5rem;
 }
+
+button.dangerButton:hover,
+button.dangerButton:focus {
+  color: var(--danger-color);
+}

@@ -63,4 +63,9 @@ export type SurveyEditorAction =
       type: "setQuestionType";
       questionId: string;
       value?: QuestionType;
+    }
+  | {
+      type: "updateQuestionDefinition";
+      questionId: string;
+      value: Record<string, unknown>;
     };

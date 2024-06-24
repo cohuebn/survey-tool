@@ -27,12 +27,48 @@ form.surveyEditorForm {
   margin-bottom: 1.3rem;
 }
 
+.questionCard .topBar {
+  display: flex;
+  align-items: center;
+}
+
+.questionCard .topBar button {
+  padding: 0;
+}
+
 .questionCard .dragArea {
   display: flex;
   justify-content: center;
   cursor: move;
+  flex-grow: 1;
 }
 
-.questionInput {
-  margin-bottom: 1rem;
+div.questionFields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+div.minMaxRatingContainer {
+  display: flex;
+  gap: 1rem;
+}
+
+.labeledButtonGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.labeledButtonGroup label {
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.labeledButtonGroup button {
+  min-width: 5rem;
+}
+
+.optionsButtons {
+  display: flex;
+  justify-content: flex-end;
 }

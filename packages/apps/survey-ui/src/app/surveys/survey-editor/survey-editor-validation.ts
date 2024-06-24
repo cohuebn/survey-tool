@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "@survey-tool/core";
+
 import { emptyToUndefined } from "../../utils/empty-to-undefined";
 import {
   SurveyValidationError,
@@ -24,17 +26,53 @@ function isSummaryValid(
   return !validationErrors.length;
 }
 
+function isOptionsList(options: unknown | undefined): options is string[] {
+  return Array.isArray(options);
+}
+
+function getBaseQuestionErrors(
+  question: EditableQuestion,
+  index: number,
+): SurveyValidationError[] {
+  return isNullOrUndefined(emptyToUndefined(question.question))
+    ? [
+        new SurveyValidationError(
+          `Question #${index + 1} is missing question text`,
+        ),
+      ]
+    : [];
+}
+
+function getQuestionOptionErrors(
+  question: EditableQuestion,
+  index: number,
+): SurveyValidationError[] {
+  const options = question.definition?.options;
+  if (!isOptionsList(options)) return [];
+  return options.reduce<SurveyValidationError[]>(
+    (_emptyOptions, option, optionIndex) => {
+      const isOptionEmpty = isNullOrUndefined(emptyToUndefined(option));
+      return isOptionEmpty
+        ? [
+            ..._emptyOptions,
+            new SurveyValidationError(
+              `Question #${index + 1} contains empty option #${optionIndex + 1}`,
+            ),
+          ]
+        : _emptyOptions;
+    },
+    [],
+  );
+}
+
 function getQuestionErrors(
   question: EditableQuestion,
   index: number,
 ): SurveyValidationError[] {
-  return emptyToUndefined(question.question)
-    ? []
-    : [
-        new SurveyValidationError(
-          `Question #${index + 1} is missing question text`,
-        ),
-      ];
+  return [
+    ...getBaseQuestionErrors(question, index),
+    ...getQuestionOptionErrors(question, index),
+  ];
 }
 
 function getQuestionsErrors(
