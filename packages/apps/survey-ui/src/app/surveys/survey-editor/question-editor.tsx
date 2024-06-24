@@ -12,7 +12,7 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Close, DragHandle } from "@mui/icons-material";
-import buttonStyles from "@styles/buttons.module.css"
+import buttonStyles from "@styles/buttons.module.css";
 
 import { EditableQuestion, QuestionType, SurveyEditorAction } from "../types";
 import { useQuestionTypes } from "../questions";
