@@ -26,6 +26,7 @@ function getExistingSurveyState(
     surveyId: summary.id,
     summary,
     questions,
+    deletedQuestionIds: [],
   };
 }
 

@@ -94,6 +94,16 @@ function moveQuestion(
   return { ...editorState, questions: reindexQuestions(updatedQuestions) };
 }
 
+function deleteQuestion(editorState: SurveyEditorState, questionId: string) {
+  return {
+    ...editorState,
+    questions: editorState.questions.filter(
+      (question) => question.id !== questionId,
+    ),
+    deletedQuestionIds: [...editorState.deletedQuestionIds, questionId],
+  };
+}
+
 export function surveyEditorReducer(
   editorState: ValidatedSurveyEditorState,
   action: SurveyEditorAction,
@@ -124,6 +134,10 @@ export function surveyEditorReducer(
           ),
         ],
       });
+    case "deleteQuestion":
+      return getValidatedSurveyState(
+        deleteQuestion(editorState, action.questionId),
+      );
     case "setQuestionText":
       return updateQuestionAndValidateState(
         editorState,

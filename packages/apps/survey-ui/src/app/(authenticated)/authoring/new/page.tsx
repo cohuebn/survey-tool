@@ -14,6 +14,7 @@ function getNewSurveyState(ownerId: string): SurveyEditorState {
     surveyId,
     summary: { id: surveyId, ownerId },
     questions: [],
+    deletedQuestionIds: [],
   };
 }
 

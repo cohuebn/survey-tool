@@ -1,5 +1,5 @@
 import { AppSupabaseClient } from "../../supabase/supabase-context";
-import { saveQuestions } from "../questions";
+import { deleteQuestions, saveQuestions } from "../questions";
 import { saveSurveySummary } from "../summaries";
 import { ValidatedSurveyEditorState } from "../types";
 
@@ -13,5 +13,8 @@ export async function saveEditedSurvey(
   }
 
   await saveSurveySummary(dbClient, editorState.summary);
-  await saveQuestions(dbClient, editorState.questions);
+  await Promise.all([
+    saveQuestions(dbClient, editorState.questions),
+    deleteQuestions(dbClient, editorState.deletedQuestionIds),
+  ]);
 }

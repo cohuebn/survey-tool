@@ -74,7 +74,12 @@ export function QuestionEditor({
             <DragHandle />
           </div>
           <Tooltip title="Delete this question">
-            <IconButton className={buttonStyles.dangerButton}>
+            <IconButton
+              className={buttonStyles.dangerButton}
+              onClick={() =>
+                dispatch({ type: "deleteQuestion", questionId: question.id })
+              }
+            >
               <Close />
             </IconButton>
           </Tooltip>
@@ -90,7 +95,6 @@ export function QuestionEditor({
             renderInput={(params) => (
               <TextField
                 {...params}
-                autoFocus
                 label="Question type"
                 placeholder="The type of question (e.g. multiple choice, rating, etc.)"
               />

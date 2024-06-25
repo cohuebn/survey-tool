@@ -1,4 +1,4 @@
-import { EditableQuestion, Question, QuestionType } from "./questions";
+import { EditableQuestion, Question } from "./questions";
 import { SurveySummary } from "./summaries";
 import { SurveyValidationError } from "./survey-validation-error";
 
@@ -12,10 +12,13 @@ export type SurveyEditorState = {
   surveyId: string;
   summary: EditableSummary;
   questions: EditableQuestion[];
+  deletedQuestionIds: string[];
 };
 
-export type ValidSurveyEditorState = {
-  surveyId: string;
+export type ValidSurveyEditorState = Omit<
+  SurveyEditorState,
+  "summary" | "questions"
+> & {
   isSurveyValid: true;
   summary: SurveySummary;
   questions: Question[];
@@ -42,30 +45,3 @@ export type InvalidSurveyEditorState = SurveyEditorState & {
 export type ValidatedSurveyEditorState =
   | ValidSurveyEditorState
   | InvalidSurveyEditorState;
-
-/** All allowed actions for editing a survey */
-export type SurveyEditorAction =
-  | { type: "setSurveyName"; value: EditableSummary["name"] }
-  | { type: "setSurveySubtitle"; value: EditableSummary["subtitle"] }
-  | { type: "setSurveyDescription"; value: EditableSummary["description"] }
-  | { type: "addQuestion" }
-  | {
-      type: "setQuestionText";
-      questionId: string;
-      value: EditableQuestion["question"];
-    }
-  | {
-      type: "moveQuestion";
-      questionId: string;
-      targetIndex: number;
-    }
-  | {
-      type: "setQuestionType";
-      questionId: string;
-      value?: QuestionType;
-    }
-  | {
-      type: "updateQuestionDefinition";
-      questionId: string;
-      value: Record<string, unknown>;
-    };

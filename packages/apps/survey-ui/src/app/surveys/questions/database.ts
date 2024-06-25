@@ -60,3 +60,14 @@ export async function saveQuestions(
   const dbResult = await dbClient.from("survey_questions").upsert(dbQuestions);
   if (dbResult.error) throw asPostgresError(dbResult.error);
 }
+
+export async function deleteQuestions(
+  dbClient: AppSupabaseClient,
+  questionIds: string[],
+) {
+  const dbResult = await dbClient
+    .from("survey_questions")
+    .delete()
+    .in("id", questionIds);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+}

@@ -77,7 +77,7 @@ export function MultipleChoiceEditor({
         />
       ))}
       <div>
-        <Tooltip title="Add another option for survey participants">
+        <Tooltip title="Add a multiple-choice option for this question">
           <IconButton>
             <Add />
           </IconButton>
