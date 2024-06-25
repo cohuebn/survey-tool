@@ -27,4 +27,25 @@ export type SurveyEditorAction =
       type: "updateQuestionDefinition";
       questionId: string;
       value: Record<string, unknown>;
+    }
+  | {
+      type: "addQuestionOption";
+      questionId: string;
+    }
+  | {
+      type: "updateQuestionOption";
+      questionId: string;
+      optionIndex: number;
+      value: string;
+    }
+  | {
+      type: "deleteQuestionOption";
+      questionId: string;
+      optionIndex: number;
+    }
+  | {
+      type: "moveQuestion";
+      questionId: string;
+      optionId: string;
+      targetIndex: number;
     };

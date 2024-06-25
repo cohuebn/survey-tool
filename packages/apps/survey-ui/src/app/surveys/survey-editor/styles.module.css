@@ -36,6 +36,10 @@ form.surveyEditorForm {
   padding: 0;
 }
 
+.questionCard .dragHandle {
+  cursor: move;
+}
+
 .questionCard .dragArea {
   display: flex;
   justify-content: center;
@@ -71,4 +75,10 @@ div.minMaxRatingContainer {
 .optionsButtons {
   display: flex;
   justify-content: flex-end;
+}
+
+div.questionOption {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }

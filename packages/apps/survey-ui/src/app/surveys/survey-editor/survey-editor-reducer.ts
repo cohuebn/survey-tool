@@ -1,4 +1,5 @@
 import { arrayMove } from "@dnd-kit/sortable";
+import { isNullOrUndefined } from "@survey-tool/core";
 
 import { createNewEditableQuestion } from "../questions";
 import {
@@ -19,32 +20,36 @@ function getUpdatedSummary<TFieldKey extends keyof EditableSummary>(
   return { ...existingSummary, [field]: value };
 }
 
-function updateSummaryAndValidateState<TFieldKey extends keyof EditableSummary>(
+function updateSummary<TFieldKey extends keyof EditableSummary>(
   editorState: SurveyEditorState,
   field: TFieldKey,
   value: EditableSummary[TFieldKey],
-): ValidatedSurveyEditorState {
+): SurveyEditorState {
   const updatedSummary = getUpdatedSummary(editorState.summary, field, value);
-  return getValidatedSurveyState({ ...editorState, summary: updatedSummary });
+  return { ...editorState, summary: updatedSummary };
 }
 
-function updateQuestionAndValidateState<
-  TFieldKey extends keyof EditableQuestion,
->(
+// function updateSummaryAndValidateState<TFieldKey extends keyof EditableSummary>(
+//   editorState: SurveyEditorState,
+//   field: TFieldKey,
+//   value: EditableSummary[TFieldKey],
+// ): ValidatedSurveyEditorState {
+//   const updatedSummary = getUpdatedSummary(editorState.summary, field, value);
+//   return getValidatedSurveyState({ ...editorState, summary: updatedSummary });
+// }
+
+function updateQuestion<TFieldKey extends keyof EditableQuestion>(
   editorState: SurveyEditorState,
   questionId: string,
   field: TFieldKey,
   value: EditableQuestion[TFieldKey],
-) {
+): SurveyEditorState {
   const updatedQuestions = editorState.questions.map((question) => {
     return question.id === questionId
       ? { ...question, [field]: value }
       : question;
   });
-  return getValidatedSurveyState({
-    ...editorState,
-    questions: updatedQuestions,
-  });
+  return { ...editorState, questions: updatedQuestions };
 }
 
 function findQuestionWithIndex(
@@ -79,7 +84,7 @@ function moveQuestion(
   editorState: SurveyEditorState,
   questionId: string,
   targetIndex: number,
-) {
+): SurveyEditorState {
   const { questions } = editorState;
   const { index: existingIndex } = findQuestionWithIndex(
     editorState,
@@ -94,7 +99,10 @@ function moveQuestion(
   return { ...editorState, questions: reindexQuestions(updatedQuestions) };
 }
 
-function deleteQuestion(editorState: SurveyEditorState, questionId: string) {
+function deleteQuestion(
+  editorState: SurveyEditorState,
+  questionId: string,
+): SurveyEditorState {
   return {
     ...editorState,
     questions: editorState.questions.filter(
@@ -104,27 +112,80 @@ function deleteQuestion(editorState: SurveyEditorState, questionId: string) {
   };
 }
 
-export function surveyEditorReducer(
+function getOptions(definition: Record<string, unknown> | undefined): string[] {
+  if (isNullOrUndefined(definition)) return [];
+  const { options } = definition;
+  return options && Array.isArray(options) ? options : [];
+}
+
+type QuestionDefinitionUpdater = (
+  existingDefinition: Record<string, unknown>,
+) => Record<string, unknown>;
+
+function updateQuestionDefinition(
+  editorState: SurveyEditorState,
+  questionId: string,
+  updateDefinition: QuestionDefinitionUpdater,
+) {
+  const updatedQuestions = editorState.questions.map((question) => {
+    if (question.id !== questionId) return question;
+    const existingDefinition = question.definition ?? {};
+    return {
+      ...question,
+      definition: updateDefinition(existingDefinition),
+    };
+  });
+  return { ...editorState, questions: updatedQuestions };
+}
+
+function addQuestionOption(editorState: SurveyEditorState, questionId: string) {
+  return updateQuestionDefinition(editorState, questionId, (definition) => {
+    const options = getOptions(definition);
+    return { ...definition, options: [...options, ""] };
+  });
+}
+
+function updateQuestionOption(
+  editorState: SurveyEditorState,
+  questionId: string,
+  index: number,
+  value: string,
+): SurveyEditorState {
+  return updateQuestionDefinition(editorState, questionId, (definition) => {
+    const options = getOptions(definition);
+    const updatedOptions = options.map((option, i) =>
+      i === index ? value : option,
+    );
+    return { ...definition, options: updatedOptions };
+  });
+}
+
+function deleteQuestionOption(
+  editorState: SurveyEditorState,
+  questionId: string,
+  optionIndex: number,
+) {
+  return updateQuestionDefinition(editorState, questionId, (definition) => {
+    const updatedOptions = getOptions(definition).filter(
+      (_, index) => index !== optionIndex,
+    );
+    return { ...definition, options: updatedOptions };
+  });
+}
+
+function getUnvalidatedSurveyState(
   editorState: ValidatedSurveyEditorState,
   action: SurveyEditorAction,
-) {
+): SurveyEditorState {
   switch (action.type) {
     case "setSurveyName":
-      return updateSummaryAndValidateState(editorState, "name", action.value);
+      return updateSummary(editorState, "name", action.value);
     case "setSurveySubtitle":
-      return updateSummaryAndValidateState(
-        editorState,
-        "subtitle",
-        action.value,
-      );
+      return updateSummary(editorState, "subtitle", action.value);
     case "setSurveyDescription":
-      return updateSummaryAndValidateState(
-        editorState,
-        "description",
-        action.value,
-      );
+      return updateSummary(editorState, "description", action.value);
     case "addQuestion":
-      return getValidatedSurveyState({
+      return {
         ...editorState,
         questions: [
           ...editorState.questions,
@@ -133,39 +194,58 @@ export function surveyEditorReducer(
             editorState.questions.length,
           ),
         ],
-      });
+      };
     case "deleteQuestion":
-      return getValidatedSurveyState(
-        deleteQuestion(editorState, action.questionId),
-      );
+      return deleteQuestion(editorState, action.questionId);
     case "setQuestionText":
-      return updateQuestionAndValidateState(
+      return updateQuestion(
         editorState,
         action.questionId,
         "question",
         action.value,
       );
     case "moveQuestion":
-      return getValidatedSurveyState(
-        moveQuestion(editorState, action.questionId, action.targetIndex),
-      );
+      return moveQuestion(editorState, action.questionId, action.targetIndex);
     case "setQuestionType":
-      return updateQuestionAndValidateState(
+      return updateQuestion(
         editorState,
         action.questionId,
         "questionType",
         action.value,
       );
     case "updateQuestionDefinition":
-      return updateQuestionAndValidateState(
+      return updateQuestion(
         editorState,
         action.questionId,
         "definition",
         action.value,
+      );
+    case "addQuestionOption":
+      return addQuestionOption(editorState, action.questionId);
+    case "updateQuestionOption":
+      return updateQuestionOption(
+        editorState,
+        action.questionId,
+        action.optionIndex,
+        action.value,
+      );
+    case "deleteQuestionOption":
+      return deleteQuestionOption(
+        editorState,
+        action.questionId,
+        action.optionIndex,
       );
     default:
       throw new Error(
         `The survey editor has been given an unknown action: ${action}`,
       );
   }
+}
+
+export function surveyEditorReducer(
+  editorState: ValidatedSurveyEditorState,
+  action: SurveyEditorAction,
+) {
+  const updatedState = getUnvalidatedSurveyState(editorState, action);
+  return getValidatedSurveyState(updatedState);
 }
