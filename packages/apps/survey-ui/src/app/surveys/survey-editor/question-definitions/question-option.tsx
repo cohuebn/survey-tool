@@ -2,6 +2,8 @@ import { Dispatch } from "react";
 import { IconButton, TextField, Tooltip } from "@mui/material";
 import buttonStyles from "@styles/buttons.module.css";
 import { Close, DragIndicator } from "@mui/icons-material";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { SurveyEditorAction } from "../../types";
 import styles from "../styles.module.css";
@@ -19,9 +21,24 @@ export function QuestionOption({
   option,
   dispatch,
 }: QuestionOptionProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: option });
+
+  const dragStyles = {
+    opacity: isDragging ? 0.4 : undefined,
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <div className={styles.questionOption}>
-      <IconButton className={styles.dragHandle}>
+    <div className={styles.questionOption} ref={setNodeRef} style={dragStyles}>
+      <IconButton className={styles.dragHandle} {...attributes} {...listeners}>
         <DragIndicator />
       </IconButton>
       <TextField

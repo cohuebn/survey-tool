@@ -2,35 +2,84 @@ import { FormLabel, IconButton, Tooltip } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
 import clsx from "clsx";
+import {
+  Active,
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { useState } from "react";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 import { QuestionDefinitionProps } from "../question-definition-props";
 import styles from "../styles.module.css";
+import { getOptions } from "../../questions/definitions";
 
 import { QuestionOption } from "./question-option";
-
-function getOptions(definition: Record<string, unknown>): string[] {
-  const { options } = definition;
-  return options && Array.isArray(options) ? options : [];
-}
 
 export function QuestionOptions({
   questionId,
   definition,
   dispatch,
 }: QuestionDefinitionProps) {
+  const [, setDraggedElement] = useState<Active | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
   const options = getOptions(definition);
+
+  function handleDragStart(event: DragStartEvent) {
+    const { active } = event;
+    setDraggedElement(active);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over) return;
+    if (active.id !== over.id) {
+      dispatch({
+        type: "moveOption",
+        questionId,
+        option: `${active.id}`,
+        targetIndex: options.findIndex((option) => option === `${over.id}`),
+      });
+    }
+  }
+
   return (
     <div className={clsx(styles.questionSubsection, styles.optionsSection)}>
       <FormLabel>Options</FormLabel>
-      {options.map((option, index) => (
-        <QuestionOption
-          key={`${questionId}-option-${index}`}
-          questionId={questionId}
-          index={index}
-          option={option}
-          dispatch={dispatch}
-        />
-      ))}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={options} strategy={verticalListSortingStrategy}>
+          {options.map((option, index) => (
+            <QuestionOption
+              key={`${questionId}-option-${index}`}
+              questionId={questionId}
+              index={index}
+              option={option}
+              dispatch={dispatch}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
       <div className={layoutStyles.centeredContent}>
         <Tooltip title="Add a multiple-choice option for this question">
           <IconButton

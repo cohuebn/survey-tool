@@ -44,8 +44,8 @@ export type SurveyEditorAction =
       optionIndex: number;
     }
   | {
-      type: "moveQuestion";
+      type: "moveOption";
       questionId: string;
-      optionId: string;
+      option: string;
       targetIndex: number;
     };

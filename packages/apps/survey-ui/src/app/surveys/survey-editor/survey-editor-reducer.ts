@@ -1,5 +1,5 @@
 import { arrayMove } from "@dnd-kit/sortable";
-import { isNullOrUndefined } from "@survey-tool/core";
+import { isNullOrUndefined, isObject } from "@survey-tool/core";
 
 import { createNewEditableQuestion } from "../questions";
 import {
@@ -9,6 +9,7 @@ import {
   SurveyEditorState,
   ValidatedSurveyEditorState,
 } from "../types";
+import { getOptions } from "../questions/definitions";
 
 import { getValidatedSurveyState } from "./survey-editor-validation";
 
@@ -52,7 +53,7 @@ function updateQuestion<TFieldKey extends keyof EditableQuestion>(
   return { ...editorState, questions: updatedQuestions };
 }
 
-function findQuestionWithIndex(
+function findQuestionAndIndex(
   editorState: SurveyEditorState,
   questionId: string,
 ) {
@@ -86,7 +87,7 @@ function moveQuestion(
   targetIndex: number,
 ): SurveyEditorState {
   const { questions } = editorState;
-  const { index: existingIndex } = findQuestionWithIndex(
+  const { index: existingIndex } = findQuestionAndIndex(
     editorState,
     questionId,
   );
@@ -110,12 +111,6 @@ function deleteQuestion(
     ),
     deletedQuestionIds: [...editorState.deletedQuestionIds, questionId],
   };
-}
-
-function getOptions(definition: Record<string, unknown> | undefined): string[] {
-  if (isNullOrUndefined(definition)) return [];
-  const { options } = definition;
-  return options && Array.isArray(options) ? options : [];
 }
 
 type QuestionDefinitionUpdater = (
@@ -171,6 +166,52 @@ function deleteQuestionOption(
     );
     return { ...definition, options: updatedOptions };
   });
+}
+
+/**
+ * Move an option for a question to the specified index.
+ * @param editorState The current survey editor state
+ * @param questionId The id of the question the option is associated with
+ * @param option The option to move
+ * @param targetIndex The index to move the question to
+ * @returns The updated survey editor state
+ */
+function moveOption(
+  editorState: SurveyEditorState,
+  questionId: string,
+  option: string,
+  targetIndex: number,
+): SurveyEditorState {
+  const { questions } = editorState;
+  const { question: existingQuestion } = findQuestionAndIndex(
+    editorState,
+    questionId,
+  );
+
+  const options = getOptions(existingQuestion.definition);
+
+  if (targetIndex < 0 || targetIndex >= options.length) {
+    throw new Error(
+      `Invalid target index; can't move option. Index: ${targetIndex}, Option count: ${questions.length}`,
+    );
+  }
+  const existingIndex = options.indexOf(option);
+  if (existingIndex < 0) {
+    throw new Error(`Option ${option} not found in question ${questionId}`);
+  }
+  const updatedOptions = arrayMove(options, existingIndex, targetIndex);
+  return updateQuestionDefinition(editorState, questionId, (definition) => ({
+    ...definition,
+    options: updatedOptions,
+  }));
+}
+
+function getUnknownActionError(action: unknown) {
+  const actionType =
+    isObject(action) && "type" in action ? action.type : "No type on action";
+  return new Error(
+    `The survey editor has been given an unknown action: ${actionType}`,
+  );
 }
 
 function getUnvalidatedSurveyState(
@@ -235,10 +276,15 @@ function getUnvalidatedSurveyState(
         action.questionId,
         action.optionIndex,
       );
-    default:
-      throw new Error(
-        `The survey editor has been given an unknown action: ${action}`,
+    case "moveOption":
+      return moveOption(
+        editorState,
+        action.questionId,
+        action.option,
+        action.targetIndex,
       );
+    default:
+      throw getUnknownActionError(action);
   }
 }
 
