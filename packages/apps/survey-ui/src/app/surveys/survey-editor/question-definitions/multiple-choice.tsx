@@ -1,23 +1,9 @@
-import {
-  FormLabel,
-  IconButton,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-} from "@mui/material";
-import { Add } from "@mui/icons-material";
-import layoutStyles from "@styles/layout.module.css";
-import clsx from "clsx";
+import { FormLabel, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import { QuestionDefinitionProps } from "../question-definition-props";
 import styles from "../styles.module.css";
 
-import { QuestionOption } from "./question-option";
-
-function getOptions(definition: Record<string, unknown>): string[] {
-  const { options } = definition;
-  return options && Array.isArray(options) ? options : [];
-}
+import { QuestionOptions } from "./question-options";
 
 export function MultipleChoiceEditor({
   questionId,
@@ -27,7 +13,6 @@ export function MultipleChoiceEditor({
   const singleAnswer = "singleAnswer";
   const multipleAnswers = "multipleAnswers";
   const multipleChoiceTypes = [singleAnswer, multipleAnswers];
-  const options = getOptions(definition);
 
   return (
     <>
@@ -50,29 +35,11 @@ export function MultipleChoiceEditor({
           <ToggleButton value={multipleAnswers}>Multiple answers</ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <div className={clsx(styles.questionSubsection, styles.optionsSection)}>
-        <FormLabel>Options</FormLabel>
-        {options.map((option, index) => (
-          <QuestionOption
-            key={`${questionId}-option-${index}`}
-            questionId={questionId}
-            index={index}
-            option={option}
-            dispatch={dispatch}
-          />
-        ))}
-        <div className={layoutStyles.centeredContent}>
-          <Tooltip title="Add a multiple-choice option for this question">
-            <IconButton
-              onClick={() =>
-                dispatch({ type: "addQuestionOption", questionId })
-              }
-            >
-              <Add />
-            </IconButton>
-          </Tooltip>
-        </div>
-      </div>
+      <QuestionOptions
+        questionId={questionId}
+        definition={definition}
+        dispatch={dispatch}
+      />
     </>
   );
 }

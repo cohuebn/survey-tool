@@ -27,7 +27,6 @@ export function QuestionOption({
       <TextField
         key={index}
         fullWidth
-        multiline
         placeholder={`Option ${index + 1}`}
         label={`Option ${index + 1}`}
         value={option}
