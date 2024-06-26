@@ -1,14 +1,13 @@
 import {
   FormLabel,
   IconButton,
-  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
 } from "@mui/material";
-import { Add, Close } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
-import buttonStyles from "@styles/buttons.module.css";
+import clsx from "clsx";
 
 import { QuestionDefinitionProps } from "../question-definition-props";
 import styles from "../styles.module.css";
@@ -32,7 +31,7 @@ export function MultipleChoiceEditor({
 
   return (
     <>
-      <div className={styles.labeledButtonGroup}>
+      <div className={styles.questionSubsection}>
         <FormLabel>Multiple choice type</FormLabel>
         <ToggleButtonGroup
           aria-label="Answer count"
@@ -51,23 +50,28 @@ export function MultipleChoiceEditor({
           <ToggleButton value={multipleAnswers}>Multiple answers</ToggleButton>
         </ToggleButtonGroup>
       </div>
-      {options.map((option, index) => (
-        <QuestionOption
-          key={`${questionId}-option-${index}`}
-          questionId={questionId}
-          index={index}
-          option={option}
-          dispatch={dispatch}
-        />
-      ))}
-      <div className={layoutStyles.centeredContent}>
-        <Tooltip title="Add a multiple-choice option for this question">
-          <IconButton
-            onClick={() => dispatch({ type: "addQuestionOption", questionId })}
-          >
-            <Add />
-          </IconButton>
-        </Tooltip>
+      <div className={clsx(styles.questionSubsection, styles.optionsSection)}>
+        <FormLabel>Options</FormLabel>
+        {options.map((option, index) => (
+          <QuestionOption
+            key={`${questionId}-option-${index}`}
+            questionId={questionId}
+            index={index}
+            option={option}
+            dispatch={dispatch}
+          />
+        ))}
+        <div className={layoutStyles.centeredContent}>
+          <Tooltip title="Add a multiple-choice option for this question">
+            <IconButton
+              onClick={() =>
+                dispatch({ type: "addQuestionOption", questionId })
+              }
+            >
+              <Add />
+            </IconButton>
+          </Tooltip>
+        </div>
       </div>
     </>
   );

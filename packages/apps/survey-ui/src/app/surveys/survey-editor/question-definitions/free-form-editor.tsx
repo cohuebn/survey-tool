@@ -1,4 +1,5 @@
 import { FormLabel, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import clsx from "clsx";
 
 import { QuestionDefinitionProps } from "../question-definition-props";
 import styles from "../styles.module.css";
@@ -10,7 +11,7 @@ export function FreeFormEditor({
 }: QuestionDefinitionProps) {
   const options = ["short", "long"];
   return (
-    <div className={styles.labeledButtonGroup}>
+    <div className={clsx(styles.questionSubsection, styles.toggleButtonGroup)}>
       <FormLabel>Text Length</FormLabel>
       <ToggleButtonGroup
         aria-label="Text length"

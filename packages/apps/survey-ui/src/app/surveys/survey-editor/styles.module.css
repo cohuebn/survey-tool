@@ -53,28 +53,34 @@ div.questionFields {
   gap: 1rem;
 }
 
+div.questionSubsection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+div.questionSubsection label {
+  font-size: 0.8rem;
+}
+
 div.minMaxRatingContainer {
   display: flex;
   gap: 1rem;
 }
 
-.labeledButtonGroup {
-  display: flex;
-  flex-direction: column;
-}
-
-.labeledButtonGroup label {
-  font-size: 0.8rem;
-  margin-bottom: 0.2rem;
-}
-
-.labeledButtonGroup button {
-  min-width: 5rem;
+.toggleButtonGroup button {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .optionsButtons {
   display: flex;
   justify-content: flex-end;
+}
+
+div.optionsSection {
+  display: flex;
+  gap: 1rem;
 }
 
 div.questionOption {
