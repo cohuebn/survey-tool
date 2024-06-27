@@ -1,5 +1,5 @@
 import { arrayMove } from "@dnd-kit/sortable";
-import { isNullOrUndefined, isObject } from "@survey-tool/core";
+import { isObject } from "@survey-tool/core";
 
 import { createNewEditableQuestion } from "../questions";
 import {
