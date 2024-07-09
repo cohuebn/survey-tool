@@ -43,6 +43,7 @@ export function QuestionOption({
       </IconButton>
       <TextField
         key={index}
+        multiline
         fullWidth
         placeholder={`Option ${index + 1}`}
         label={`Option ${index + 1}`}

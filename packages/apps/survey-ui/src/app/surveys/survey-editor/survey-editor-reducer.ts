@@ -30,15 +30,6 @@ function updateSummary<TFieldKey extends keyof EditableSummary>(
   return { ...editorState, summary: updatedSummary };
 }
 
-// function updateSummaryAndValidateState<TFieldKey extends keyof EditableSummary>(
-//   editorState: SurveyEditorState,
-//   field: TFieldKey,
-//   value: EditableSummary[TFieldKey],
-// ): ValidatedSurveyEditorState {
-//   const updatedSummary = getUpdatedSummary(editorState.summary, field, value);
-//   return getValidatedSurveyState({ ...editorState, summary: updatedSummary });
-// }
-
 function updateQuestion<TFieldKey extends keyof EditableQuestion>(
   editorState: SurveyEditorState,
   questionId: string,

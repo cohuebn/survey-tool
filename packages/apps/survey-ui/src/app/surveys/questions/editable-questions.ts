@@ -10,5 +10,6 @@ export function createNewEditableQuestion(
     id: uuidV4(),
     surveyId,
     sortOrder,
+    definition: {},
   };
 }

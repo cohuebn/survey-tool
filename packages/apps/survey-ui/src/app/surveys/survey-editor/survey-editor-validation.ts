@@ -30,22 +30,32 @@ function isOptionsList(options: unknown | undefined): options is string[] {
   return Array.isArray(options);
 }
 
-function getBaseQuestionErrors(
+function getTopLevelQuestionErrors(
   question: EditableQuestion,
   index: number,
 ): SurveyValidationError[] {
-  return isNullOrUndefined(emptyToUndefined(question.question))
-    ? [
-        new SurveyValidationError(
-          `Question #${index + 1} is missing question text`,
-        ),
-      ]
-    : [];
+  const requiredFieldMap = {
+    "question type": question.questionType?.questionType,
+    "question text": question.question,
+  };
+  return Object.entries(requiredFieldMap).reduce<SurveyValidationError[]>(
+    (errors, [fieldName, fieldValue]) => {
+      return isNullOrUndefined(emptyToUndefined(fieldValue))
+        ? [
+            ...errors,
+            new SurveyValidationError(
+              `Question #${index + 1} is missing ${fieldName}`,
+            ),
+          ]
+        : errors;
+    },
+    [],
+  );
 }
 
-function getQuestionOptionErrors(
+function getEmptyOptionErrors(
   question: EditableQuestion,
-  index: number,
+  questionIndex: number,
 ): SurveyValidationError[] {
   const options = question.definition?.options;
   if (!isOptionsList(options)) return [];
@@ -56,7 +66,7 @@ function getQuestionOptionErrors(
         ? [
             ..._emptyOptions,
             new SurveyValidationError(
-              `Question #${index + 1} contains empty option #${optionIndex + 1}`,
+              `Question #${questionIndex + 1} contains empty option #${optionIndex + 1}`,
             ),
           ]
         : _emptyOptions;
@@ -65,12 +75,19 @@ function getQuestionOptionErrors(
   );
 }
 
+function getQuestionOptionErrors(
+  question: EditableQuestion,
+  index: number,
+): SurveyValidationError[] {
+  return getEmptyOptionErrors(question, index);
+}
+
 function getQuestionErrors(
   question: EditableQuestion,
   index: number,
 ): SurveyValidationError[] {
   return [
-    ...getBaseQuestionErrors(question, index),
+    ...getTopLevelQuestionErrors(question, index),
     ...getQuestionOptionErrors(question, index),
   ];
 }
