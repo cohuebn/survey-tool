@@ -3,7 +3,7 @@ import { isObject } from "@survey-tool/core";
 
 import { createNewEditableQuestion } from "../questions";
 import {
-  EditablePermissions,
+  SurveyPermissions,
   EditableQuestion,
   EditableSummary,
   SurveyEditorAction,
@@ -206,10 +206,10 @@ function getUnknownActionError(action: unknown) {
   );
 }
 
-function updatePermissions<TFieldKey extends keyof EditablePermissions>(
+function updatePermissions<TFieldKey extends keyof SurveyPermissions>(
   editorState: SurveyEditorState,
   field: TFieldKey,
-  value: EditablePermissions[TFieldKey],
+  value: SurveyPermissions[TFieldKey],
 ): SurveyEditorState {
   const updatedPermissions = { ...editorState.permissions, [field]: value };
   return { ...editorState, permissions: updatedPermissions };

@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { useSupabaseDb } from "../../supabase/use-supabase-db";
+import { SurveyPermissions } from "../types";
 
 import { getPermissionsForSurvey } from "./database";
-import { SurveyPermissions } from "../types";
 
 export function useSurveyPermissions(surveyId: string) {
   const [permissionsLoaded, setPermissionsLoaded] = useState(false);

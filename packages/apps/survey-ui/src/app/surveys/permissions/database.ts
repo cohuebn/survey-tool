@@ -1,4 +1,4 @@
-import { toCamel } from "convert-keys";
+import { toCamel, toSnake } from "convert-keys";
 
 import { asPostgresError } from "../../errors/postgres-error";
 import { AppSupabaseClient } from "../../supabase/supabase-context";
@@ -24,4 +24,19 @@ export async function getPermissionsForSurvey(
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);
   return dbResult.data ? toCamel<SurveyPermissions>(dbResult.data) : null;
+}
+
+function toDbPermission(permissions: SurveyPermissions): DBSurveyPermissions {
+  return toSnake<DBSurveyPermissions>(permissions);
+}
+
+export async function savePermissionsForSurvey(
+  dbClient: AppSupabaseClient,
+  permissions: SurveyPermissions,
+) {
+  const dbPermissions = toDbPermission(permissions);
+  const dbResult = await dbClient
+    .from("survey_permissions")
+    .upsert(dbPermissions);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
 }

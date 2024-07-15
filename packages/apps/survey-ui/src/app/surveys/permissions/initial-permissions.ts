@@ -1,10 +1,11 @@
 import { v4 as uuidV4 } from "uuid";
 
-import { EditablePermissions } from "../types";
+import { SurveyPermissions } from "../types";
 
-export function getInitialPermissions(): EditablePermissions {
+export function getInitialPermissions(surveyId: string): SurveyPermissions {
   return {
     id: uuidV4(),
+    surveyId,
     isPublic: true,
     restrictByLocation: false,
     restrictByDepartment: false,

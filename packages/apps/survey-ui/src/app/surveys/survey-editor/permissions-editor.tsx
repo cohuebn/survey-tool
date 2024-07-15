@@ -1,12 +1,12 @@
 import { Dispatch } from "react";
 import { FormControlLabel, Switch } from "@mui/material";
 
-import { EditablePermissions, SurveyEditorAction } from "../types";
+import { SurveyEditorAction, SurveyPermissions } from "../types";
 
 import styles from "./styles.module.css";
 
 type PermissionsEditorProps = {
-  permissions: EditablePermissions;
+  permissions: SurveyPermissions;
   dispatch: Dispatch<SurveyEditorAction>;
 };
 
