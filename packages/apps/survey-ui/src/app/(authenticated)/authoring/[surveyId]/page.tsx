@@ -11,8 +11,12 @@ import {
   SurveySummary,
   useSurveySummary,
   useQuestions,
+  EditablePermissions,
+  SurveyPermissions,
 } from "../../../surveys";
 import { useUserId } from "../../../auth/use-user-id";
+import { useSurveyPermissions } from "../../../surveys/permissions/use-permissions";
+import { getInitialPermissions } from "../../../surveys/permissions/initial-permissions";
 
 type PageProps = {
   params: { surveyId: string };
@@ -21,13 +25,21 @@ type PageProps = {
 function getExistingSurveyState(
   summary: SurveySummary,
   questions: Question[],
+  permissions: EditablePermissions,
 ): SurveyEditorState {
   return {
     surveyId: summary.id,
     summary,
     questions,
+    permissions,
     deletedQuestionIds: [],
   };
+}
+
+function getDefaultedPermissions(
+  permissions: SurveyPermissions | null,
+): EditablePermissions {
+  return permissions ?? getInitialPermissions();
 }
 
 export default function Page({ params }: PageProps) {
@@ -35,13 +47,25 @@ export default function Page({ params }: PageProps) {
   const userId = useUserId();
   const { surveySummary, surveySummaryLoaded } = useSurveySummary(surveyId);
   const { questions, questionsLoaded } = useQuestions(surveyId);
+  const { permissions, permissionsLoaded } = useSurveyPermissions(surveyId);
   const initialEditorState = useMemo(
     () =>
-      surveySummary ? getExistingSurveyState(surveySummary, questions) : null,
-    [surveySummary, questions],
+      surveySummary
+        ? getExistingSurveyState(
+            surveySummary,
+            questions,
+            getDefaultedPermissions(permissions),
+          )
+        : null,
+    [surveySummary, questions, permissions],
   );
 
-  if (!userId || !surveySummaryLoaded || !questionsLoaded) {
+  if (
+    !userId ||
+    !surveySummaryLoaded ||
+    !questionsLoaded ||
+    !permissionsLoaded
+  ) {
     return <CircularProgress />;
   }
 

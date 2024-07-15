@@ -18,6 +18,7 @@ import { surveyEditorReducer } from "./survey-editor-reducer";
 import { SurveySummaryEditor } from "./survey-summary-editor";
 import { getValidatedSurveyState } from "./survey-editor-validation";
 import { QuestionsEditor } from "./questions-editor";
+import { PermissionsEditor } from "./permissions-editor";
 
 type SurveyEditorProps = {
   initialEditorState: SurveyEditorState;
@@ -124,7 +125,10 @@ export function SurveyEditor(props: SurveyEditorProps) {
         tabValue="permissions"
         selectedValue={selectedTab}
       >
-        Permissions placeholder
+        <PermissionsEditor
+          permissions={editorState.permissions}
+          dispatch={dispatch}
+        />
       </TabPanel>
       <div className={layoutStyles.bottomActions}>
         <Fab

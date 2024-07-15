@@ -4,6 +4,13 @@ import { SurveyValidationError } from "./survey-validation-error";
 
 export type EditableSummary = Partial<SurveySummary>;
 
+export type EditablePermissions = {
+  id: string;
+  isPublic: boolean;
+  restrictByLocation: boolean;
+  restrictByDepartment: boolean;
+};
+
 /**
  * The state of a survey that is being edited; this state represents
  * a survey that might be invalid or incomplete (editing in progress)
@@ -12,6 +19,7 @@ export type SurveyEditorState = {
   surveyId: string;
   summary: EditableSummary;
   questions: EditableQuestion[];
+  permissions: EditablePermissions;
   deletedQuestionIds: string[];
 };
 

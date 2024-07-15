@@ -48,4 +48,16 @@ export type SurveyEditorAction =
       questionId: string;
       option: string;
       targetIndex: number;
+    }
+  | {
+      type: "setIsPublic";
+      value: boolean;
+    }
+  | {
+      type: "setRestrictByLocation";
+      value: boolean;
+    }
+  | {
+      type: "setRestrictByDepartment";
+      value: boolean;
     };

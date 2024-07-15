@@ -3,6 +3,7 @@ import { isObject } from "@survey-tool/core";
 
 import { createNewEditableQuestion } from "../questions";
 import {
+  EditablePermissions,
   EditableQuestion,
   EditableSummary,
   SurveyEditorAction,
@@ -205,6 +206,30 @@ function getUnknownActionError(action: unknown) {
   );
 }
 
+function updatePermissions<TFieldKey extends keyof EditablePermissions>(
+  editorState: SurveyEditorState,
+  field: TFieldKey,
+  value: EditablePermissions[TFieldKey],
+): SurveyEditorState {
+  const updatedPermissions = { ...editorState.permissions, [field]: value };
+  return { ...editorState, permissions: updatedPermissions };
+}
+
+function updateIsPublicPermission(
+  editorState: SurveyEditorState,
+  value: boolean,
+): SurveyEditorState {
+  return {
+    ...editorState,
+    permissions: {
+      ...editorState.permissions,
+      isPublic: value,
+      restrictByLocation: false,
+      restrictByDepartment: false,
+    },
+  };
+}
+
 function getUnvalidatedSurveyState(
   editorState: ValidatedSurveyEditorState,
   action: SurveyEditorAction,
@@ -273,6 +298,16 @@ function getUnvalidatedSurveyState(
         action.questionId,
         action.option,
         action.targetIndex,
+      );
+    case "setIsPublic":
+      return updateIsPublicPermission(editorState, action.value);
+    case "setRestrictByLocation":
+      return updatePermissions(editorState, "restrictByLocation", action.value);
+    case "setRestrictByDepartment":
+      return updatePermissions(
+        editorState,
+        "restrictByDepartment",
+        action.value,
       );
     default:
       throw getUnknownActionError(action);

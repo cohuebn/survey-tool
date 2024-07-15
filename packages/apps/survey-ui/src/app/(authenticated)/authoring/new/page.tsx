@@ -7,6 +7,7 @@ import { useMemo } from "react";
 
 import { SurveyEditor, SurveyEditorState } from "../../../surveys";
 import { useUserId } from "../../../auth/use-user-id";
+import { getInitialPermissions } from "../../../surveys/permissions/initial-permissions";
 
 function getNewSurveyState(ownerId: string): SurveyEditorState {
   const surveyId = uuidV4();
@@ -14,6 +15,7 @@ function getNewSurveyState(ownerId: string): SurveyEditorState {
     surveyId,
     summary: { id: surveyId, ownerId },
     questions: [],
+    permissions: getInitialPermissions(),
     deletedQuestionIds: [],
   };
 }
