@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import { FormControlLabel, Switch } from "@mui/material";
+import { Autocomplete, FormControlLabel, Switch } from "@mui/material";
 
 import { SurveyEditorAction, SurveyPermissions } from "../types";
 
@@ -35,16 +35,20 @@ export function PermissionsEditor({
         }
         label="Public survey?"
       />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={permissions.restrictByLocation}
-            disabled={permissions.isPublic}
-            onChange={(event) => onSwitchChange("setRestrictByLocation", event)}
-          />
-        }
-        label="Restrict by location?"
-      />
+      <div className={styles.toggledPermissions}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={permissions.restrictByLocation}
+              disabled={permissions.isPublic}
+              onChange={(event) =>
+                onSwitchChange("setRestrictByLocation", event)
+              }
+            />
+          }
+          label="Restrict by location?"
+        />
+      </div>
       <FormControlLabel
         control={
           <Switch

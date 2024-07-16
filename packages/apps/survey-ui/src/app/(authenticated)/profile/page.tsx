@@ -20,7 +20,6 @@ import { isNullOrUndefined } from "@survey-tool/core";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
-import { useHospitalSearch } from "../../hospitals/use-hospital-search";
 import { departmentOptions } from "../../hospitals/department-options";
 import { employmentTypeOptions } from "../../hospitals/employment-type-options";
 import {
@@ -34,6 +33,7 @@ import { parseError } from "../../errors/parse-error";
 import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
 import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profiles";
+import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
 
 import styles from "./styles.module.css";
 
@@ -42,24 +42,11 @@ export default function Page() {
   const userProfile = useUserProfile(userId);
   const { userValidation, userValidationLoaded } =
     useUserValidationData(userId);
-  const [locationSearchText, setLocationSearchText] = useState<string>("");
   const [location, setLocation] = useState<Hospital | null>(null);
   const [department, setDepartment] = useState<string | null>(null);
   const [employmentType, setEmploymentType] = useState<string | null>(null);
   const [npiNumber, setNpiNumber] = useState<string | null>(null);
-  const { loading: hospitalsLoading, searchResults: matchedHospitals } =
-    useHospitalSearch(locationSearchText, 500);
   const [initialHospital, setInitialHospital] = useState<Hospital | null>(null);
-
-  const hospitalOptions = useMemo(() => {
-    if (!initialHospital) return matchedHospitals;
-    const currentHospitalInOptions = matchedHospitals
-      .map((hospital) => hospital.id)
-      .includes(initialHospital?.id);
-    return currentHospitalInOptions
-      ? matchedHospitals
-      : [...matchedHospitals, initialHospital];
-  }, [matchedHospitals, initialHospital]);
 
   const dbClient = useSupabaseDb();
 
@@ -197,46 +184,10 @@ export default function Page() {
       <Typography className={layoutStyles.centeredText} variant="h2">
         Your profile
       </Typography>
-      <Autocomplete
+      <HospitalAutocomplete
+        initialHospital={initialHospital}
         className={styles.input}
-        autoFocus
-        loading={hospitalsLoading}
-        options={hospitalOptions}
-        noOptionsText={
-          location ? "No matching locations found" : "Search for your location"
-        }
-        filterOptions={(x) => x} // Use only the server-side filter
-        getOptionLabel={(option) =>
-          typeof option === "string" ? option : option.name
-        }
-        value={location}
-        onChange={(_, newValue) => {
-          setLocation(newValue);
-          setLocationSearchText(newValue?.name ?? "");
-        }}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Location"
-            value={locationSearchText}
-            onChange={(event) => setLocationSearchText(event.target.value)}
-          />
-        )}
-        renderOption={(props, option) => {
-          return (
-            <li
-              {...props}
-              key={`${option.id}-${option.city}-${option.state}`}
-              className={styles.locationAutocompleteOption}
-            >
-              {option.name}
-              <Typography variant="caption">
-                {option.city}, {option.state}
-              </Typography>
-            </li>
-          );
-        }}
+        onChange={setLocation}
       />
       <Autocomplete
         freeSolo
