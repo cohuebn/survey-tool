@@ -1,5 +1,7 @@
 import { SnakeCasedPropertiesDeep } from "type-fest";
 
+import { Hospital } from "../../hospitals/types";
+
 export type SurveyPermissions = {
   id: string;
   surveyId: string;
@@ -9,3 +11,13 @@ export type SurveyPermissions = {
 };
 
 export type DBSurveyPermissions = SnakeCasedPropertiesDeep<SurveyPermissions>;
+
+export type SurveyAllowedLocation = {
+  id: string;
+  surveyId: string;
+  locationId: string;
+  hospital: Hospital;
+};
+
+export type DBSurveyAllowedLocation =
+  SnakeCasedPropertiesDeep<SurveyAllowedLocation>;

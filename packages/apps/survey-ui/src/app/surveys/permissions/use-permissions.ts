@@ -1,30 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { useSupabaseDb } from "../../supabase/use-supabase-db";
-import { SurveyPermissions } from "../types";
+import { useSupabaseQueryResult } from "../../supabase/use-supabase-query-result";
 
 import { getPermissionsForSurvey } from "./database";
 
 export function useSurveyPermissions(surveyId: string) {
-  const [permissionsLoaded, setPermissionsLoaded] = useState(false);
-  const [permissions, setPermissions] = useState<SurveyPermissions | null>(
+  const { data, dataLoaded } = useSupabaseQueryResult(
+    getPermissionsForSurvey,
+    [surveyId],
     null,
   );
-  const supabaseDb = useSupabaseDb();
 
-  useEffect(() => {
-    if (permissionsLoaded) return;
-    if (!supabaseDb.clientLoaded) return;
-
-    getPermissionsForSurvey(supabaseDb.client, surveyId).then(
-      (loadedPermissions) => {
-        setPermissions(loadedPermissions);
-        setPermissionsLoaded(true);
-      },
-    );
-  }, [supabaseDb, surveyId, permissionsLoaded]);
-
-  return { permissions, permissionsLoaded };
+  return { permissions: data, permissionsLoaded: dataLoaded };
 }

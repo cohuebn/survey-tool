@@ -7,12 +7,14 @@ import styles from "./hospital-autocomplete.module.css";
 
 type HospitalAutocompleteProps = {
   className?: string;
+  label?: string;
   initialHospital?: Hospital | null;
   onChange?: (hospital: Hospital | null) => void;
 };
 
 export function HospitalAutocomplete({
   className,
+  label,
   initialHospital,
   onChange,
 }: HospitalAutocompleteProps) {
@@ -58,7 +60,7 @@ export function HospitalAutocomplete({
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Location"
+          label={label ?? "Location"}
           value={locationSearchText}
           onChange={(event) => setLocationSearchText(event.target.value)}
         />

@@ -1,7 +1,8 @@
 import { Dispatch } from "react";
-import { Autocomplete, FormControlLabel, Switch } from "@mui/material";
+import { FormControlLabel, Switch } from "@mui/material";
 
 import { SurveyEditorAction, SurveyPermissions } from "../types";
+import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
 
 import styles from "./styles.module.css";
 
@@ -48,6 +49,7 @@ export function PermissionsEditor({
           }
           label="Restrict by location?"
         />
+        <HospitalAutocomplete label="Add a location" />
       </div>
       <FormControlLabel
         control={
