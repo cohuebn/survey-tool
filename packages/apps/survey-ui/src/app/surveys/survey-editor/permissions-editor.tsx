@@ -5,6 +5,7 @@ import { SurveyEditorAction, SurveyPermissionDetails } from "../types";
 
 import styles from "./styles.module.css";
 import { RestrictByLocationEditor } from "./restrict-by-location-editor";
+import { RestrictByDepartmentEditor } from "./restrict-by-department-editor";
 
 type PermissionsEditorProps = {
   permissions: SurveyPermissionDetails;
@@ -56,18 +57,26 @@ export function PermissionsEditor({
           />
         ) : null}
       </div>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={permissions.permissions.restrictByDepartment}
-            disabled={permissions.permissions.isPublic}
-            onChange={(event) =>
-              onSwitchChange("setRestrictByDepartment", event)
-            }
+      <div className={styles.toggledPermissions}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={permissions.permissions.restrictByDepartment}
+              disabled={permissions.permissions.isPublic}
+              onChange={(event) =>
+                onSwitchChange("setRestrictByDepartment", event)
+              }
+            />
+          }
+          label="Restrict by department?"
+        />
+        {permissions.permissions.restrictByDepartment ? (
+          <RestrictByDepartmentEditor
+            departmentRestrictions={permissions.departmentRestrictions}
+            dispatch={dispatch}
           />
-        }
-        label="Restrict by department?"
-      />
+        ) : null}
+      </div>
     </form>
   );
 }

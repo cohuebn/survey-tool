@@ -70,4 +70,12 @@ export type SurveyEditorAction =
   | {
       type: "removeAllowedLocation";
       value: string;
+    }
+  | {
+      type: "addAllowedDepartment";
+      value: string;
+    }
+  | {
+      type: "removeAllowedDepartment";
+      value: string;
     };

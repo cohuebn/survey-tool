@@ -11,10 +11,12 @@ import {
   ValidatedSurveyEditorState,
   SurveyPermissionDetails,
   SurveyAllowedLocation,
+  SurveyAllowedDepartment,
 } from "../types";
 import { getOptions } from "../questions/definitions";
 import { Hospital } from "../../hospitals/types";
 import { toSurveyAllowedLocation } from "../permissions/survey-allowed-locations";
+import { toSurveyAllowedDepartment } from "../permissions/survey-allowed-departments";
 
 import { getValidatedSurveyState } from "./survey-editor-validation";
 
@@ -269,6 +271,53 @@ function removeAllowedLocation(
   };
 }
 
+function updateDepartmentRestrictions(
+  editorState: SurveyEditorState,
+  allowedDepartments: SurveyAllowedDepartment[],
+): SurveyEditorState {
+  return {
+    ...editorState,
+    permissions: {
+      ...editorState.permissions,
+      departmentRestrictions: allowedDepartments,
+    },
+  };
+}
+
+function addAllowedDepartment(
+  editorState: SurveyEditorState,
+  department: string,
+): SurveyEditorState {
+  const existingDepartments = editorState.permissions.departmentRestrictions;
+  const departmentAlreadyIncluded = existingDepartments.some(
+    (x) => x.department === department,
+  );
+  if (departmentAlreadyIncluded) return editorState;
+
+  const allowedDepartment = toSurveyAllowedDepartment(
+    editorState.surveyId,
+    department,
+  );
+  return updateDepartmentRestrictions(editorState, [
+    ...existingDepartments,
+    allowedDepartment,
+  ]);
+}
+
+function removeAllowedDepartment(
+  editorState: SurveyEditorState,
+  departmentId: string,
+): SurveyEditorState {
+  const existingDepartments = editorState.permissions.departmentRestrictions;
+  const updatedDepartments = existingDepartments.filter(
+    (department) => department.id !== departmentId,
+  );
+  return {
+    ...updateDepartmentRestrictions(editorState, updatedDepartments),
+    deletedDepartmentRestrictionIds: [departmentId],
+  };
+}
+
 function getUnvalidatedSurveyState(
   editorState: ValidatedSurveyEditorState,
   action: SurveyEditorAction,
@@ -356,6 +405,10 @@ function getUnvalidatedSurveyState(
       return addAllowedLocation(editorState, action.value);
     case "removeAllowedLocation":
       return removeAllowedLocation(editorState, action.value);
+    case "addAllowedDepartment":
+      return addAllowedDepartment(editorState, action.value);
+    case "removeAllowedDepartment":
+      return removeAllowedDepartment(editorState, action.value);
     default:
       throw getUnknownActionError(action);
   }

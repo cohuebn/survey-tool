@@ -18,5 +18,6 @@ export function getInitialPermissionDetails(
   return {
     permissions: getInitialPermissions(surveyId),
     locationRestrictions: [],
+    departmentRestrictions: [],
   };
 }

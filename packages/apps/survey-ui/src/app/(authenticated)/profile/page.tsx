@@ -20,7 +20,6 @@ import { isNullOrUndefined } from "@survey-tool/core";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
-import { departmentOptions } from "../../hospitals/department-options";
 import { employmentTypeOptions } from "../../hospitals/employment-type-options";
 import {
   DBUserValidation,
@@ -34,6 +33,7 @@ import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
 import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profiles";
 import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
+import { DepartmentAutocomplete } from "../../hospitals/department-autocomplete";
 
 import styles from "./styles.module.css";
 
@@ -189,17 +189,10 @@ export default function Page() {
         className={styles.input}
         onChange={setLocation}
       />
-      <Autocomplete
-        freeSolo
+      <DepartmentAutocomplete
         className={styles.input}
-        autoFocus
-        autoHighlight
-        options={departmentOptions}
-        value={department}
-        onChange={(_, newValue) => setDepartment(newValue)}
-        renderInput={(params) => (
-          <TextField {...params} label="Department" value={department} />
-        )}
+        initialDepartment={department}
+        onChange={setDepartment}
       />
       <Autocomplete
         value={employmentType}

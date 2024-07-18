@@ -16,6 +16,7 @@ export type SurveyEditorState = {
   deletedQuestionIds: string[];
   permissions: SurveyPermissionDetails;
   deletedLocationRestrictionIds: string[];
+  deletedDepartmentRestrictionIds: string[];
 };
 
 export type ValidSurveyEditorState = Omit<

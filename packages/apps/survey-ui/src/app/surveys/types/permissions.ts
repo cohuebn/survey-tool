@@ -30,4 +30,14 @@ export type DBSavableSurveyAllowedLocation = Omit<
 export type SurveyPermissionDetails = {
   permissions: SurveyPermissions;
   locationRestrictions: SurveyAllowedLocation[];
+  departmentRestrictions: SurveyAllowedDepartment[];
 };
+
+export type SurveyAllowedDepartment = {
+  id: string;
+  surveyId: string;
+  department: string;
+};
+
+export type DBSurveyAllowedDepartment =
+  SnakeCasedPropertiesDeep<SurveyAllowedDepartment>;

@@ -32,6 +32,7 @@ function getExistingSurveyState(
     deletedQuestionIds: [],
     permissions,
     deletedLocationRestrictionIds: [],
+    deletedDepartmentRestrictionIds: [],
   };
 }
 

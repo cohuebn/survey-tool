@@ -1,6 +1,8 @@
 import { AppSupabaseClient } from "../../supabase/supabase-context";
 import {
+  deleteDepartmentRestrictionsForSurvey,
   deleteLocationRestrictionsForSurvey,
+  saveDepartmentRestrictionsForSurvey,
   saveLocationRestrictionsForSurvey,
   savePermissionsForSurvey,
 } from "../permissions/database";
@@ -29,6 +31,14 @@ export async function saveEditedSurvey(
     deleteLocationRestrictionsForSurvey(
       dbClient,
       editorState.deletedLocationRestrictionIds,
+    ),
+    saveDepartmentRestrictionsForSurvey(
+      dbClient,
+      editorState.permissions.departmentRestrictions,
+    ),
+    deleteDepartmentRestrictionsForSurvey(
+      dbClient,
+      editorState.deletedDepartmentRestrictionIds,
     ),
   ]);
 }

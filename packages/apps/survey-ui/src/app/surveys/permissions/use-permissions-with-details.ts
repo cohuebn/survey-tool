@@ -7,6 +7,7 @@ import { SurveyPermissionDetails } from "../types";
 import { useLocationRestrictions } from "./use-location-restrictions";
 import { useSurveyPermissions } from "./use-permissions";
 import { getInitialPermissions } from "./initial-permissions";
+import { useDepartmentRestrictions } from "./use-department-restrictions";
 
 type UseSurveyPermissionsWithDetailsResults = {
   permissionDetailsLoaded: boolean;
@@ -22,15 +23,25 @@ export function useSurveyPermissionsWithDetails(
   }, [permissions, surveyId]);
   const { locationRestrictions, locationRestrictionsLoaded } =
     useLocationRestrictions(surveyId);
+  const { departmentRestrictions, departmentRestrictionsLoaded } =
+    useDepartmentRestrictions(surveyId);
   const permissionDetailsLoaded = useMemo(
-    () => permissionsLoaded && locationRestrictionsLoaded,
-    [permissionsLoaded, locationRestrictionsLoaded],
+    () =>
+      permissionsLoaded &&
+      locationRestrictionsLoaded &&
+      departmentRestrictionsLoaded,
+    [
+      permissionsLoaded,
+      locationRestrictionsLoaded,
+      departmentRestrictionsLoaded,
+    ],
   );
   return {
     permissionDetailsLoaded,
     permissionDetails: {
       permissions: initialPermissions,
       locationRestrictions,
+      departmentRestrictions,
     },
   };
 }

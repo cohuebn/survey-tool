@@ -18,6 +18,7 @@ function getNewSurveyState(ownerId: string): SurveyEditorState {
     deletedQuestionIds: [],
     permissions: getInitialPermissionDetails(surveyId),
     deletedLocationRestrictionIds: [],
+    deletedDepartmentRestrictionIds: [],
   };
 }
 

@@ -4,7 +4,9 @@ import { asPostgresError } from "../../errors/postgres-error";
 import { AppSupabaseClient } from "../../supabase/supabase-context";
 import {
   DBSavableSurveyAllowedLocation,
+  DBSurveyAllowedDepartment,
   DBSurveyPermissions,
+  SurveyAllowedDepartment,
   SurveyAllowedLocation,
   SurveyPermissions,
 } from "../types";
@@ -90,5 +92,48 @@ export async function deleteLocationRestrictionsForSurvey(
     .from("survey_location_restrictions")
     .delete()
     .in("id", locationRestrictionIds);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+}
+
+export async function getDepartmentRestrictionsForSurvey(
+  dbClient: AppSupabaseClient,
+  surveyId: string,
+): Promise<SurveyAllowedDepartment[]> {
+  const query = dbClient
+    .from("survey_department_restrictions")
+    .select(
+      `
+      id,
+      survey_id,
+      department
+    `,
+    )
+    .eq("survey_id", surveyId);
+  const dbResult = await query;
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+  return dbResult.data.map(toCamel<SurveyAllowedDepartment>);
+}
+
+export async function saveDepartmentRestrictionsForSurvey(
+  dbClient: AppSupabaseClient,
+  departmentRestrictions: SurveyAllowedDepartment[],
+): Promise<void> {
+  const dbDepartments: DBSurveyAllowedDepartment[] = departmentRestrictions.map(
+    toSnake<DBSurveyAllowedDepartment>,
+  );
+  const dbResult = await dbClient
+    .from("survey_department_restrictions")
+    .upsert(dbDepartments);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+}
+
+export async function deleteDepartmentRestrictionsForSurvey(
+  dbClient: AppSupabaseClient,
+  departmentRestrictionIds: string[],
+) {
+  const dbResult = await dbClient
+    .from("survey_department_restrictions")
+    .delete()
+    .in("id", departmentRestrictionIds);
   if (dbResult.error) throw asPostgresError(dbResult.error);
 }
