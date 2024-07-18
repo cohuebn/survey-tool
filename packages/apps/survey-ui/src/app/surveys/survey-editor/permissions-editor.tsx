@@ -1,13 +1,13 @@
 import { Dispatch } from "react";
 import { FormControlLabel, Switch } from "@mui/material";
 
-import { SurveyEditorAction, SurveyPermissions } from "../types";
-import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
+import { SurveyEditorAction, SurveyPermissionDetails } from "../types";
 
 import styles from "./styles.module.css";
+import { RestrictByLocationEditor } from "./restrict-by-location-editor";
 
 type PermissionsEditorProps = {
-  permissions: SurveyPermissions;
+  permissions: SurveyPermissionDetails;
   dispatch: Dispatch<SurveyEditorAction>;
 };
 
@@ -30,7 +30,7 @@ export function PermissionsEditor({
       <FormControlLabel
         control={
           <Switch
-            checked={permissions.isPublic}
+            checked={permissions.permissions.isPublic}
             onChange={(event) => onSwitchChange("setIsPublic", event)}
           />
         }
@@ -40,8 +40,8 @@ export function PermissionsEditor({
         <FormControlLabel
           control={
             <Switch
-              checked={permissions.restrictByLocation}
-              disabled={permissions.isPublic}
+              checked={permissions.permissions.restrictByLocation}
+              disabled={permissions.permissions.isPublic}
               onChange={(event) =>
                 onSwitchChange("setRestrictByLocation", event)
               }
@@ -49,13 +49,18 @@ export function PermissionsEditor({
           }
           label="Restrict by location?"
         />
-        <HospitalAutocomplete label="Add a location" />
+        {permissions.permissions.restrictByLocation ? (
+          <RestrictByLocationEditor
+            locationRestrictions={permissions.locationRestrictions}
+            dispatch={dispatch}
+          />
+        ) : null}
       </div>
       <FormControlLabel
         control={
           <Switch
-            checked={permissions.restrictByDepartment}
-            disabled={permissions.isPublic}
+            checked={permissions.permissions.restrictByDepartment}
+            disabled={permissions.permissions.isPublic}
             onChange={(event) =>
               onSwitchChange("setRestrictByDepartment", event)
             }

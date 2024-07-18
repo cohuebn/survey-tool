@@ -1,3 +1,5 @@
+import { Hospital } from "../../hospitals/types";
+
 import { EditableSummary } from "./authoring";
 import { EditableQuestion, QuestionType } from "./questions";
 
@@ -60,4 +62,12 @@ export type SurveyEditorAction =
   | {
       type: "setRestrictByDepartment";
       value: boolean;
+    }
+  | {
+      type: "addAllowedLocation";
+      value: Hospital;
+    }
+  | {
+      type: "removeAllowedLocation";
+      value: string;
     };

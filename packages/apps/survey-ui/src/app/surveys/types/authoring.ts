@@ -1,4 +1,4 @@
-import { SurveyPermissions } from "./permissions";
+import { SurveyPermissionDetails } from "./permissions";
 import { EditableQuestion, Question } from "./questions";
 import { SurveySummary } from "./summaries";
 import { SurveyValidationError } from "./survey-validation-error";
@@ -13,8 +13,9 @@ export type SurveyEditorState = {
   surveyId: string;
   summary: EditableSummary;
   questions: EditableQuestion[];
-  permissions: SurveyPermissions;
   deletedQuestionIds: string[];
+  permissions: SurveyPermissionDetails;
+  deletedLocationRestrictionIds: string[];
 };
 
 export type ValidSurveyEditorState = Omit<

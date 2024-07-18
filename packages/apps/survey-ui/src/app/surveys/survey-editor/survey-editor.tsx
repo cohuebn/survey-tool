@@ -22,6 +22,7 @@ import { PermissionsEditor } from "./permissions-editor";
 
 type SurveyEditorProps = {
   initialEditorState: SurveyEditorState;
+  isNewSurvey?: boolean;
 };
 
 /** Props to ensure tabs are accessible */
@@ -87,11 +88,13 @@ export function SurveyEditor(props: SurveyEditorProps) {
         <Tabs variant="fullWidth" value={selectedTab} onChange={onTabChange}>
           <Tab label="Summary" value="summary" {...a11yTabProps("summary")} />
           <Tab
+            disabled={props.isNewSurvey}
             label="Questions"
             value="questions"
             {...a11yTabProps("questions")}
           />
           <Tab
+            disabled={props.isNewSurvey}
             label="Permissions"
             value="permissions"
             {...a11yTabProps("permissions")}

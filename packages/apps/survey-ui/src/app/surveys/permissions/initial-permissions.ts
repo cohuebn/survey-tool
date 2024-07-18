@@ -1,6 +1,6 @@
 import { v4 as uuidV4 } from "uuid";
 
-import { SurveyPermissions } from "../types";
+import { SurveyPermissionDetails, SurveyPermissions } from "../types";
 
 export function getInitialPermissions(surveyId: string): SurveyPermissions {
   return {
@@ -9,5 +9,14 @@ export function getInitialPermissions(surveyId: string): SurveyPermissions {
     isPublic: true,
     restrictByLocation: false,
     restrictByDepartment: false,
+  };
+}
+
+export function getInitialPermissionDetails(
+  surveyId: string,
+): SurveyPermissionDetails {
+  return {
+    permissions: getInitialPermissions(surveyId),
+    locationRestrictions: [],
   };
 }

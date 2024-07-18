@@ -7,7 +7,7 @@ import { useMemo } from "react";
 
 import { SurveyEditor, SurveyEditorState } from "../../../surveys";
 import { useUserId } from "../../../auth/use-user-id";
-import { getInitialPermissions } from "../../../surveys/permissions/initial-permissions";
+import { getInitialPermissionDetails } from "../../../surveys/permissions/initial-permissions";
 
 function getNewSurveyState(ownerId: string): SurveyEditorState {
   const surveyId = uuidV4();
@@ -15,8 +15,9 @@ function getNewSurveyState(ownerId: string): SurveyEditorState {
     surveyId,
     summary: { id: surveyId, ownerId },
     questions: [],
-    permissions: getInitialPermissions(surveyId),
     deletedQuestionIds: [],
+    permissions: getInitialPermissionDetails(surveyId),
+    deletedLocationRestrictionIds: [],
   };
 }
 
@@ -38,7 +39,10 @@ export default function Page() {
   return (
     <div className={layoutStyles.centeredContent}>
       <Typography variant="h2">Create a new survey</Typography>
-      <SurveyEditor initialEditorState={initialEditorState} />
+      <SurveyEditor
+        initialEditorState={initialEditorState}
+        isNewSurvey={true}
+      />
     </div>
   );
 }

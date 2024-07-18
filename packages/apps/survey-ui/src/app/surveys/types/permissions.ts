@@ -16,8 +16,18 @@ export type SurveyAllowedLocation = {
   id: string;
   surveyId: string;
   locationId: string;
-  hospital: Hospital;
+  location: Hospital;
 };
 
 export type DBSurveyAllowedLocation =
   SnakeCasedPropertiesDeep<SurveyAllowedLocation>;
+
+export type DBSavableSurveyAllowedLocation = Omit<
+  SnakeCasedPropertiesDeep<SurveyAllowedLocation>,
+  "location"
+>;
+
+export type SurveyPermissionDetails = {
+  permissions: SurveyPermissions;
+  locationRestrictions: SurveyAllowedLocation[];
+};

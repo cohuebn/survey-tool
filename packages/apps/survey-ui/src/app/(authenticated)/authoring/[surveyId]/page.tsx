@@ -11,11 +11,10 @@ import {
   SurveySummary,
   useSurveySummary,
   useQuestions,
-  SurveyPermissions,
+  SurveyPermissionDetails,
 } from "../../../surveys";
 import { useUserId } from "../../../auth/use-user-id";
-import { useSurveyPermissions } from "../../../surveys/permissions/use-permissions";
-import { getInitialPermissions } from "../../../surveys/permissions/initial-permissions";
+import { useSurveyPermissionsWithDetails } from "../../../surveys/permissions/use-permissions-with-details";
 
 type PageProps = {
   params: { surveyId: string };
@@ -24,14 +23,15 @@ type PageProps = {
 function getExistingSurveyState(
   summary: SurveySummary,
   questions: Question[],
-  permissions: SurveyPermissions,
+  permissions: SurveyPermissionDetails,
 ): SurveyEditorState {
   return {
     surveyId: summary.id,
     summary,
     questions,
-    permissions,
     deletedQuestionIds: [],
+    permissions,
+    deletedLocationRestrictionIds: [],
   };
 }
 
@@ -40,23 +40,21 @@ export default function Page({ params }: PageProps) {
   const userId = useUserId();
   const { surveySummary, surveySummaryLoaded } = useSurveySummary(surveyId);
   const { questions, questionsLoaded } = useQuestions(surveyId);
-  const { permissions, permissionsLoaded } = useSurveyPermissions(surveyId);
-  const initialPermissions = useMemo(() => {
-    return permissions ?? getInitialPermissions(surveyId);
-  }, [permissions, surveyId]);
+  const { permissionDetails, permissionDetailsLoaded } =
+    useSurveyPermissionsWithDetails(surveyId);
   const initialEditorState = useMemo(
     () =>
       surveySummary
-        ? getExistingSurveyState(surveySummary, questions, initialPermissions)
+        ? getExistingSurveyState(surveySummary, questions, permissionDetails)
         : null,
-    [surveySummary, questions, initialPermissions],
+    [surveySummary, questions, permissionDetails],
   );
 
   if (
     !userId ||
     !surveySummaryLoaded ||
     !questionsLoaded ||
-    !permissionsLoaded
+    !permissionDetailsLoaded
   ) {
     return <CircularProgress />;
   }

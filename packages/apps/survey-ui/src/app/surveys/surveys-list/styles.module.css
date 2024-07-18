@@ -1,11 +1,8 @@
-.surveyCard {
-  min-width: 40rem;
-}
-
-@media screen and (max-width: 768px) {
-  .surveyCard {
-    min-width: 0;
-  }
+.surveysList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .surveyCard p.surveyCardTitle {

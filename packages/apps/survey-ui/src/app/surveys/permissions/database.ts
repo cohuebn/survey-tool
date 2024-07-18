@@ -3,6 +3,7 @@ import { toCamel, toSnake } from "convert-keys";
 import { asPostgresError } from "../../errors/postgres-error";
 import { AppSupabaseClient } from "../../supabase/supabase-context";
 import {
+  DBSavableSurveyAllowedLocation,
   DBSurveyPermissions,
   SurveyAllowedLocation,
   SurveyPermissions,
@@ -63,4 +64,31 @@ export async function getLocationRestrictionsForSurvey(
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);
   return dbResult.data.map(toCamel<SurveyAllowedLocation>);
+}
+
+export async function saveLocationRestrictionsForSurvey(
+  dbClient: AppSupabaseClient,
+  locationRestrictions: SurveyAllowedLocation[],
+): Promise<void> {
+  const dbLocations: DBSavableSurveyAllowedLocation[] =
+    locationRestrictions.map((location) => ({
+      id: location.id,
+      survey_id: location.surveyId,
+      location_id: location.locationId,
+    }));
+  const dbResult = await dbClient
+    .from("survey_location_restrictions")
+    .upsert(dbLocations);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+}
+
+export async function deleteLocationRestrictionsForSurvey(
+  dbClient: AppSupabaseClient,
+  locationRestrictionIds: string[],
+) {
+  const dbResult = await dbClient
+    .from("survey_location_restrictions")
+    .delete()
+    .in("id", locationRestrictionIds);
+  if (dbResult.error) throw asPostgresError(dbResult.error);
 }

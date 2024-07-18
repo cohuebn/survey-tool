@@ -1,5 +1,9 @@
 import { AppSupabaseClient } from "../../supabase/supabase-context";
-import { savePermissionsForSurvey } from "../permissions/database";
+import {
+  deleteLocationRestrictionsForSurvey,
+  saveLocationRestrictionsForSurvey,
+  savePermissionsForSurvey,
+} from "../permissions/database";
 import { deleteQuestions, saveQuestions } from "../questions";
 import { saveSurveySummary } from "../summaries";
 import { ValidatedSurveyEditorState } from "../types";
@@ -17,6 +21,14 @@ export async function saveEditedSurvey(
   await Promise.all([
     saveQuestions(dbClient, editorState.questions),
     deleteQuestions(dbClient, editorState.deletedQuestionIds),
-    savePermissionsForSurvey(dbClient, editorState.permissions),
+    savePermissionsForSurvey(dbClient, editorState.permissions.permissions),
+    saveLocationRestrictionsForSurvey(
+      dbClient,
+      editorState.permissions.locationRestrictions,
+    ),
+    deleteLocationRestrictionsForSurvey(
+      dbClient,
+      editorState.deletedLocationRestrictionIds,
+    ),
   ]);
 }

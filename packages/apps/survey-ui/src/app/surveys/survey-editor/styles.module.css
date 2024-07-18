@@ -94,3 +94,8 @@ div.toggledPermissions {
   flex-direction: column;
   gap: 1rem;
 }
+
+div.selectedChips {
+  display: flex;
+  gap: 0.5rem;
+}

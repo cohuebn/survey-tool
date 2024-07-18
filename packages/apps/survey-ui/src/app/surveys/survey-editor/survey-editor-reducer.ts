@@ -9,8 +9,12 @@ import {
   SurveyEditorAction,
   SurveyEditorState,
   ValidatedSurveyEditorState,
+  SurveyPermissionDetails,
+  SurveyAllowedLocation,
 } from "../types";
 import { getOptions } from "../questions/definitions";
+import { Hospital } from "../../hospitals/types";
+import { toSurveyAllowedLocation } from "../permissions/survey-allowed-locations";
 
 import { getValidatedSurveyState } from "./survey-editor-validation";
 
@@ -206,27 +210,62 @@ function getUnknownActionError(action: unknown) {
   );
 }
 
-function updatePermissions<TFieldKey extends keyof SurveyPermissions>(
+function patchPermissions(
   editorState: SurveyEditorState,
-  field: TFieldKey,
-  value: SurveyPermissions[TFieldKey],
+  patch: Partial<SurveyPermissions>,
 ): SurveyEditorState {
-  const updatedPermissions = { ...editorState.permissions, [field]: value };
+  const existingPermissionDetails = editorState.permissions;
+  const updatedPermissions: SurveyPermissionDetails = {
+    ...existingPermissionDetails,
+    permissions: { ...existingPermissionDetails.permissions, ...patch },
+  };
   return { ...editorState, permissions: updatedPermissions };
 }
 
-function updateIsPublicPermission(
+function updateLocationRestrictions(
   editorState: SurveyEditorState,
-  value: boolean,
-): SurveyEditorState {
+  allowedLocations: SurveyAllowedLocation[],
+) {
   return {
     ...editorState,
     permissions: {
       ...editorState.permissions,
-      isPublic: value,
-      restrictByLocation: false,
-      restrictByDepartment: false,
+      locationRestrictions: allowedLocations,
     },
+  };
+}
+
+function addAllowedLocation(
+  editorState: SurveyEditorState,
+  hospital: Hospital,
+): SurveyEditorState {
+  const existingLocations = editorState.permissions.locationRestrictions;
+  const locationAlreadyIncluded = existingLocations.some(
+    (x) => x.location.id === hospital.id,
+  );
+  if (locationAlreadyIncluded) return editorState;
+
+  const allowedLocation = toSurveyAllowedLocation(
+    editorState.surveyId,
+    hospital,
+  );
+  return updateLocationRestrictions(editorState, [
+    ...existingLocations,
+    allowedLocation,
+  ]);
+}
+
+function removeAllowedLocation(
+  editorState: SurveyEditorState,
+  locationId: string,
+): SurveyEditorState {
+  const existingLocations = editorState.permissions.locationRestrictions;
+  const updatedLocations = existingLocations.filter(
+    (location) => location.id !== locationId,
+  );
+  return {
+    ...updateLocationRestrictions(editorState, updatedLocations),
+    deletedLocationRestrictionIds: [locationId],
   };
 }
 
@@ -300,15 +339,23 @@ function getUnvalidatedSurveyState(
         action.targetIndex,
       );
     case "setIsPublic":
-      return updateIsPublicPermission(editorState, action.value);
+      return patchPermissions(editorState, {
+        isPublic: action.value,
+        restrictByLocation: false,
+        restrictByDepartment: false,
+      });
     case "setRestrictByLocation":
-      return updatePermissions(editorState, "restrictByLocation", action.value);
+      return patchPermissions(editorState, {
+        restrictByLocation: action.value,
+      });
     case "setRestrictByDepartment":
-      return updatePermissions(
-        editorState,
-        "restrictByDepartment",
-        action.value,
-      );
+      return patchPermissions(editorState, {
+        restrictByDepartment: action.value,
+      });
+    case "addAllowedLocation":
+      return addAllowedLocation(editorState, action.value);
+    case "removeAllowedLocation":
+      return removeAllowedLocation(editorState, action.value);
     default:
       throw getUnknownActionError(action);
   }
