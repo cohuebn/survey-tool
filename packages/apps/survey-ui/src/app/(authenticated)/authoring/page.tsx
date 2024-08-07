@@ -30,7 +30,11 @@ export default function Authoring() {
         <Typography variant="h2">Surveys</Typography>
 
         {surveySummaries.length ? (
-          <SurveysList surveys={surveySummaries} />
+          <SurveysList
+            surveys={surveySummaries}
+            linkText="Author survey"
+            linkBuilder={(surveyId) => `/authoring/${surveyId}`}
+          />
         ) : (
           <Alert severity="info">
             No surveys found that you can author. If you believe you should have

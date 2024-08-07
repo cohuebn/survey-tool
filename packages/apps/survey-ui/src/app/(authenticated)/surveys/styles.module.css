@@ -1,0 +1,12 @@
+.searchSurveys {
+  width: 35rem;
+}
+
+.surveySummary {
+  gap: 0;
+  color: var(--subheading-color);
+}
+
+h3.surveySubtitle {
+  font-weight: 300;
+}

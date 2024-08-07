@@ -9,5 +9,6 @@ body {
   --secondary-color: #47b2a6;
   --hover-highlight: #f5f5f5;
   --danger-color: #ed6b04;
+  --subheading-color: #4f616e;
   --divider-color: rgba(0, 0, 0, 0.12);
 }

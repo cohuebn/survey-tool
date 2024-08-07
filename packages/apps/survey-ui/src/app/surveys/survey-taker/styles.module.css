@@ -1,0 +1,8 @@
+h2.surveyTitle {
+  font-size: 2rem;
+}
+
+.questionsNavigation {
+  position: fixed;
+  bottom: 1rem;
+}

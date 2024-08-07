@@ -45,7 +45,7 @@ export function Navbar({ userScopes }: NavbarProps) {
           </li>
           <li>
             <NavbarLink
-              href="/home"
+              href="/surveys"
               icon={<Quiz fontSize="large" />}
               text="Take surveys"
             />

@@ -12,9 +12,11 @@ import styles from "./styles.module.css";
 
 type SurveyCardProps = {
   survey: SurveySummary;
+  linkBuilder: (surveyId: string) => string;
+  linkText: string;
 };
 
-export function SurveyCard({ survey }: SurveyCardProps) {
+export function SurveyCard({ survey, linkBuilder, linkText }: SurveyCardProps) {
   return (
     <Card className={styles.surveyCard}>
       <CardContent>
@@ -33,7 +35,7 @@ export function SurveyCard({ survey }: SurveyCardProps) {
         ) : null}
       </CardContent>
       <CardActions>
-        <Button href={`/authoring/${survey.id}`}>Author survey</Button>
+        <Button href={linkBuilder(survey.id)}>{linkText}</Button>
       </CardActions>
     </Card>
   );
