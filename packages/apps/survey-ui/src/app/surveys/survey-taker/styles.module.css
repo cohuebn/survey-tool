@@ -1,8 +1,18 @@
 h2.surveyTitle {
   font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+div.questionContent {
+  max-width: 40rem;
+  padding-bottom: 2rem;
 }
 
 .questionsNavigation {
   position: fixed;
   bottom: 1rem;
+}
+
+div.buttons {
+  margin-top: 1rem;
 }

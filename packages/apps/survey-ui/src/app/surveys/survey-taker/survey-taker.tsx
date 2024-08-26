@@ -1,14 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { Button, Pagination, Typography } from "@mui/material";
+import { ChangeEvent, useReducer } from "react";
+import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
-import layoutStyles from "@styles/layout.module.css";
-import { Pagination, Typography } from "@mui/material";
-import { ChangeEvent, useState } from "react";
 
 import { Question, SurveySummary } from "../types";
 
 import styles from "./styles.module.css";
+import { surveyTakerReducer } from "./survey-taker-reducer";
+import { renderQuestion } from "./question-types";
 
 type SurveyTakerProps = {
   surveyId: string;
@@ -23,33 +24,57 @@ export function SurveyTaker({
   questions,
   initialQuestionNumber,
 }: SurveyTakerProps) {
-  const router = useRouter();
-  const [activeQuestionNumber, setActiveQuestionNumber] = useState(
-    initialQuestionNumber,
-  );
-  const activeQuestion = questions[activeQuestionNumber - 1];
-
-  const handleQuestionChange = (questionNumber: number) => {
-    setActiveQuestionNumber(questionNumber);
-    router.push(`/surveys/${surveyId}/questions/${questionNumber}`);
-  };
+  const [surveyTakerState, dispatch] = useReducer(surveyTakerReducer, {
+    surveyId,
+    questions,
+    summary,
+    activeQuestionNumber: initialQuestionNumber,
+    activeQuestion: questions[initialQuestionNumber - 1],
+    answers: {},
+    onQuestionChange: (questionNumber: number) => {
+      window.history.pushState(
+        null,
+        "",
+        `/surveys/${surveyId}/questions/${questionNumber}`,
+      );
+    },
+  });
 
   return (
-    <div className={clsx(layoutStyles.centeredContent)}>
-      <Typography className={styles.surveyTitle} variant="h2">
-        {summary.name}
-      </Typography>
-      <Typography variant="body1">{activeQuestion.question}</Typography>
+    <>
+      <div className={styles.questionContent}>
+        <Typography className={styles.surveyTitle} variant="h2">
+          {summary.name}
+        </Typography>
+        {renderQuestion({
+          question: surveyTakerState.activeQuestion,
+          dispatch,
+        })}
+        <div className={clsx(buttonStyles.buttons, styles.buttons)}>
+          <Button
+            className={buttonStyles.button}
+            variant="contained"
+            onClick={() =>
+              dispatch({
+                type: "setQuestionNumber",
+                value: surveyTakerState.activeQuestionNumber + 1,
+              })
+            }
+          >
+            Next
+          </Button>
+        </div>
+      </div>
       <div className={styles.questionsNavigation}>
         <Pagination
           count={questions.length}
-          page={activeQuestionNumber}
+          page={surveyTakerState.activeQuestionNumber}
           color="primary"
           onChange={(_: ChangeEvent<unknown>, questionNumber: number) =>
-            handleQuestionChange(questionNumber)
+            dispatch({ type: "setQuestionNumber", value: questionNumber })
           }
         />
       </div>
-    </div>
+    </>
   );
 }

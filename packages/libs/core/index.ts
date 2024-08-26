@@ -5,3 +5,4 @@ export * from "./logger";
 export * from "./lazy-load";
 export * from "./objects";
 export * from "./to-hashed-key";
+export * from "./range";

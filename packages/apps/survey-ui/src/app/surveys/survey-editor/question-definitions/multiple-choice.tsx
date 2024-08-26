@@ -2,6 +2,7 @@ import { FormLabel, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import { QuestionDefinitionProps } from "../question-definition-props";
 import styles from "../styles.module.css";
+import { MultipleChoiceType } from "../../types";
 
 import { QuestionOptions } from "./question-options";
 
@@ -10,9 +11,12 @@ export function MultipleChoiceEditor({
   definition,
   dispatch,
 }: QuestionDefinitionProps) {
-  const singleAnswer = "singleAnswer";
-  const multipleAnswers = "multipleAnswers";
-  const multipleChoiceTypes = [singleAnswer, multipleAnswers];
+  const singleAnswer: MultipleChoiceType = "singleAnswer";
+  const multipleAnswers: MultipleChoiceType = "multipleAnswers";
+  const multipleChoiceTypes: MultipleChoiceType[] = [
+    singleAnswer,
+    multipleAnswers,
+  ];
 
   return (
     <>
