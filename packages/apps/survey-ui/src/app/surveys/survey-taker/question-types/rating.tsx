@@ -1,5 +1,5 @@
 import { Slider, Typography } from "@mui/material";
-import { range } from "@survey-tool/core";
+import { isNullOrUndefined, range } from "@survey-tool/core";
 import { useMemo } from "react";
 
 import { QuestionProps } from "./types";
@@ -11,7 +11,11 @@ function getAllowedRating(value: unknown, defaultValue: number): number {
   return typeof value === "number" ? value : defaultValue;
 }
 
-export function RatingQuestion({ question }: QuestionProps) {
+export function RatingQuestion({
+  question,
+  activeAnswer,
+  dispatch,
+}: QuestionProps) {
   const minimumRating = getAllowedRating(
     question.definition.minRating,
     defaultMinimumRating,
@@ -28,6 +32,22 @@ export function RatingQuestion({ question }: QuestionProps) {
       })),
     [minimumRating, maximumRating],
   );
+  const numericAnswer = useMemo(() => {
+    if (isNullOrUndefined(activeAnswer)) return minimumRating;
+    if (typeof activeAnswer === "string") return parseInt(activeAnswer, 10);
+    return activeAnswer;
+  }, [activeAnswer, minimumRating]);
+
+  const handleAnswerChange = (_: unknown, value: number | number[]) => {
+    if (Array.isArray(value))
+      throw new Error(`Did not expect an array of numbers`);
+    dispatch({
+      type: "changeAnswer",
+      questionId: question.id,
+      answer: `${value}`,
+    });
+  };
+
   return (
     <div>
       <Typography variant="body1">{question.question}</Typography>
@@ -36,6 +56,8 @@ export function RatingQuestion({ question }: QuestionProps) {
         max={maximumRating}
         step={1}
         marks={ratingRange}
+        value={numericAnswer}
+        onChange={handleAnswerChange}
       />
     </div>
   );

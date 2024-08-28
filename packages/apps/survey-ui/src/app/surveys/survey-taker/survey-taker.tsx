@@ -30,6 +30,7 @@ export function SurveyTaker({
     summary,
     activeQuestionNumber: initialQuestionNumber,
     activeQuestion: questions[initialQuestionNumber - 1],
+    activeAnswer: null,
     answers: {},
     onQuestionChange: (questionNumber: number) => {
       window.history.pushState(
@@ -48,6 +49,7 @@ export function SurveyTaker({
         </Typography>
         {renderQuestion({
           question: surveyTakerState.activeQuestion,
+          activeAnswer: surveyTakerState.activeAnswer,
           dispatch,
         })}
         <div className={clsx(buttonStyles.buttons, styles.buttons)}>

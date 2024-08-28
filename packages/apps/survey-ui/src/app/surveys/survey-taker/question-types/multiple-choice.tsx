@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { isNullOrUndefined } from "@survey-tool/core";
+import { ChangeEvent } from "react";
 
 import {
   Question,
@@ -24,17 +25,33 @@ function assertMultipleChoiceQuestion(
   }
 }
 
-type MultipleChoiceQuestionProps = {
+type MultipleChoiceQuestionProps = Omit<QuestionProps, "question"> & {
   question: MultipleChoiceQuestionModel;
 };
 
-function SingleAllowedAnswers({ question }: MultipleChoiceQuestionProps) {
+function SingleAllowedAnswers({
+  question,
+  activeAnswer,
+  dispatch,
+}: MultipleChoiceQuestionProps) {
+  const handleAnswerChange = (event: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "changeAnswer",
+      questionId: question.id,
+      answer: event.target.value,
+    });
+  };
+
   return (
-    <RadioGroup name="question-options">
+    <RadioGroup
+      name={`question-${question.id}-options`}
+      value={activeAnswer ?? ""}
+      onChange={handleAnswerChange}
+    >
       {question.definition.options.map((option, index) => (
         <FormControlLabel
-          key={`question-option-${index}`}
-          value={index}
+          key={`question-${question.id}-option-${index}`}
+          value={option}
           control={<Radio />}
           label={option}
         />
@@ -48,7 +65,7 @@ function MultipleAllowedAnswers({ question }: MultipleChoiceQuestionProps) {
     <FormGroup>
       {question.definition.options.map((option, index) => (
         <FormControlLabel
-          key={`question-option-${index}`}
+          key={`question-${question.id}-option-${index}`}
           control={<Checkbox value={index} />}
           label={option}
         />
@@ -57,23 +74,31 @@ function MultipleAllowedAnswers({ question }: MultipleChoiceQuestionProps) {
   );
 }
 
-export function MultipleChoiceQuestion({ question }: QuestionProps) {
+export function MultipleChoiceQuestion({
+  question,
+  dispatch,
+  activeAnswer,
+}: QuestionProps) {
   assertMultipleChoiceQuestion(question);
-  const { options, multipleChoiceType } = question.definition;
+  const { multipleChoiceType } = question.definition;
 
   return (
     <div>
       <Typography variant="body1">{question.question}</Typography>
       <FormControl>
-        <RadioGroup
-          aria-labelledby="question"
-          defaultValue={options[0]}
-          name="question-options"
-        >
+        <RadioGroup aria-labelledby="question" name={`${question.id}-options`}>
           {multipleChoiceType === "multipleAnswers" ? (
-            <MultipleAllowedAnswers question={question} />
+            <MultipleAllowedAnswers
+              question={question}
+              dispatch={dispatch}
+              activeAnswer={activeAnswer}
+            />
           ) : (
-            <SingleAllowedAnswers question={question} />
+            <SingleAllowedAnswers
+              question={question}
+              dispatch={dispatch}
+              activeAnswer={activeAnswer}
+            />
           )}
         </RadioGroup>
       </FormControl>

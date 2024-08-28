@@ -1,38 +1,29 @@
 "use client";
 
 import { CircularProgress, TextField } from "@mui/material";
-import { useMemo, useState } from "react";
-import layoutStyles from "@styles/layout.module.css";
+import { useState } from "react";
 import { Search } from "@mui/icons-material";
+import layoutStyles from "@styles/layout.module.css";
+import searchSurveysStyles from "@styles/search-surveys.module.css";
 
 import { useSurveySummaries } from "../../surveys";
 import { SurveysList } from "../../surveys/surveys-list/surveys-list";
-
-import styles from "./styles.module.css";
+import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Page() {
   const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({});
   const [surveySearch, setSurveySearch] = useState<string>("");
-
-  // TODO - move this to the API, add more sophisticated permissioned search
-  const filteredSurveySummaries = useMemo(() => {
-    const normalizedSearch = surveySearch.toLowerCase();
-    if (!normalizedSearch) return surveySummaries;
-
-    return surveySummaries.filter(
-      (survey) =>
-        survey.name.toLocaleLowerCase().includes(normalizedSearch) ||
-        survey.subtitle?.toLocaleLowerCase().includes(normalizedSearch) ||
-        survey.description?.toLocaleLowerCase().includes(normalizedSearch),
-    );
-  }, [surveySummaries, surveySearch]);
+  const filteredSurveySummaries = useFilteredSurveys(
+    surveySummaries,
+    surveySearch,
+  );
 
   if (!surveySummariesLoaded) return <CircularProgress />;
 
   return (
     <div className={layoutStyles.centeredContent}>
       <TextField
-        className={styles.searchSurveys}
+        className={searchSurveysStyles.searchSurveys}
         type="text"
         value={surveySearch}
         onChange={(e) => setSurveySearch(e.target.value)}

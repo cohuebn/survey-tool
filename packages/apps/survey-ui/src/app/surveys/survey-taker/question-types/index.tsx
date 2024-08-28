@@ -9,17 +9,18 @@ import { FreeFormQuestion } from "./free-form";
 
 type RenderQuestionProps = {
   question: Question;
+  activeAnswer: string | number | null;
   dispatch: Dispatch<SurveyTakerAction>;
 };
 
-export function renderQuestion({ question, dispatch }: RenderQuestionProps) {
-  switch (question.questionType.questionType) {
+export function renderQuestion(renderQuestionProps: RenderQuestionProps) {
+  switch (renderQuestionProps.question.questionType.questionType) {
     case "Rating":
-      return <RatingQuestion question={question} dispatch={dispatch} />;
+      return <RatingQuestion {...renderQuestionProps} />;
     case "Free-form":
-      return <FreeFormQuestion question={question} dispatch={dispatch} />;
+      return <FreeFormQuestion {...renderQuestionProps} />;
     case "Multiple choice":
-      return <MultipleChoiceQuestion question={question} dispatch={dispatch} />;
+      return <MultipleChoiceQuestion {...renderQuestionProps} />;
     default:
       return <></>;
   }

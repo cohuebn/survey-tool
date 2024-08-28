@@ -1,14 +1,22 @@
 "use client";
 
-import { Alert, CircularProgress, Fab, Typography } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Fab,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useMemo, useState } from "react";
+import { Create, Search } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
 import buttonStyles from "@styles/buttons.module.css";
-import { useMemo } from "react";
-import { Create } from "@mui/icons-material";
+import searchSurveysStyles from "@styles/search-surveys.module.css";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useSurveySummaries, SurveyFilters, SurveysList } from "../../surveys";
 import { FileIssueLink } from "../../issues/file-issue-link";
+import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Authoring() {
   const { userId } = useUserSession();
@@ -19,6 +27,11 @@ export default function Authoring() {
   );
   const { surveySummaries, surveySummariesLoaded } =
     useSurveySummaries(surveyFilters);
+  const [surveySearch, setSurveySearch] = useState<string>("");
+  const filteredSurveySummaries = useFilteredSurveys(
+    surveySummaries,
+    surveySearch,
+  );
 
   if (!surveySummariesLoaded) {
     return <CircularProgress />;
@@ -29,7 +42,17 @@ export default function Authoring() {
       <div className={layoutStyles.centeredContent}>
         <Typography variant="h2">Surveys</Typography>
 
-        {surveySummaries.length ? (
+        <TextField
+          className={searchSurveysStyles.searchSurveys}
+          type="text"
+          value={surveySearch}
+          onChange={(e) => setSurveySearch(e.target.value)}
+          placeholder="Search surveys"
+          InputProps={{
+            endAdornment: <Search />,
+          }}
+        />
+        {filteredSurveySummaries.length ? (
           <SurveysList
             surveys={surveySummaries}
             linkText="Author survey"
@@ -38,7 +61,8 @@ export default function Authoring() {
         ) : (
           <Alert severity="info">
             No surveys found that you can author. If you believe you should have
-            surveys available, please <FileIssueLink />
+            surveys available, please <FileIssueLink />. If you have entered
+            search text above, check your search text.
           </Alert>
         )}
       </div>

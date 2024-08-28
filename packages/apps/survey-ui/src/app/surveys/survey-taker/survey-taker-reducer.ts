@@ -7,6 +7,7 @@ type SurveyTakerReducerState = {
   summary: SurveySummary;
   activeQuestionNumber: number;
   activeQuestion: Question;
+  activeAnswer: string | number | null;
   answers: Record<string, string>;
   onQuestionChange: (questionNumber: number) => void;
 };
@@ -16,10 +17,27 @@ function changeQuestion(
   questionNumber: number,
 ) {
   state.onQuestionChange(questionNumber);
+  const activeQuestion = state.questions[questionNumber - 1];
   return {
     ...state,
     activeQuestionNumber: questionNumber,
-    activeQuestion: state.questions[questionNumber - 1],
+    activeQuestion,
+    activeAnswer: state.answers[activeQuestion.id],
+  };
+}
+
+function changeAnswer(
+  state: SurveyTakerReducerState,
+  questionId: string,
+  answer: string,
+) {
+  return {
+    ...state,
+    answers: {
+      ...state.answers,
+      [questionId]: answer,
+    },
+    activeAnswer: answer,
   };
 }
 
@@ -40,6 +58,9 @@ export function surveyTakerReducer(
         ...changeQuestion(state, nextQuestionNumber),
         answers: updatedAnswers,
       };
+    }
+    case "changeAnswer": {
+      return changeAnswer(state, action.questionId, action.answer);
     }
     default:
       return state;
