@@ -23,6 +23,11 @@
       "@styles/*": ["./src/app/styles/*"]
     }
   },
-  "include": ["./**/*", ".next/types/**/*.ts"],
+  "include": [
+    "./**/*",
+    ".next/types/**/*.ts",
+    "../../libs/hashing/hash-answer-id.test.ts",
+    "../../libs/hashing/hash-answer-id.ts"
+  ],
   "exclude": ["node_modules"]
 }

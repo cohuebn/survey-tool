@@ -8,6 +8,12 @@ div.questionContent {
   padding-bottom: 2rem;
 }
 
+@media screen and (min-width: 1200px) {
+  div.questionContent {
+    min-width: 30rem;
+  }
+}
+
 .questionsNavigation {
   position: fixed;
   bottom: 1rem;

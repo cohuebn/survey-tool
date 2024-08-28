@@ -10,11 +10,17 @@
 }
 
 button.button {
-  font-weight: 400;
-  font-size: 1.5rem;
-  width: 100%;
-  max-width: 15rem;
+  min-width: 8rem;
   text-transform: none;
+}
+
+@media screen and (min-width: 1200px) {
+  button.button {
+    width: 100%;
+    font-weight: 400;
+    font-size: 1.5rem;
+    width: 100%;
+  }
 }
 
 button.button.maxWidth20 {

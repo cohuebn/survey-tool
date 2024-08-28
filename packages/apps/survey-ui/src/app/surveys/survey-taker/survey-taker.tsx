@@ -1,9 +1,10 @@
 "use client";
 
 import { Button, Pagination, Typography } from "@mui/material";
-import { ChangeEvent, useReducer } from "react";
+import { ChangeEvent, useMemo, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
+import { toast } from "react-toastify";
 
 import { Question, SurveySummary } from "../types";
 
@@ -16,9 +17,11 @@ type SurveyTakerProps = {
   summary: SurveySummary;
   questions: Question[];
   initialQuestionNumber: number;
+  userId: string;
 };
 
 export function SurveyTaker({
+  userId,
   surveyId,
   summary,
   questions,
@@ -41,6 +44,24 @@ export function SurveyTaker({
     },
   });
 
+  // const hasAllAnswers = useMemo(() => {
+  //   const answeredQuestions = Object.keys(surveyTakerState.answers);
+  //   const allQuestions = surveyTakerState.questions.map((q) => q.id);
+  //   return answeredQuestions.length === allQuestions.length;
+  // }, [surveyTakerState.questions, surveyTakerState.answers]);
+
+  const submitSurvey = async () => {
+    await fetch(`/api/surveys/${surveyId}/answers`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ answers: surveyTakerState.answers, userId }),
+    });
+    toast.success("Survey submitted");
+  };
+
   return (
     <>
       <div className={styles.questionContent}>
@@ -54,6 +75,10 @@ export function SurveyTaker({
         })}
         <div className={clsx(buttonStyles.buttons, styles.buttons)}>
           <Button
+            disabled={
+              surveyTakerState.activeQuestionNumber ===
+              surveyTakerState.questions.length
+            }
             className={buttonStyles.button}
             variant="contained"
             onClick={() =>
@@ -64,6 +89,14 @@ export function SurveyTaker({
             }
           >
             Next
+          </Button>
+          <Button
+            className={buttonStyles.button}
+            // disabled={!hasAllAnswers}
+            variant="contained"
+            onClick={() => submitSurvey()}
+          >
+            Submit Survey
           </Button>
         </div>
       </div>

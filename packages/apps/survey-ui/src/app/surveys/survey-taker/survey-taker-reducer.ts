@@ -1,4 +1,4 @@
-import { Question, SurveySummary } from "../types";
+import { Answer, Question, SurveySummary } from "../types";
 import { SurveyTakerAction } from "../types/survey-taker-action";
 
 type SurveyTakerReducerState = {
@@ -7,8 +7,8 @@ type SurveyTakerReducerState = {
   summary: SurveySummary;
   activeQuestionNumber: number;
   activeQuestion: Question;
-  activeAnswer: string | number | null;
-  answers: Record<string, string>;
+  activeAnswer: string | string[] | null;
+  answers: Record<string, string | string[]>;
   onQuestionChange: (questionNumber: number) => void;
 };
 
@@ -29,14 +29,11 @@ function changeQuestion(
 function changeAnswer(
   state: SurveyTakerReducerState,
   questionId: string,
-  answer: string,
+  answer: Answer,
 ) {
   return {
     ...state,
-    answers: {
-      ...state.answers,
-      [questionId]: answer,
-    },
+    answers: { ...state.answers, [questionId]: answer },
     activeAnswer: answer,
   };
 }

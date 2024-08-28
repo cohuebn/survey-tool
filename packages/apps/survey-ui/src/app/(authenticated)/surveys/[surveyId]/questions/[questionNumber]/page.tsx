@@ -24,6 +24,7 @@ export default function Page({ params }: PageProps) {
   return (
     <div className={layoutStyles.centeredContent}>
       <SurveyTaker
+        userId={userId}
         surveyId={surveySummary?.id}
         summary={surveySummary}
         questions={questions}

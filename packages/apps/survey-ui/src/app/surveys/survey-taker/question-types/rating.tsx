@@ -2,7 +2,9 @@ import { Slider, Typography } from "@mui/material";
 import { isNullOrUndefined, range } from "@survey-tool/core";
 import { useMemo } from "react";
 
-import { QuestionProps } from "./types";
+import { QuestionProps } from "../../types/survey-taking";
+
+import { assertSingleAnswer } from "./answer-assertions";
 
 const defaultMinimumRating = 1;
 const defaultMaximumRating = 5;
@@ -16,6 +18,7 @@ export function RatingQuestion({
   activeAnswer,
   dispatch,
 }: QuestionProps) {
+  assertSingleAnswer(question.id, activeAnswer);
   const minimumRating = getAllowedRating(
     question.definition.minRating,
     defaultMinimumRating,

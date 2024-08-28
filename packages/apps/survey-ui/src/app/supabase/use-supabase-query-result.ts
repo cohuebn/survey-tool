@@ -49,8 +49,6 @@ export function useSupabaseQueryResult<
     if (dataLoaded) return;
     if (!supabaseDb.clientLoaded) return;
 
-    // eslint-disable-next-line no-console
-    console.log("Running query");
     boundDataRetriever().then((loadedLocationRestrictions) => {
       setData(loadedLocationRestrictions);
       setDataLoaded(true);

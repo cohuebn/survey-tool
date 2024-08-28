@@ -14,8 +14,9 @@ import {
   Question,
   MultipleChoiceQuestion as MultipleChoiceQuestionModel,
 } from "../../types";
+import { QuestionProps } from "../../types/survey-taking";
 
-import { QuestionProps } from "./types";
+import { assertMultiAnswer, assertSingleAnswer } from "./answer-assertions";
 
 function assertMultipleChoiceQuestion(
   question: Question,
@@ -34,6 +35,7 @@ function SingleAllowedAnswers({
   activeAnswer,
   dispatch,
 }: MultipleChoiceQuestionProps) {
+  assertSingleAnswer(question.id, activeAnswer);
   const handleAnswerChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "changeAnswer",
@@ -60,13 +62,39 @@ function SingleAllowedAnswers({
   );
 }
 
-function MultipleAllowedAnswers({ question }: MultipleChoiceQuestionProps) {
+function MultipleAllowedAnswers({
+  question,
+  activeAnswer,
+  dispatch,
+}: MultipleChoiceQuestionProps) {
+  assertMultiAnswer(question.id, activeAnswer);
+
+  const handleOptionChanged = (option: string, checked: boolean) => {
+    const originalAnswers = activeAnswer ?? [];
+    const updatedAnswers = checked
+      ? originalAnswers.concat(option)
+      : originalAnswers.filter((answer) => answer !== option);
+    dispatch({
+      type: "changeAnswer",
+      questionId: question.id,
+      answer: updatedAnswers,
+    });
+  };
+
   return (
     <FormGroup>
       {question.definition.options.map((option, index) => (
         <FormControlLabel
           key={`question-${question.id}-option-${index}`}
-          control={<Checkbox value={index} />}
+          control={
+            <Checkbox
+              value={option}
+              checked={(activeAnswer ?? []).includes(option)}
+              onChange={(event) =>
+                handleOptionChanged(option, event.target.checked)
+              }
+            />
+          }
           label={option}
         />
       ))}

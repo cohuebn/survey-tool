@@ -40,8 +40,6 @@ export default function Authoring() {
   return (
     <>
       <div className={layoutStyles.centeredContent}>
-        <Typography variant="h2">Surveys</Typography>
-
         <TextField
           className={searchSurveysStyles.searchSurveys}
           type="text"
