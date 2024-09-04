@@ -1,20 +1,13 @@
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  Radio,
-  RadioGroup,
-  Typography,
-} from "@mui/material";
+import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { isNullOrUndefined } from "@survey-tool/core";
-import { ChangeEvent } from "react";
 
 import {
   Question,
   MultipleChoiceQuestion as MultipleChoiceQuestionModel,
+  MultiAnswer,
 } from "../../types";
 import { QuestionProps } from "../../types/survey-taking";
+import styles from "../styles.module.css";
 
 import { assertMultiAnswer, assertSingleAnswer } from "./answer-assertions";
 
@@ -36,29 +29,35 @@ function SingleAllowedAnswers({
   dispatch,
 }: MultipleChoiceQuestionProps) {
   assertSingleAnswer(question.id, activeAnswer);
-  const handleAnswerChange = (event: ChangeEvent<HTMLInputElement>) => {
+
+  const handleAnswerChange = (value: string | string[]) => {
+    const parsedAnswer = Array.isArray(value) ? value[0] : value;
     dispatch({
       type: "changeAnswer",
       questionId: question.id,
-      answer: event.target.value,
+      answer: parsedAnswer,
     });
   };
 
   return (
-    <RadioGroup
-      name={`question-${question.id}-options`}
+    <ToggleButtonGroup
+      color="primary"
+      orientation="vertical"
+      exclusive
       value={activeAnswer ?? ""}
-      onChange={handleAnswerChange}
+      onChange={(_, value) => handleAnswerChange(value)}
+      fullWidth
     >
       {question.definition.options.map((option, index) => (
-        <FormControlLabel
+        <ToggleButton
           key={`question-${question.id}-option-${index}`}
           value={option}
-          control={<Radio />}
-          label={option}
-        />
+          className={styles.answerOption}
+        >
+          {option}
+        </ToggleButton>
       ))}
-    </RadioGroup>
+    </ToggleButtonGroup>
   );
 }
 
@@ -69,36 +68,32 @@ function MultipleAllowedAnswers({
 }: MultipleChoiceQuestionProps) {
   assertMultiAnswer(question.id, activeAnswer);
 
-  const handleOptionChanged = (option: string, checked: boolean) => {
-    const originalAnswers = activeAnswer ?? [];
-    const updatedAnswers = checked
-      ? originalAnswers.concat(option)
-      : originalAnswers.filter((answer) => answer !== option);
+  const handleAnswerChange = (answer: MultiAnswer) => {
     dispatch({
       type: "changeAnswer",
       questionId: question.id,
-      answer: updatedAnswers,
+      answer,
     });
   };
 
   return (
-    <FormGroup>
+    <ToggleButtonGroup
+      color="primary"
+      orientation="vertical"
+      value={activeAnswer ?? ""}
+      onChange={(_, value) => handleAnswerChange(value)}
+      fullWidth
+    >
       {question.definition.options.map((option, index) => (
-        <FormControlLabel
+        <ToggleButton
           key={`question-${question.id}-option-${index}`}
-          control={
-            <Checkbox
-              value={option}
-              checked={(activeAnswer ?? []).includes(option)}
-              onChange={(event) =>
-                handleOptionChanged(option, event.target.checked)
-              }
-            />
-          }
-          label={option}
-        />
+          value={option}
+          className={styles.answerOption}
+        >
+          {option}
+        </ToggleButton>
       ))}
-    </FormGroup>
+    </ToggleButtonGroup>
   );
 }
 
@@ -112,24 +107,22 @@ export function MultipleChoiceQuestion({
 
   return (
     <div>
-      <Typography variant="body1">{question.question}</Typography>
-      <FormControl>
-        <RadioGroup aria-labelledby="question" name={`${question.id}-options`}>
-          {multipleChoiceType === "multipleAnswers" ? (
-            <MultipleAllowedAnswers
-              question={question}
-              dispatch={dispatch}
-              activeAnswer={activeAnswer}
-            />
-          ) : (
-            <SingleAllowedAnswers
-              question={question}
-              dispatch={dispatch}
-              activeAnswer={activeAnswer}
-            />
-          )}
-        </RadioGroup>
-      </FormControl>
+      <Typography variant="body1" className={styles.question}>
+        {question.question}
+      </Typography>
+      {multipleChoiceType === "multipleAnswers" ? (
+        <MultipleAllowedAnswers
+          question={question}
+          dispatch={dispatch}
+          activeAnswer={activeAnswer}
+        />
+      ) : (
+        <SingleAllowedAnswers
+          question={question}
+          dispatch={dispatch}
+          activeAnswer={activeAnswer}
+        />
+      )}
     </div>
   );
 }

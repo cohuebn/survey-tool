@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Pagination, Typography } from "@mui/material";
-import { ChangeEvent, useMemo, useReducer } from "react";
+import { ChangeEvent, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
 import { toast } from "react-toastify";

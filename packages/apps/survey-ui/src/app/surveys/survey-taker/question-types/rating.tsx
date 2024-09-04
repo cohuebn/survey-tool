@@ -1,8 +1,11 @@
-import { Slider, Typography } from "@mui/material";
-import { isNullOrUndefined, range } from "@survey-tool/core";
+import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { range } from "@survey-tool/core";
 import { useMemo } from "react";
+import { Star } from "@mui/icons-material";
+import clsx from "clsx";
 
 import { QuestionProps } from "../../types/survey-taking";
+import styles from "../styles.module.css";
 
 import { assertSingleAnswer } from "./answer-assertions";
 
@@ -35,33 +38,59 @@ export function RatingQuestion({
       })),
     [minimumRating, maximumRating],
   );
-  const numericAnswer = useMemo(() => {
-    if (isNullOrUndefined(activeAnswer)) return minimumRating;
-    if (typeof activeAnswer === "string") return parseInt(activeAnswer, 10);
-    return activeAnswer;
-  }, [activeAnswer, minimumRating]);
 
-  const handleAnswerChange = (_: unknown, value: number | number[]) => {
-    if (Array.isArray(value))
-      throw new Error(`Did not expect an array of numbers`);
+  assertSingleAnswer(question.id, activeAnswer);
+
+  const handleAnswerChange = (value: string | string[]) => {
+    const parsedAnswer = Array.isArray(value) ? value[0] : value;
     dispatch({
       type: "changeAnswer",
       questionId: question.id,
-      answer: `${value}`,
+      answer: parsedAnswer,
     });
   };
 
+  function deriveStyle(value: number, maxValue: number) {
+    const distanceFromMax = (maxValue - value) / maxValue;
+    const hue = ((1 - distanceFromMax) * 120).toString(10);
+    const hslColor = `hsl(${hue},100%,60%)`;
+    return { color: hslColor };
+  }
+
   return (
     <div>
-      <Typography variant="body1">{question.question}</Typography>
-      <Slider
-        min={minimumRating}
-        max={maximumRating}
-        step={1}
-        marks={ratingRange}
-        value={numericAnswer}
-        onChange={handleAnswerChange}
-      />
+      <Typography variant="body1" className={styles.question}>
+        {question.question}
+      </Typography>
+      <ToggleButtonGroup
+        color="primary"
+        orientation="vertical"
+        exclusive
+        value={activeAnswer ?? ""}
+        onChange={(_, value) => handleAnswerChange(value)}
+        fullWidth
+      >
+        {ratingRange.map((option, index) => (
+          <>
+            <ToggleButton
+              key={`question-${question.id}-option-${index}`}
+              value={option.label}
+              className={styles.answerOption}
+            >
+              <span
+                className={clsx(styles.centeredContent, styles.maximizeSize)}
+              >
+                {option.label}
+              </span>
+              <span
+                className={clsx(styles.centeredContent, styles.minimizeSize)}
+              >
+                <Star style={deriveStyle(option.value, maximumRating)} />
+              </span>
+            </ToggleButton>
+          </>
+        ))}
+      </ToggleButtonGroup>
     </div>
   );
 }

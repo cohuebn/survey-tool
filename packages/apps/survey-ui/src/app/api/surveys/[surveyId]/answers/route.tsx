@@ -33,6 +33,6 @@ export async function POST(
   );
   const savableAnswers = await getSavableAnswers(userId, surveyId, answers);
   // TODO - remove this trace
-  logger.trace({ savableAnswers }, "REMOVE ME");
+  logger.info({ savableAnswers }, "REMOVE ME");
   return Response.json({});
 }

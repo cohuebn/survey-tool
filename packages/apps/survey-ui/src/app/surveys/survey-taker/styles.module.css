@@ -19,6 +19,32 @@ div.questionContent {
   bottom: 1rem;
 }
 
+p.question {
+  margin-bottom: 1rem;
+}
+
 div.buttons {
   margin-top: 1rem;
+}
+
+div.answerOptions {
+  width: 100%;
+}
+
+button.answerOption {
+  text-transform: none;
+}
+
+button.answerOption span.centeredContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button.answerOption span.maximizeSize {
+  flex-grow: 1;
+}
+
+button.answerOption span.minimizeSize {
+  flex-shrink: 0;
 }

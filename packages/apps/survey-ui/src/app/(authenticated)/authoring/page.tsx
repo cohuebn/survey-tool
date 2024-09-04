@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Alert,
-  CircularProgress,
-  Fab,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, CircularProgress, Fab, TextField } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Create, Search } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
