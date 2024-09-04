@@ -1,12 +1,18 @@
 "use client";
 
-import { Button, Pagination, Typography } from "@mui/material";
-import { ChangeEvent, useReducer } from "react";
+import {
+  Button,
+  CircularProgress,
+  Pagination,
+  Typography,
+} from "@mui/material";
+import { ChangeEvent, useMemo, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
 import { toast } from "react-toastify";
 
 import { Question, SurveySummary } from "../types";
+import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
 
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
@@ -44,22 +50,40 @@ export function SurveyTaker({
     },
   });
 
-  // const hasAllAnswers = useMemo(() => {
-  //   const answeredQuestions = Object.keys(surveyTakerState.answers);
-  //   const allQuestions = surveyTakerState.questions.map((q) => q.id);
-  //   return answeredQuestions.length === allQuestions.length;
-  // }, [surveyTakerState.questions, surveyTakerState.answers]);
+  const hasAllAnswers = useMemo(() => {
+    const answeredQuestions = Object.keys(surveyTakerState.answers);
+    const allQuestions = surveyTakerState.questions.map((q) => q.id);
+    return answeredQuestions.length === allQuestions.length;
+  }, [surveyTakerState.questions, surveyTakerState.answers]);
+
+  const auth = useSupabaseAuth();
+  if (!auth.clientLoaded) {
+    return <CircularProgress />;
+  }
+  const authClient = auth.auth;
 
   const submitSurvey = async () => {
-    await fetch(`/api/surveys/${surveyId}/answers`, {
+    const { data, error } = await authClient.getSession();
+    if (error) throw error;
+    const accessToken = data.session?.access_token;
+    if (!accessToken) {
+      throw new Error("No access token associated with session");
+    }
+
+    const response = await fetch(`/api/surveys/${surveyId}/answers`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Bearer ${data.session?.access_token}`,
       },
       body: JSON.stringify({ answers: surveyTakerState.answers, userId }),
     });
-    toast.success("Survey submitted");
+    if (response.ok) {
+      toast.success("Survey submitted");
+    } else {
+      toast.error(`Failed to submit survey: ${response.statusText}`);
+    }
   };
 
   return (
@@ -92,7 +116,7 @@ export function SurveyTaker({
           </Button>
           <Button
             className={buttonStyles.button}
-            // disabled={!hasAllAnswers}
+            disabled={!hasAllAnswers && hasAllAnswers}
             variant="contained"
             onClick={() => submitSurvey()}
           >

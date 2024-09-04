@@ -71,24 +71,18 @@ export function RatingQuestion({
         fullWidth
       >
         {ratingRange.map((option, index) => (
-          <>
-            <ToggleButton
-              key={`question-${question.id}-option-${index}`}
-              value={option.label}
-              className={styles.answerOption}
-            >
-              <span
-                className={clsx(styles.centeredContent, styles.maximizeSize)}
-              >
-                {option.label}
-              </span>
-              <span
-                className={clsx(styles.centeredContent, styles.minimizeSize)}
-              >
-                <Star style={deriveStyle(option.value, maximumRating)} />
-              </span>
-            </ToggleButton>
-          </>
+          <ToggleButton
+            key={`question-${question.id}-option-${index}`}
+            value={option.label}
+            className={styles.answerOption}
+          >
+            <span className={clsx(styles.centeredContent, styles.maximizeSize)}>
+              {option.label}
+            </span>
+            <span className={clsx(styles.centeredContent, styles.minimizeSize)}>
+              <Star style={deriveStyle(option.value, maximumRating)} />
+            </span>
+          </ToggleButton>
         ))}
       </ToggleButtonGroup>
     </div>
