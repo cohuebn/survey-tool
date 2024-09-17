@@ -62,7 +62,7 @@ export function SurveyTaker({
   }
   const authClient = auth.auth;
 
-  const submitSurvey = async () => {
+  const saveSurvey = async () => {
     const { data, error } = await authClient.getSession();
     if (error) throw error;
     const accessToken = data.session?.access_token;
@@ -118,9 +118,9 @@ export function SurveyTaker({
             className={buttonStyles.button}
             disabled={!hasAllAnswers && hasAllAnswers}
             variant="contained"
-            onClick={() => submitSurvey()}
+            onClick={() => saveSurvey()}
           >
-            Submit Survey
+            Save Answers
           </Button>
         </div>
       </div>

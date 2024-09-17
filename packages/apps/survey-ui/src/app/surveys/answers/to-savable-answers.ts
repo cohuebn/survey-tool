@@ -1,8 +1,16 @@
 "use server";
 
+import { v4 as uuid } from "uuid";
 import { toHashedKey } from "@survey-tool/core";
 
-import { Answer, MultiAnswer, SavableAnswer, SingleAnswer } from "../types";
+import {
+  Answer,
+  DBAnswer,
+  MultiAnswer,
+  SavableAnswer,
+  SingleAnswer,
+} from "../types";
+import { getParticipantId } from "../participant-ids";
 
 /**
  * Standardize answers (single or multi) into an array of answers
@@ -21,20 +29,21 @@ function toSavableAnswer(
   surveyId: string,
   questionId: string,
   answer: SingleAnswer,
-) {
-  const participantId = toHashedKey([userId, surveyId, questionId]);
+): SavableAnswer {
+  const participantId = getParticipantId(userId, surveyId);
   return {
     participantId,
     surveyId,
     questionId,
     answer,
+    answerTime: new Date(),
   };
 }
 
 // TODO - figure out if this needs to be async; doing it for now while
 // "use server" yells about non-async functions
 /** Get all answers with hashed PII to submit to the server */
-export async function getSavableAnswers(
+export async function toSavableAnswers(
   userId: string,
   surveyId: string,
   answers: Record<string, Answer>,

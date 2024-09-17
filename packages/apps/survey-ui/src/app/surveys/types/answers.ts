@@ -9,4 +9,9 @@ export type SavableAnswer = {
   surveyId: string;
   questionId: string;
   answer: SingleAnswer;
+  answerTime: Date;
+};
+
+export type DBAnswer = SavableAnswer & {
+  id: string;
 };

@@ -10,7 +10,7 @@ import { ReactNode, createContext, useEffect, useState } from "react";
 
 const logger = createLogger("supabase-app-context");
 
-/** Get a Firebase app using config from the API */
+/** Get a Supabase client using config from the API */
 async function getSupabaseClient() {
   logger.debug("Getting Supabase app using config from API");
   const configResponse = await fetch("/api/config");

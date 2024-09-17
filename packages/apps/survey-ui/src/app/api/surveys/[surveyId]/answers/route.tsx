@@ -1,10 +1,13 @@
 import { createLogger } from "@survey-tool/core";
 
-import { getSavableAnswers } from "../../../../surveys/answers/get-savable-answers";
+import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { Answer } from "../../../../surveys";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
 import { BadRequestError } from "../../../http-errors";
 import { convertErrorToResponse } from "../../../utils/responses";
+import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
+import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
+import { getParticipantId } from "../../../../surveys/participant-ids";
 
 const logger = createLogger("api/answers");
 
@@ -37,9 +40,15 @@ export async function POST(
       `Handling answer submission for survey ${surveyId}`,
     );
 
-    const savableAnswers = await getSavableAnswers(userId, surveyId, answers);
-    // TODO - remove this trace
-    logger.info({ savableAnswers, userId }, "REMOVE ME");
+    const dbAnswers = await toSavableAnswers(userId, surveyId, answers);
+    const supabaseClient = await getServerSideSupabaseClient();
+    const participantId = getParticipantId(userId, surveyId);
+    await updateParticipantAnswers(
+      supabaseClient(),
+      participantId,
+      surveyId,
+      dbAnswers,
+    );
     return Response.json({});
   } catch (err: unknown) {
     return convertErrorToResponse(err);
