@@ -11,7 +11,7 @@ import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
 import { toast } from "react-toastify";
 
-import { Question, SurveySummary } from "../types";
+import { Answer, Question, SurveySummary } from "../types";
 import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
 
 import styles from "./styles.module.css";
@@ -19,11 +19,12 @@ import { surveyTakerReducer } from "./survey-taker-reducer";
 import { renderQuestion } from "./question-types";
 
 type SurveyTakerProps = {
+  userId: string;
   surveyId: string;
   summary: SurveySummary;
   questions: Question[];
+  answers: Record<string, Answer>;
   initialQuestionNumber: number;
-  userId: string;
 };
 
 export function SurveyTaker({
@@ -31,16 +32,18 @@ export function SurveyTaker({
   surveyId,
   summary,
   questions,
+  answers,
   initialQuestionNumber,
 }: SurveyTakerProps) {
+  const activeQuestion = questions[initialQuestionNumber - 1];
   const [surveyTakerState, dispatch] = useReducer(surveyTakerReducer, {
     surveyId,
     questions,
     summary,
     activeQuestionNumber: initialQuestionNumber,
-    activeQuestion: questions[initialQuestionNumber - 1],
-    activeAnswer: null,
-    answers: {},
+    activeQuestion,
+    activeAnswer: answers[activeQuestion.id] || null,
+    answers,
     onQuestionChange: (questionNumber: number) => {
       window.history.pushState(
         null,
@@ -80,7 +83,7 @@ export function SurveyTaker({
       body: JSON.stringify({ answers: surveyTakerState.answers, userId }),
     });
     if (response.ok) {
-      toast.success("Survey submitted");
+      toast.success("Survey saved");
     } else {
       toast.error(`Failed to submit survey: ${response.statusText}`);
     }

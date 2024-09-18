@@ -4,7 +4,12 @@ import { asPostgresError } from "../../errors/postgres-error";
 import { AppSupabaseClient } from "../../supabase/supabase-context";
 import { DBAnswer } from "../types";
 
-/** Get all answers for the given survey for the given participant id */
+/**
+ * Get all answers for the given survey for the given participant id
+ * @param dbClient The Supabase client
+ * @param surveyId The id of the survey
+ * @param participantId The id of the participant
+ */
 export async function getParticipantAnswersForSurvey(
   dbClient: AppSupabaseClient,
   surveyId: string,

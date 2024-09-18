@@ -7,8 +7,8 @@ type SurveyTakerReducerState = {
   summary: SurveySummary;
   activeQuestionNumber: number;
   activeQuestion: Question;
-  activeAnswer: string | string[] | null;
-  answers: Record<string, string | string[]>;
+  activeAnswer: Answer | null;
+  answers: Record<string, Answer>;
   onQuestionChange: (questionNumber: number) => void;
 };
 

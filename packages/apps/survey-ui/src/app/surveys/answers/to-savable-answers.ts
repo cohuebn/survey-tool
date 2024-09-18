@@ -1,11 +1,8 @@
 "use server";
 
-import { v4 as uuid } from "uuid";
-import { toHashedKey } from "@survey-tool/core";
-
 import {
   Answer,
-  DBAnswer,
+  AnswersForQuestions,
   MultiAnswer,
   SavableAnswer,
   SingleAnswer,
@@ -46,7 +43,7 @@ function toSavableAnswer(
 export async function toSavableAnswers(
   userId: string,
   surveyId: string,
-  answers: Record<string, Answer>,
+  answers: AnswersForQuestions,
 ): Promise<SavableAnswer[]> {
   return Object.entries(answers).flatMap(([questionId, answer]) => {
     const multiAnswers = toMultiAnswers(answer);

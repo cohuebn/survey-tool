@@ -15,3 +15,5 @@ export type SavableAnswer = {
 export type DBAnswer = SavableAnswer & {
   id: string;
 };
+
+export type AnswersForQuestions = Record<string, Answer>;
