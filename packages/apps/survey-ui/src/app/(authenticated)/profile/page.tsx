@@ -4,8 +4,10 @@ import {
   Autocomplete,
   Button,
   CircularProgress,
+  FormControlLabel,
   InputAdornment,
   Link,
+  Switch,
   TextField,
   Tooltip,
   Typography,
@@ -34,6 +36,7 @@ import { useUserValidationData } from "../../users/use-user-validation-data";
 import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profiles";
 import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
 import { DepartmentAutocomplete } from "../../hospitals/department-autocomplete";
+import { saveUserSettings as coreSaveUserSettings } from "../../user-settings/database";
 
 import styles from "./styles.module.css";
 
@@ -47,6 +50,7 @@ export default function Page() {
   const [employmentType, setEmploymentType] = useState<string | null>(null);
   const [npiNumber, setNpiNumber] = useState<string | null>(null);
   const [initialHospital, setInitialHospital] = useState<Hospital | null>(null);
+  const [autoAdvance, setAutoAdvance] = useState(true);
 
   const dbClient = useSupabaseDb();
 
@@ -164,16 +168,25 @@ export default function Page() {
     location?.id,
   ]);
 
+  const saveUserSettings = useCallback(async () => {
+    const settings = { autoAdvance };
+    await coreSaveUserSettings(
+      getLoadedDBClient(),
+      getValidatedUserId(),
+      settings,
+    );
+  }, [autoAdvance, getLoadedDBClient, getValidatedUserId]);
+
   const saveAllChanges = useCallback(async () => {
     try {
       // User profile must be saved before validation due to foreign key constraint
       await saveUserProfile();
-      await saveUserValidation();
+      await Promise.all([saveUserValidation(), saveUserSettings()]);
       toast("Profile saved successfully", { type: "success" });
     } catch (err: unknown) {
       toast(parseError(err), { type: "error" });
     }
-  }, [saveUserProfile, saveUserValidation]);
+  }, [saveUserProfile, saveUserSettings, saveUserValidation]);
 
   if (loading) {
     return <CircularProgress />;
@@ -203,6 +216,19 @@ export default function Page() {
           <TextField {...params} label="Employment type" />
         )}
       />
+      <div className={styles.autoAdvanceSetting}>
+        <Tooltip title="If set, some question types will automatically progress after an answer is selected.">
+          <FormControlLabel
+            control={
+              <Switch
+                checked={autoAdvance}
+                onChange={(event) => setAutoAdvance(event.target.checked)}
+              />
+            }
+            label="Auto-advance to next question when question supports it?"
+          />
+        </Tooltip>
+      </div>
       {userValidationSection}
       <Button
         className={buttonStyles.button}

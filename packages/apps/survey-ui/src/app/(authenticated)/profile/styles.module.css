@@ -19,3 +19,8 @@ li.locationAutocompleteOption:hover {
 .helpIcon {
   color: var(--primary-color);
 }
+
+.autoAdvanceSetting {
+  display: flex;
+  align-items: center;
+}

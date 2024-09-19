@@ -1,5 +1,4 @@
 import { TextField, Typography } from "@mui/material";
-import { isNullOrUndefined } from "@survey-tool/core";
 
 import { QuestionProps } from "../../types/survey-taking";
 import {
