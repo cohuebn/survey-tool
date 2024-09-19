@@ -56,3 +56,10 @@ export type RatingQuestion = Omit<BaseQuestion, "definition"> & {
     maxRating?: number;
   };
 };
+
+export type FreeFormLength = "short" | "long";
+export type FreeFormQuestion = Omit<BaseQuestion, "definition"> & {
+  definition: {
+    textLength?: FreeFormLength;
+  };
+};
