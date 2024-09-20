@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-import { SupabaseAuthClient } from "@supabase/supabase-js/dist/module/lib/SupabaseAuthClient";
+import { isNullOrUndefined } from "@survey-tool/core";
 
 import { AnswersForQuestions } from "../types";
-import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
+import { useAccessToken } from "../../users/use-access-token";
 
 async function fetchSurveyAnswers(
-  authClient: SupabaseAuthClient,
+  accessToken: string | null,
   surveyId: string,
 ): Promise<AnswersForQuestions> {
-  const authSession = await authClient.getSession();
-  if (authSession.error) throw authSession.error;
+  if (isNullOrUndefined(accessToken)) {
+    throw new Error(
+      "No access token associated with session; can't fetch answers",
+    );
+  }
   const response = await fetch(`/api/surveys/${surveyId}/answers`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: `Bearer ${authSession.data.session?.access_token}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   const answers: AnswersForQuestions = await response.json();
@@ -23,19 +26,19 @@ async function fetchSurveyAnswers(
 }
 
 export function useCurrentUserSurveyAnswers(surveyId: string) {
-  const authClient = useSupabaseAuth();
+  const { accessToken, accessTokenLoaded } = useAccessToken();
   const [answersLoaded, setAnswersLoaded] = useState(false);
   const [answers, setAnswers] = useState<AnswersForQuestions>({});
 
   useEffect(() => {
     if (answersLoaded) return;
-    if (!authClient.clientLoaded) return;
+    if (!accessTokenLoaded) return;
 
-    fetchSurveyAnswers(authClient.auth, surveyId).then((loadedAnswers) => {
+    fetchSurveyAnswers(accessToken, surveyId).then((loadedAnswers) => {
       setAnswers(loadedAnswers);
       setAnswersLoaded(true);
     });
-  }, [surveyId, answersLoaded, authClient]);
+  }, [surveyId, answersLoaded, accessToken, accessTokenLoaded]);
 
   return { answers, answersLoaded };
 }

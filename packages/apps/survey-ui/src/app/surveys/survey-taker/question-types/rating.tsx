@@ -1,4 +1,4 @@
-import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { ToggleButtonGroup, Typography } from "@mui/material";
 import { range } from "@survey-tool/core";
 import { useMemo } from "react";
 import { Star } from "@mui/icons-material";

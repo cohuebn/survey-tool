@@ -37,6 +37,7 @@ import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profile
 import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
 import { DepartmentAutocomplete } from "../../hospitals/department-autocomplete";
 import { saveUserSettings as coreSaveUserSettings } from "../../user-settings/database";
+import { useUserSettings } from "../../user-settings/use-user-settings";
 
 import styles from "./styles.module.css";
 
@@ -45,6 +46,7 @@ export default function Page() {
   const userProfile = useUserProfile(userId);
   const { userValidation, userValidationLoaded } =
     useUserValidationData(userId);
+  const { userSettings, userSettingsLoaded } = useUserSettings(userId);
   const [location, setLocation] = useState<Hospital | null>(null);
   const [department, setDepartment] = useState<string | null>(null);
   const [employmentType, setEmploymentType] = useState<string | null>(null);
@@ -59,12 +61,14 @@ export default function Page() {
       !userSession.loggedIn ||
       !userProfile ||
       !userValidationLoaded ||
-      !dbClient.clientLoaded,
+      !dbClient.clientLoaded ||
+      !userSettingsLoaded,
     [
       dbClient.clientLoaded,
       userProfile,
       userSession.loggedIn,
       userValidationLoaded,
+      userSettingsLoaded,
     ],
   );
 
@@ -110,6 +114,10 @@ export default function Page() {
       setNpiNumber(userValidation.npiNumber);
     }
   }, [userValidation]);
+
+  useEffect(() => {
+    setAutoAdvance(userSettings.autoAdvance ?? true); // Default auto-advance to true
+  }, [userSettings]);
 
   const getValidatedUserId = useCallback(() => {
     if (!userId) {

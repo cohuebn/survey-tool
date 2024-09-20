@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
-import { toCamel } from "convert-keys";
 
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 
-import { DBUser, User } from "./types";
-
-export function dbUserToUserProfile(
-  userId: string,
-  dbUser: DBUser | null,
-): User | null {
-  return toCamel({ ...dbUser, userId });
-}
+import { User } from "./types";
+import { getUserProfile } from "./user-profiles";
 
 export function useUserProfile(userId: string | undefined) {
   const [userProfileLoaded, setUserProfileLoaded] = useState(false);
@@ -27,25 +20,10 @@ export function useUserProfile(userId: string | undefined) {
     if (!userId || !supabaseDb.clientLoaded) {
       setUserProfile(null);
     } else {
-      supabaseDb.client
-        .from("users")
-        .select(
-          `
-          user_id,
-          validated_timestamp,
-          location,
-          hospitals(id, name, city, state),
-          department,
-          employment_type
-        `,
-        )
-        .eq("user_id", userId)
-        .maybeSingle<DBUser>()
-        .then((dbResult) => {
-          const loadedProfile = dbUserToUserProfile(userId, dbResult.data);
-          setUserProfile(loadedProfile);
-          setUserProfileLoaded(true);
-        });
+      getUserProfile(supabaseDb.client, userId).then((loadedProfile) => {
+        setUserProfile(loadedProfile);
+        setUserProfileLoaded(true);
+      });
     }
   }, [userId, supabaseDb, userProfileLoaded]);
 

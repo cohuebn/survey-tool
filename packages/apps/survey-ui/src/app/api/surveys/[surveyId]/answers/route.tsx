@@ -10,6 +10,7 @@ import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server
 import { getParticipantId } from "../../../../surveys/participant-ids";
 import { getParticipantAnswersForSurvey } from "../../../../surveys/answers/database";
 import { dbAnswersToAnswers } from "../../../../surveys/answers/answer-converters";
+import { getUserProfile } from "../../../../users/user-profiles";
 
 const logger = createLogger("api/answers");
 
@@ -42,7 +43,21 @@ export async function POST(
       `Handling answer submission for survey ${surveyId}`,
     );
 
-    const dbAnswers = await toSavableAnswers(userId, surveyId, answers);
+    const dbClient = await getServerSideSupabaseClient();
+    const userProfile = await getUserProfile(dbClient(), userId);
+
+    if (!userProfile) {
+      throw new Error(
+        `User profile not found for user ${userId}. Cannot save answers.`,
+      );
+    }
+
+    const dbAnswers = await toSavableAnswers(
+      userId,
+      surveyId,
+      answers,
+      userProfile,
+    );
     const supabaseClient = await getServerSideSupabaseClient();
     const participantId = getParticipantId(userId, surveyId);
     await updateParticipantAnswers(

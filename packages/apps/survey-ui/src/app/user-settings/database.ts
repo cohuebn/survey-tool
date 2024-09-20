@@ -1,11 +1,19 @@
+import { isNullOrUndefined } from "@survey-tool/core";
+
 import { asPostgresError } from "../errors/postgres-error";
 import { AppSupabaseClient } from "../supabase/supabase-context";
 import { UserSettings } from "../surveys/types/user-settings";
 
+const defaultUserSettings: UserSettings = {
+  autoAdvance: true,
+};
+
 export async function getUserSettings(
   dbClient: AppSupabaseClient,
-  userId: string,
+  userId: string | null | undefined,
 ): Promise<UserSettings> {
+  if (isNullOrUndefined(userId)) return defaultUserSettings;
+
   const query = dbClient
     .from("user_settings")
     .select(`settings`)

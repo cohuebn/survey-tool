@@ -1,9 +1,9 @@
-import { toSnake } from "convert-keys";
+import { toCamel, toSnake } from "convert-keys";
 
 import { AppSupabaseClient } from "../supabase/supabase-context";
 import { asPostgresError } from "../errors/postgres-error";
 
-import { DBUserProfile, UserProfile } from "./types";
+import { DBUser, DBUserProfile, User, UserProfile } from "./types";
 
 export async function saveUserProfile(
   dbClient: AppSupabaseClient,
@@ -14,4 +14,32 @@ export async function saveUserProfile(
   if (profileSaveResult.error) {
     throw asPostgresError(profileSaveResult.error);
   }
+}
+
+function dbUserToUserProfile(
+  userId: string,
+  dbUser: DBUser | null,
+): User | null {
+  return toCamel({ ...dbUser, userId });
+}
+
+export async function getUserProfile(
+  dbClient: AppSupabaseClient,
+  userId: string,
+) {
+  const dbResult = await dbClient
+    .from("users")
+    .select(
+      `
+          user_id,
+          validated_timestamp,
+          location,
+          hospitals(id, name, city, state),
+          department,
+          employment_type
+        `,
+    )
+    .eq("user_id", userId)
+    .maybeSingle<DBUser>();
+  return dbUserToUserProfile(userId, dbResult.data);
 }

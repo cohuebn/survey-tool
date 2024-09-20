@@ -8,6 +8,7 @@ import {
   SingleAnswer,
 } from "../types";
 import { getParticipantId } from "../participant-ids";
+import { UserProfile } from "../../users/types";
 
 /**
  * Standardize answers (single or multi) into an array of answers
@@ -26,6 +27,7 @@ function toSavableAnswer(
   surveyId: string,
   questionId: string,
   answer: SingleAnswer,
+  userProfile: UserProfile,
 ): SavableAnswer {
   const participantId = getParticipantId(userId, surveyId);
   return {
@@ -34,6 +36,9 @@ function toSavableAnswer(
     questionId,
     answer,
     answerTime: new Date(),
+    location: userProfile.location,
+    department: userProfile.department,
+    employmentType: userProfile.employmentType,
   };
 }
 
@@ -44,11 +49,12 @@ export async function toSavableAnswers(
   userId: string,
   surveyId: string,
   answers: AnswersForQuestions,
+  userProfile: UserProfile,
 ): Promise<SavableAnswer[]> {
   return Object.entries(answers).flatMap(([questionId, answer]) => {
     const multiAnswers = toMultiAnswers(answer);
     return multiAnswers.map((singleAnswer) =>
-      toSavableAnswer(userId, surveyId, questionId, singleAnswer),
+      toSavableAnswer(userId, surveyId, questionId, singleAnswer, userProfile),
     );
   });
 }

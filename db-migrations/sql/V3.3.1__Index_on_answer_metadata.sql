@@ -1,0 +1,2 @@
+create index if not exists answers_survey_location_idx on ${flyway:defaultSchema}.answers (survey_id, location);
+create index if not exists answers_survey_department_idx on ${flyway:defaultSchema}.answers (survey_id, department);

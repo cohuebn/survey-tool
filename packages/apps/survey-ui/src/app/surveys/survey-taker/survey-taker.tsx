@@ -12,8 +12,8 @@ import clsx from "clsx";
 import { toast } from "react-toastify";
 
 import { Answer, Question, SurveySummary } from "../types";
-import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
 import { useUserSettings } from "../../user-settings/use-user-settings";
+import { useAccessToken } from "../../users/use-access-token";
 
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
@@ -61,18 +61,16 @@ export function SurveyTaker({
   }, [surveyTakerState.questions, surveyTakerState.answers]);
 
   const { userSettings, userSettingsLoaded } = useUserSettings(userId);
-  const auth = useSupabaseAuth();
-  if (!userSettingsLoaded || !auth.clientLoaded) {
+  const { accessToken, accessTokenLoaded } = useAccessToken();
+  if (!userSettingsLoaded || !accessTokenLoaded) {
     return <CircularProgress />;
   }
-  const authClient = auth.auth;
 
   const saveSurvey = async () => {
-    const { data, error } = await authClient.getSession();
-    if (error) throw error;
-    const accessToken = data.session?.access_token;
     if (!accessToken) {
-      throw new Error("No access token associated with session");
+      throw new Error(
+        "No access token associated with session; can't save survey",
+      );
     }
 
     const response = await fetch(`/api/surveys/${surveyId}/answers`, {
@@ -80,7 +78,7 @@ export function SurveyTaker({
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${data.session?.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ answers: surveyTakerState.answers, userId }),
     });
