@@ -41,15 +41,16 @@ export function RatingQuestion({
     const backgroundColor = `hsl(${hue},100%,98%)`;
     return { color, backgroundColor };
   }
-  const ratingRange = useMemo(
-    () =>
-      range(minimumRating, maximumRating).map((value) => ({
+  const ratingRange = useMemo(() => {
+    const ascendingRatings = range(minimumRating, maximumRating).map(
+      (value) => ({
         ...deriveStyle(value, maximumRating),
         value,
         label: `${value}`,
-      })),
-    [minimumRating, maximumRating],
-  );
+      }),
+    );
+    return ascendingRatings.slice().reverse();
+  }, [minimumRating, maximumRating]);
 
   assertSingleAnswer(question.id, activeAnswer);
 
