@@ -225,7 +225,17 @@ export default function Page() {
         )}
       />
       <div className={styles.autoAdvanceSetting}>
-        <Tooltip title="If set, some question types will automatically progress after an answer is selected.">
+        <Tooltip
+          title={
+            <Typography variant="body1">
+              If enabled, some question types (single-choice, rating, etc.) will
+              automatically progress after an answer is selected. When this
+              setting is disabled, you just need to explicitly hit the Next
+              button after selecting a choice. If using a screen reader or other
+              accessibility device, disabling this setting is recommended.
+            </Typography>
+          }
+        >
           <FormControlLabel
             control={
               <Switch
