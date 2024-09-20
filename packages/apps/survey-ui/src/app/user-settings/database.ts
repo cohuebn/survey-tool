@@ -1,23 +1,19 @@
 import { asPostgresError } from "../errors/postgres-error";
 import { AppSupabaseClient } from "../supabase/supabase-context";
+import { UserSettings } from "../surveys/types/user-settings";
 
 export async function getUserSettings(
   dbClient: AppSupabaseClient,
   userId: string,
-): Promise<Record<string, unknown>> {
+): Promise<UserSettings> {
   const query = dbClient
     .from("user_settings")
-    .select(
-      `
-      user_id,
-      settings,
-    `,
-    )
+    .select(`settings`)
     .eq("user_id", userId)
-    .maybeSingle<Record<string, unknown>>();
+    .maybeSingle<{ settings: UserSettings }>();
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);
-  return dbResult.data ?? {};
+  return dbResult.data?.settings ?? {};
 }
 
 export async function saveUserSettings(

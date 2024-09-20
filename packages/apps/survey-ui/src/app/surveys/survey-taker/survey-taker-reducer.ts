@@ -45,6 +45,10 @@ export function surveyTakerReducer(
   switch (action.type) {
     case "setQuestionNumber":
       return changeQuestion(state, action.value);
+    case "moveToNextQuestion":
+      return state.activeQuestionNumber === state.questions.length
+        ? state
+        : changeQuestion(state, state.activeQuestionNumber + 1);
     case "submitAnswer": {
       const nextQuestionNumber = state.activeQuestionNumber + 1;
       const updatedAnswers = {

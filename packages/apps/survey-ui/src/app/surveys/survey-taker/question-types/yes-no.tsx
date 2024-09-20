@@ -4,8 +4,10 @@ import { QuestionProps } from "../../types/survey-taking";
 import styles from "../styles.module.css";
 
 import { assertSingleAnswer } from "./answer-assertions";
+import { autoAdvanceIfDesired } from "./auto-advance-question";
 
 export function YesNoQuestion({
+  userSettings,
   question,
   activeAnswer,
   dispatch,
@@ -21,6 +23,7 @@ export function YesNoQuestion({
       questionId: question.id,
       answer: parsedAnswer,
     });
+    autoAdvanceIfDesired(userSettings.autoAdvance, dispatch);
   };
 
   return (

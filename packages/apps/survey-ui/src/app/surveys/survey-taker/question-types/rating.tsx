@@ -6,8 +6,10 @@ import clsx from "clsx";
 
 import { QuestionProps } from "../../types/survey-taking";
 import styles from "../styles.module.css";
+import { ColoredToggleButton } from "../../../core-components/colored-toggle-button";
 
 import { assertSingleAnswer } from "./answer-assertions";
+import { autoAdvanceIfDesired } from "./auto-advance-question";
 
 const defaultMinimumRating = 1;
 const defaultMaximumRating = 5;
@@ -17,6 +19,7 @@ function getAllowedRating(value: unknown, defaultValue: number): number {
 }
 
 export function RatingQuestion({
+  userSettings,
   question,
   activeAnswer,
   dispatch,
@@ -30,9 +33,18 @@ export function RatingQuestion({
     question.definition.maxRating,
     defaultMaximumRating,
   );
+
+  function deriveStyle(value: number, maxValue: number) {
+    const distanceFromMax = (maxValue - value) / maxValue;
+    const hue = ((1 - distanceFromMax) * 120).toString(10);
+    const color = `hsl(${hue},100%,50%)`;
+    const backgroundColor = `hsl(${hue},100%,98%)`;
+    return { color, backgroundColor };
+  }
   const ratingRange = useMemo(
     () =>
       range(minimumRating, maximumRating).map((value) => ({
+        ...deriveStyle(value, maximumRating),
         value,
         label: `${value}`,
       })),
@@ -48,14 +60,8 @@ export function RatingQuestion({
       questionId: question.id,
       answer: parsedAnswer,
     });
+    autoAdvanceIfDesired(userSettings.autoAdvance, dispatch);
   };
-
-  function deriveStyle(value: number, maxValue: number) {
-    const distanceFromMax = (maxValue - value) / maxValue;
-    const hue = ((1 - distanceFromMax) * 120).toString(10);
-    const hslColor = `hsl(${hue},100%,60%)`;
-    return { color: hslColor };
-  }
 
   return (
     <div>
@@ -63,7 +69,6 @@ export function RatingQuestion({
         {question.question}
       </Typography>
       <ToggleButtonGroup
-        color="primary"
         orientation="vertical"
         exclusive
         value={activeAnswer ?? ""}
@@ -71,7 +76,8 @@ export function RatingQuestion({
         fullWidth
       >
         {ratingRange.map((option, index) => (
-          <ToggleButton
+          <ColoredToggleButton
+            backgroundColor={option.backgroundColor}
             key={`question-${question.id}-option-${index}`}
             value={option.label}
             className={styles.answerOption}
@@ -80,9 +86,9 @@ export function RatingQuestion({
               {option.label}
             </span>
             <span className={clsx(styles.centeredContent, styles.minimizeSize)}>
-              <Star style={deriveStyle(option.value, maximumRating)} />
+              <Star style={{ color: option.color }} />
             </span>
-          </ToggleButton>
+          </ColoredToggleButton>
         ))}
       </ToggleButtonGroup>
     </div>

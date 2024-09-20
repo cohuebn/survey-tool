@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 
 import { Answer, Question, SurveySummary } from "../types";
 import { useSupabaseAuth } from "../../supabase/use-supabase-auth";
+import { useUserSettings } from "../../user-settings/use-user-settings";
 
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
@@ -59,8 +60,9 @@ export function SurveyTaker({
     return answeredQuestions.length === allQuestions.length;
   }, [surveyTakerState.questions, surveyTakerState.answers]);
 
+  const { userSettings, userSettingsLoaded } = useUserSettings(userId);
   const auth = useSupabaseAuth();
-  if (!auth.clientLoaded) {
+  if (!userSettingsLoaded || !auth.clientLoaded) {
     return <CircularProgress />;
   }
   const authClient = auth.auth;
@@ -96,6 +98,8 @@ export function SurveyTaker({
           {summary.name}
         </Typography>
         {renderQuestion({
+          userId,
+          userSettings,
           question: surveyTakerState.activeQuestion,
           activeAnswer: surveyTakerState.activeAnswer,
           dispatch,

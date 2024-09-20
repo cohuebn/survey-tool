@@ -10,6 +10,7 @@ import { QuestionProps } from "../../types/survey-taking";
 import styles from "../styles.module.css";
 
 import { assertMultiAnswer, assertSingleAnswer } from "./answer-assertions";
+import { autoAdvanceIfDesired } from "./auto-advance-question";
 
 function assertMultipleChoiceQuestion(
   question: Question,
@@ -24,6 +25,7 @@ type MultipleChoiceQuestionProps = Omit<QuestionProps, "question"> & {
 };
 
 function SingleAllowedAnswers({
+  userSettings,
   question,
   activeAnswer,
   dispatch,
@@ -37,6 +39,7 @@ function SingleAllowedAnswers({
       questionId: question.id,
       answer: parsedAnswer,
     });
+    autoAdvanceIfDesired(userSettings.autoAdvance, dispatch);
   };
 
   return (
@@ -98,6 +101,8 @@ function MultipleAllowedAnswers({
 }
 
 export function MultipleChoiceQuestion({
+  userId,
+  userSettings,
   question,
   dispatch,
   activeAnswer,
@@ -112,12 +117,16 @@ export function MultipleChoiceQuestion({
       </Typography>
       {multipleChoiceType === "multipleAnswers" ? (
         <MultipleAllowedAnswers
+          userId={userId}
+          userSettings={userSettings}
           question={question}
           dispatch={dispatch}
           activeAnswer={activeAnswer}
         />
       ) : (
         <SingleAllowedAnswers
+          userId={userId}
+          userSettings={userSettings}
           question={question}
           dispatch={dispatch}
           activeAnswer={activeAnswer}
