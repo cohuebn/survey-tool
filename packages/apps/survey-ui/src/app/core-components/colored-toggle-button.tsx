@@ -6,9 +6,14 @@ type ColoredToggleButtonProps = ToggleButtonProps & {
   textColor?: string;
 };
 
-export const ColoredToggleButton = styled(
-  ToggleButton,
-)<ColoredToggleButtonProps>(({ textColor, backgroundColor }) => ({
+/** Prevent passing custom properties down to the underlying ToggleButton */
+function shouldForwardProp(prop: PropertyKey): boolean {
+  return prop !== "backgroundColor" && prop !== "textColor";
+}
+
+export const ColoredToggleButton = styled(ToggleButton, {
+  shouldForwardProp,
+})<ColoredToggleButtonProps>(({ textColor, backgroundColor }) => ({
   "&.Mui-selected, &.Mui-selected:hover": omitUndefinedAndNullProperties({
     color: textColor,
     backgroundColor,
