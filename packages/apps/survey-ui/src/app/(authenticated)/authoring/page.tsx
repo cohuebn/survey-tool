@@ -1,26 +1,18 @@
 "use client";
 
 import { Alert, CircularProgress, Fab, TextField } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Create, Search } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
 import buttonStyles from "@styles/buttons.module.css";
 import searchSurveysStyles from "@styles/search-surveys.module.css";
 
-import { useUserSession } from "../../auth/use-user-session";
-import { useSurveySummaries, SurveyFilters, SurveysList } from "../../surveys";
+import { useSurveySummaries, SurveysList } from "../../surveys";
 import { FileIssueLink } from "../../issues/file-issue-link";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Authoring() {
-  const { userId } = useUserSession();
-  // A silly little memoized object to avoid the filters changing on every render
-  const surveyFilters: SurveyFilters = useMemo(
-    () => ({ ownerId: userId }),
-    [userId],
-  );
-  const { surveySummaries, surveySummariesLoaded } =
-    useSurveySummaries(surveyFilters);
+  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries();
   const [surveySearch, setSurveySearch] = useState<string>("");
   const filteredSurveySummaries = useFilteredSurveys(
     surveySummaries,

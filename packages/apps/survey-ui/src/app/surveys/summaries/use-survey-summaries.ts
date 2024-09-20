@@ -7,7 +7,7 @@ import { SurveySummary, SurveyFilters } from "../types";
 
 import { getSurveySummaries } from "./database";
 
-export function useSurveySummaries(filters: SurveyFilters) {
+export function useSurveySummaries(filters: SurveyFilters = {}) {
   const [surveySummariesLoaded, setSurveySummariesLoaded] = useState(false);
   const [surveySummaries, setSurveySummaries] = useState<SurveySummary[]>([]);
   const supabaseDb = useSupabaseDb();
