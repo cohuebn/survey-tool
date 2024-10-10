@@ -1,6 +1,6 @@
 div.chartContainer {
   position: relative;
-  height: 60vh;
+  height: 50vh;
 }
 
 @media screen and (max-width: 720px) {

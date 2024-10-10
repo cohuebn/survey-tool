@@ -1,5 +1,5 @@
-import { useReducer } from "react";
-import { Typography } from "@mui/material";
+import { ChangeEvent, useReducer } from "react";
+import { Pagination, Typography } from "@mui/material";
 
 import {
   AggregatedAnswersForQuestions,
@@ -55,6 +55,16 @@ export function SurveyReviewer({
             surveyReviewerState.answers[surveyReviewerState.activeQuestion.id],
           dispatch,
         })}
+      </div>
+      <div className={styles.questionsNavigation}>
+        <Pagination
+          count={questions.length}
+          page={surveyReviewerState.activeQuestionNumber}
+          color="primary"
+          onChange={(_: ChangeEvent<unknown>, questionNumber: number) =>
+            dispatch({ type: "setQuestionNumber", value: questionNumber })
+          }
+        />
       </div>
     </>
   );

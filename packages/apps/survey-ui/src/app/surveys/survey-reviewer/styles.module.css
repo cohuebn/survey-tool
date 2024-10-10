@@ -14,10 +14,6 @@ div.questionContent {
   }
 }
 
-div.chartContainer {
-  position: relative;
-}
-
 .questionsNavigation {
   position: fixed;
   bottom: 1rem;

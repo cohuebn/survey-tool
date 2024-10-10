@@ -52,6 +52,12 @@ Chart.register(
   Colors,
 );
 
+const defaultChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { position: "bottom" as const } },
+};
+
 /** Initialize a canvas with a chartjs chart on it */
 export function useChartCanvas({ config, height }: UseChartProps) {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
@@ -60,8 +66,8 @@ export function useChartCanvas({ config, height }: UseChartProps) {
     const canvasContext = chartRef.current?.getContext("2d");
     if (!canvasContext) return () => {}; // No cleanup needed
     const chart = new Chart(canvasContext, {
-      options: { responsive: true, maintainAspectRatio: false },
       ...config,
+      options: config.options ?? defaultChartOptions,
     });
 
     // Cleanup the chart on unmount
