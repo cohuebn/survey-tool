@@ -38,7 +38,7 @@ export function Navbar({ userScopes }: NavbarProps) {
         <ul className={styles.navbarLinks}>
           <li>
             <NavbarLink
-              href="/home"
+              href="/results"
               icon={<Insights fontSize="large" />}
               text="Survey results"
             />

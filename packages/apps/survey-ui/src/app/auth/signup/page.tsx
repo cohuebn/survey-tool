@@ -37,7 +37,7 @@ export default function Page() {
           email: _email,
           password: _password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/login`,
+            emailRedirectTo: `${window.location.origin}/auth/login/`,
           },
         });
         if (error) throw error;

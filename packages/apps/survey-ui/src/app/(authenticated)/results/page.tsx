@@ -1,0 +1,42 @@
+"use client";
+
+import { CircularProgress, TextField } from "@mui/material";
+import { useState } from "react";
+import { Search } from "@mui/icons-material";
+import layoutStyles from "@styles/layout.module.css";
+import searchSurveysStyles from "@styles/search-surveys.module.css";
+
+import { useSurveySummaries } from "../../surveys";
+import { SurveysList } from "../../surveys/surveys-list/surveys-list";
+import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
+
+export default function Page() {
+  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({});
+  const [surveySearch, setSurveySearch] = useState<string>("");
+  const filteredSurveySummaries = useFilteredSurveys(
+    surveySummaries,
+    surveySearch,
+  );
+
+  if (!surveySummariesLoaded) return <CircularProgress />;
+
+  return (
+    <div className={layoutStyles.centeredContent}>
+      <TextField
+        className={searchSurveysStyles.searchSurveys}
+        type="text"
+        value={surveySearch}
+        onChange={(e) => setSurveySearch(e.target.value)}
+        placeholder="Search surveys"
+        InputProps={{
+          endAdornment: <Search />,
+        }}
+      />
+      <SurveysList
+        surveys={filteredSurveySummaries}
+        linkText="Review survey results"
+        linkBuilder={(surveyId) => `/results/${surveyId}`}
+      />
+    </div>
+  );
+}

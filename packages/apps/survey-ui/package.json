@@ -35,6 +35,7 @@
     "@survey-tool/firebase": "*",
     "@survey-tool/firebase-config": "*",
     "@survey-tool/supabase": "*",
+    "chart.js": "^4.4.4",
     "clsx": "^2.1.0",
     "convert-keys": "^1.3.4",
     "eslint-config-next": "^14.2.2",
