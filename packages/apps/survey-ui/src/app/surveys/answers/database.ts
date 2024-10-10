@@ -74,16 +74,9 @@ export async function getAggregatedAnswersForSurvey(
   dbClient: AppSupabaseClient,
   surveyId: string,
 ): Promise<AggregatedAnswersForQuestion[]> {
-  const query = dbClient
-    .from("answers")
-    .select(
-      `
-      question_id,
-      answer,
-      answer_count:id.count()
-    `,
-    )
-    .eq("survey_id", surveyId);
+  const query = dbClient.rpc("get_aggregate_answers", {
+    survey_id_to_find: surveyId,
+  });
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);
   return dbResult.data.map(toCamel<AggregatedAnswersForQuestion>);
