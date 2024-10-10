@@ -20,4 +20,17 @@ export type DBAnswer = SavableAnswer & {
   id: string;
 };
 
+export type DBAnswerWithoutParticipant = Omit<DBAnswer, "participantId">;
+
 export type AnswersForQuestions = Record<string, Answer>;
+
+export type AggregatedAnswersForQuestion = {
+  questionId: string;
+  answer: string;
+  answerCount: number;
+};
+
+export type AggregatedAnswersForQuestions = Record<
+  string,
+  AggregatedAnswersForQuestion[]
+>;

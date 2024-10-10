@@ -1,16 +1,15 @@
 import { createLogger } from "@survey-tool/core";
 
-import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
-import { AnswersForQuestions } from "../../../../surveys";
-import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
-import { BadRequestError } from "../../../http-errors";
-import { convertErrorToResponse } from "../../../utils/responses";
-import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
-import { getParticipantId } from "../../../../surveys/participant-ids";
-import { getParticipantAnswersForSurvey } from "../../../../surveys/answers/database";
-import { dbAnswersToAnswers } from "../../../../surveys/answers/answer-converters";
+import { getAnswersForSurvey } from "../../../../surveys/answers/database";
+import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
+import { AnswersForQuestions } from "../../../../surveys";
+import { BadRequestError } from "../../../http-errors";
 import { getUserProfile } from "../../../../users/user-profiles";
+import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
+import { getParticipantId } from "../../../../surveys/participant-ids";
+import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
+import { convertErrorToResponse } from "../../../utils/responses";
 
 const logger = createLogger("api/answers");
 
@@ -72,19 +71,9 @@ export async function POST(
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: PathParams },
-) {
+export async function GET(_: Request, { params }: { params: PathParams }) {
   const { surveyId } = params;
-  const userId = getUserIdFromAuthorizationJwt(request);
-  const participantId = getParticipantId(userId, surveyId);
   const supabaseClient = await getServerSideSupabaseClient();
-  const dbAnswers = await getParticipantAnswersForSurvey(
-    supabaseClient(),
-    surveyId,
-    participantId,
-  );
-  const answers = dbAnswersToAnswers(dbAnswers);
-  return Response.json(answers);
+  const dbAnswers = await getAnswersForSurvey(supabaseClient(), surveyId);
+  return Response.json(dbAnswers);
 }

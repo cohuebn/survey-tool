@@ -35,7 +35,7 @@ export default function Page() {
       <SurveysList
         surveys={filteredSurveySummaries}
         linkText="Review survey results"
-        linkBuilder={(surveyId) => `/results/${surveyId}`}
+        linkBuilder={(surveyId) => `/results/${surveyId}/questions/1`}
       />
     </div>
   );

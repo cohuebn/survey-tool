@@ -49,7 +49,7 @@ export function SurveyTaker({
       window.history.pushState(
         null,
         "",
-        `/surveys/${surveyId}/questions/${questionNumber}`,
+        `/surveys/${surveyId}/results/${questionNumber}`,
       );
     },
   });
@@ -73,7 +73,7 @@ export function SurveyTaker({
       );
     }
 
-    const response = await fetch(`/api/surveys/${surveyId}/answers`, {
+    const response = await fetch(`/api/surveys/${surveyId}/answers/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

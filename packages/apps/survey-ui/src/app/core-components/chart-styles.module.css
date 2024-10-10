@@ -1,0 +1,14 @@
+div.chartContainer {
+  position: relative;
+  height: 60vh;
+}
+
+@media screen and (max-width: 720px) {
+  /* On small screens, constrain the height based on the screen width assuming a 1:1 aspect ratio
+  and the width of the screen being the limiting factor on smaller screens.
+  It seems as though height-constraint works best for chartjs responsiveness
+  */
+  div.chartContainer {
+    height: 60vw;
+  }
+}

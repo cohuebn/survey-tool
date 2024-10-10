@@ -1,6 +1,11 @@
 import groupBy from "just-group-by";
 
-import { AnswersForQuestions, DBAnswer } from "../types";
+import {
+  AggregatedAnswersForQuestion,
+  AggregatedAnswersForQuestions,
+  AnswersForQuestions,
+  DBAnswer,
+} from "../types";
 
 /**
  * Convert DB answers (1 row per answer string)
@@ -21,4 +26,16 @@ export function dbAnswersToAnswers(dbAnswers: DBAnswer[]): AnswersForQuestions {
     },
     {},
   );
+}
+
+/**
+ * Convert DB answers (1 row per answer string)
+ * into answers for the application (1 row per question with 1 or more aggregated answers beneath it).
+ * @param dbAnswers The full answer objects from the database
+ * @returns A record mapping question IDs to aggregated answers. Answers will be returned as an array of objects
+ */
+export function dbAggregatedAnswersToAnswers(
+  dbAnswers: AggregatedAnswersForQuestion[],
+): AggregatedAnswersForQuestions {
+  return groupBy(dbAnswers, (x) => x.questionId);
 }

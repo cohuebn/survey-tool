@@ -1,0 +1,28 @@
+h2.surveyTitle {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+div.questionContent {
+  max-width: 30rem;
+  padding-bottom: 2rem;
+}
+
+@media screen and (min-width: 1200px) {
+  div.questionContent {
+    width: 30rem;
+  }
+}
+
+div.chartContainer {
+  position: relative;
+}
+
+.questionsNavigation {
+  position: fixed;
+  bottom: 1rem;
+}
+
+p.question {
+  margin-bottom: 1rem;
+}

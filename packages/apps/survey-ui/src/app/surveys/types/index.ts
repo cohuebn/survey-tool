@@ -6,3 +6,5 @@ export * from "./authoring";
 export * from "./survey-editor-action";
 export * from "./permissions";
 export * from "./answers";
+export * from "./survey-taker-action";
+export * from "./survey-reviewer-action";

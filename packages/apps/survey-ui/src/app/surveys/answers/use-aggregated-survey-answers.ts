@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
 import { isNullOrUndefined } from "@survey-tool/core";
+import { useEffect, useState } from "react";
 
-import { AnswersForQuestions } from "../types";
+import { AggregatedAnswersForQuestions } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 
-async function fetchSurveyAnswers(
+async function fetchAggregatedSurveyAnswers(
   accessToken: string | null,
   surveyId: string,
-): Promise<AnswersForQuestions> {
+): Promise<AggregatedAnswersForQuestions> {
   if (isNullOrUndefined(accessToken)) {
     throw new Error(
       "No access token associated with session; can't fetch answers",
     );
   }
-  const response = await fetch(`/api/surveys/${surveyId}/answers/user`, {
+  const response = await fetch(`/api/surveys/${surveyId}/answers/aggregated`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -21,23 +21,25 @@ async function fetchSurveyAnswers(
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  const answers: AnswersForQuestions = await response.json();
+  const answers: AggregatedAnswersForQuestions = await response.json();
   return answers;
 }
 
-export function useCurrentUserSurveyAnswers(surveyId: string) {
+export function useAggregatedSurveyAnswers(surveyId: string) {
   const { accessToken, accessTokenLoaded } = useAccessToken();
   const [answersLoaded, setAnswersLoaded] = useState(false);
-  const [answers, setAnswers] = useState<AnswersForQuestions>({});
+  const [answers, setAnswers] = useState<AggregatedAnswersForQuestions>({});
 
   useEffect(() => {
     if (answersLoaded) return;
     if (!accessTokenLoaded) return;
 
-    fetchSurveyAnswers(accessToken, surveyId).then((loadedAnswers) => {
-      setAnswers(loadedAnswers);
-      setAnswersLoaded(true);
-    });
+    fetchAggregatedSurveyAnswers(accessToken, surveyId).then(
+      (loadedAnswers) => {
+        setAnswers(loadedAnswers);
+        setAnswersLoaded(true);
+      },
+    );
   }, [surveyId, answersLoaded, accessToken, accessTokenLoaded]);
 
   return { answers, answersLoaded };
