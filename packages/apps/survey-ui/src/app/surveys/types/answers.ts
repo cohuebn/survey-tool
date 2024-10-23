@@ -1,5 +1,7 @@
 // Encapsulating these types in case single answer/multi answer types
 
+import { Hospital } from "../../hospitals/types";
+
 // need to support additional primitives in the future
 export type SingleAnswer = string;
 export type MultiAnswer = string[];
@@ -34,3 +36,16 @@ export type AggregatedAnswersForQuestions = Record<
   string,
   AggregatedAnswersForQuestion[]
 >;
+
+export type DBParticipatingHospital = {
+  location_id: string;
+  hospital_name: string;
+  hospital_city: string;
+  hospital_state: string;
+  participant_count: number;
+};
+
+export type ParticipatingHospital = {
+  hospital: Hospital;
+  participantCount: number;
+};

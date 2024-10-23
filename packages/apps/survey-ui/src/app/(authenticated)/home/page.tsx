@@ -60,8 +60,8 @@ export default function Page() {
       <Typography variant="h2">Home</Typography>
       {userProfile?.validatedTimestamp ? (
         <Typography variant="body1">
-          Placeholder for the homepage for approved users. Eventually, this will
-          contained recently taken and potential surveys to take.
+          Welcome back. You can participate in surveys using the navigation
+          menu.
         </Typography>
       ) : (
         <Typography variant="body1">

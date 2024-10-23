@@ -1,5 +1,6 @@
 import {
   AggregatedAnswersForQuestions,
+  ParticipatingHospital,
   Question,
   SurveySummary,
 } from "../types";
@@ -12,6 +13,7 @@ type SurveyReviewerReducerState = {
   answers: AggregatedAnswersForQuestions;
   activeQuestionNumber: number;
   activeQuestion: Question;
+  participatingHospitals: ParticipatingHospital[];
   onQuestionChange: (questionNumber: number) => void;
 };
 

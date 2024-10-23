@@ -6,7 +6,10 @@ import {
   AggregatedAnswersForQuestion,
   DBAnswer,
   DBAnswerWithoutParticipant,
+  ParticipatingHospital,
 } from "../types";
+
+import { toParticipatingHospital } from "./participating-hospitals";
 
 /**
  * Get all answers for the given survey for the given participant id
@@ -98,4 +101,22 @@ export async function insertAnswers(
   const dbAnswers = answers.map(toSnake<DBAnswer>);
   const dbResult = await dbClient.from("answers").insert(dbAnswers);
   if (dbResult.error) throw asPostgresError(dbResult.error);
+}
+
+/**
+ * Get all hospitals with at least one participant in the given survey
+ * @param dbClient The Supabase client
+ * @param surveyId The id of the survey to find participants for
+ * @returns All participating hospitals including a count of participants in the given survey
+ */
+export async function getParticipatingHospitals(
+  dbClient: AppSupabaseClient,
+  surveyId: string,
+): Promise<ParticipatingHospital[]> {
+  const query = dbClient.rpc("get_participating_hospitals", {
+    survey_id_to_find: surveyId,
+  });
+  const dbResult = await query;
+  if (dbResult.error) throw asPostgresError(dbResult.error);
+  return dbResult.data.map(toParticipatingHospital);
 }

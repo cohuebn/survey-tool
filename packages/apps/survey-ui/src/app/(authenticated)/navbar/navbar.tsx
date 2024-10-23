@@ -1,8 +1,9 @@
 "use client";
 
 import { Edit, Insights, PendingActions, Quiz } from "@mui/icons-material";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Drawer, useMediaQuery } from "@mui/material";
+import { usePathname } from "next/navigation";
 
 import { adminScope, authorScope } from "../../auth/scopes";
 
@@ -16,6 +17,12 @@ type NavbarProps = {
 
 export function Navbar({ userScopes }: NavbarProps) {
   const { open, setOpen } = useContext(NavbarContext);
+  const activeRoute = usePathname();
+
+  const isActive = useCallback(
+    (route: string) => route === activeRoute,
+    [activeRoute],
+  );
 
   // Not my favorite thing, but it's the only way I've found to style
   // the drawer's nested paper control position relative to the app bar.
@@ -41,6 +48,7 @@ export function Navbar({ userScopes }: NavbarProps) {
               href="/results"
               icon={<Insights fontSize="large" />}
               text="Survey results"
+              active={isActive("/results")}
             />
           </li>
           <li>
@@ -48,6 +56,7 @@ export function Navbar({ userScopes }: NavbarProps) {
               href="/surveys"
               icon={<Quiz fontSize="large" />}
               text="Take surveys"
+              active={isActive("/surveys")}
             />
           </li>
           {userScopes.includes(authorScope) ? (
@@ -56,6 +65,7 @@ export function Navbar({ userScopes }: NavbarProps) {
                 href="/authoring"
                 icon={<Edit fontSize="large" />}
                 text="Author surveys"
+                active={isActive("/authoring")}
               />
             </li>
           ) : null}
@@ -65,6 +75,7 @@ export function Navbar({ userScopes }: NavbarProps) {
                 href="/users/needing-validation"
                 icon={<PendingActions fontSize="large" />}
                 text="Validate new users"
+                active={isActive("/users/needing-validation")}
               />
             </li>
           ) : null}

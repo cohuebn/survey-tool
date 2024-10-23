@@ -30,3 +30,7 @@
 .navbarLink:hover {
   text-decoration: underline;
 }
+
+.navbarLink.active {
+  color: var(--primary-accent);
+}

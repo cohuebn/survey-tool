@@ -1,8 +1,9 @@
 import { ChangeEvent, useReducer } from "react";
-import { Pagination, Typography } from "@mui/material";
+import { Autocomplete, Pagination, TextField, Typography } from "@mui/material";
 
 import {
   AggregatedAnswersForQuestions,
+  ParticipatingHospital,
   Question,
   SurveySummary,
 } from "../types";
@@ -17,6 +18,7 @@ type SurveyReviewerProps = {
   questions: Question[];
   answers: AggregatedAnswersForQuestions;
   initialQuestionNumber: number;
+  participatingHospitals: ParticipatingHospital[];
 };
 
 export function SurveyReviewer({
@@ -25,6 +27,7 @@ export function SurveyReviewer({
   questions,
   answers,
   initialQuestionNumber,
+  participatingHospitals,
 }: SurveyReviewerProps) {
   const activeQuestion = questions[initialQuestionNumber - 1];
   const [surveyReviewerState, dispatch] = useReducer(surveyReviewerReducer, {
@@ -34,6 +37,7 @@ export function SurveyReviewer({
     activeQuestionNumber: initialQuestionNumber,
     activeQuestion,
     answers,
+    participatingHospitals,
     onQuestionChange: (questionNumber: number) => {
       window.history.pushState(
         null,
@@ -49,6 +53,12 @@ export function SurveyReviewer({
         <Typography className={styles.surveyTitle} variant="h2">
           {summary.name}
         </Typography>
+        <Autocomplete
+          multiple
+          options={participatingHospitals}
+          getOptionLabel={(option) => option.hospital.name}
+          renderInput={(params) => <TextField {...params} label="Location" />}
+        />
         {renderQuestion({
           question: surveyReviewerState.activeQuestion,
           answers:
