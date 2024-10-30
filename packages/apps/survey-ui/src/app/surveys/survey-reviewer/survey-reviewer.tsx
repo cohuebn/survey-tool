@@ -1,4 +1,4 @@
-import { ChangeEvent, useReducer } from "react";
+import { ChangeEvent, useReducer, useState } from "react";
 import { Autocomplete, Pagination, TextField, Typography } from "@mui/material";
 
 import {
@@ -46,6 +46,9 @@ export function SurveyReviewer({
       );
     },
   });
+  const [filteredHospitals, setFilteredHospitals] = useState<
+    ParticipatingHospital[]
+  >([]);
 
   return (
     <>
@@ -58,6 +61,12 @@ export function SurveyReviewer({
           options={participatingHospitals}
           getOptionLabel={(option) => option.hospital.name}
           renderInput={(params) => <TextField {...params} label="Location" />}
+          onChange={(_, newValue) => {
+            // eslint-disable-next-line no-console
+            console.log(newValue);
+            setFilteredHospitals(newValue);
+          }}
+          value={filteredHospitals}
         />
         {renderQuestion({
           question: surveyReviewerState.activeQuestion,

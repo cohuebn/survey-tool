@@ -37,5 +37,7 @@ export function dbAnswersToAnswers(dbAnswers: DBAnswer[]): AnswersForQuestions {
 export function dbAggregatedAnswersToAnswers(
   dbAnswers: AggregatedAnswersForQuestion[],
 ): AggregatedAnswersForQuestions {
+  // eslint-disable-next-line no-console
+  console.log({ dbAnswers });
   return groupBy(dbAnswers, (x) => x.questionId);
 }

@@ -76,9 +76,11 @@ export async function getAnswersForSurvey(
 export async function getAggregatedAnswersForSurvey(
   dbClient: AppSupabaseClient,
   surveyId: string,
+  locations: string[] | null = null,
 ): Promise<AggregatedAnswersForQuestion[]> {
   const query = dbClient.rpc("get_aggregate_answers", {
     survey_id_to_find: surveyId,
+    locations_to_find: locations,
   });
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);

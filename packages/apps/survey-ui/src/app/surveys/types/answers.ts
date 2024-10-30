@@ -27,6 +27,7 @@ export type DBAnswerWithoutParticipant = Omit<DBAnswer, "participantId">;
 export type AnswersForQuestions = Record<string, Answer>;
 
 export type AggregatedAnswersForQuestion = {
+  location: string;
   questionId: string;
   answer: string;
   answerCount: number;
