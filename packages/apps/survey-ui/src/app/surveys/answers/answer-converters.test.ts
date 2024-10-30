@@ -48,5 +48,24 @@ describe("dbAggregatedAnswersToAnswers", () => {
     expect(resultKeys).toContain("Q1");
     expect(resultKeys).toContain("Q2");
     expect(resultKeys).toContain("Q3");
+
+    const q1Answers = result.Q1;
+    expect(q1Answers.length).toBe(1);
+    expect(q1Answers[0].answer).toBe("A1");
+    expect(q1Answers[0].answerCount).toBe(2);
+
+    const q2Answers = result.Q2;
+    expect(q2Answers.length).toBe(2);
+    expect(q2Answers[0].answer).toBe("A1");
+    expect(q2Answers[0].answerCount).toBe(1);
+    expect(q2Answers[1].answer).toBe("A2");
+    expect(q2Answers[1].answerCount).toBe(2);
+
+    const q3Answers = result.Q3;
+    expect(q3Answers.length).toBe(2);
+    expect(q3Answers[0].answer).toBe("A4");
+    expect(q3Answers[0].answerCount).toBe(1);
+    expect(q3Answers[1].answer).toBe("A5");
+    expect(q3Answers[1].answerCount).toBe(4);
   });
 });

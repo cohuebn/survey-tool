@@ -26,16 +26,20 @@ export type DBAnswerWithoutParticipant = Omit<DBAnswer, "participantId">;
 
 export type AnswersForQuestions = Record<string, Answer>;
 
-export type AggregatedAnswersForQuestion = {
-  location: string;
+export type AggregatedAnswerForQuestion = {
   questionId: string;
   answer: string;
   answerCount: number;
 };
 
+export type AggregatedAnswerForQuestionWithLocation =
+  AggregatedAnswerForQuestion & {
+    location: string;
+  };
+
 export type AggregatedAnswersForQuestions = Record<
   string,
-  AggregatedAnswersForQuestion[]
+  AggregatedAnswerForQuestion[]
 >;
 
 export type DBParticipatingHospital = {

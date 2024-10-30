@@ -1,13 +1,13 @@
 import { Typography } from "@mui/material";
 import { useMemo } from "react";
 
-import { AggregatedAnswersForQuestion, Question } from "../../types";
+import { AggregatedAnswerForQuestion, Question } from "../../types";
 import styles from "../styles.module.css";
 import { useChartCanvas } from "../../../core-components/use-chart-canvas";
 
 type AnswersPieChartProps = {
   question: Question;
-  answers: AggregatedAnswersForQuestion[];
+  answers: AggregatedAnswerForQuestion[];
 };
 
 export function AnswersPieChart({ question, answers }: AnswersPieChartProps) {

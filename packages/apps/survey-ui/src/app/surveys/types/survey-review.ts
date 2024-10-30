@@ -2,10 +2,10 @@ import { Dispatch } from "react";
 
 import { Question } from "./questions";
 import { SurveyReviewerAction } from "./survey-reviewer-action";
-import { AggregatedAnswersForQuestion } from "./answers";
+import { AggregatedAnswerForQuestion } from "./answers";
 
 export type ReviewQuestionProps = {
   question: Question;
-  answers: AggregatedAnswersForQuestion[];
+  answers: AggregatedAnswerForQuestion[];
   dispatch: Dispatch<SurveyReviewerAction>;
 };

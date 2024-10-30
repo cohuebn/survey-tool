@@ -3,7 +3,7 @@ import { toCamel, toSnake } from "convert-keys";
 import { asPostgresError } from "../../errors/postgres-error";
 import { AppSupabaseClient } from "../../supabase/supabase-context";
 import {
-  AggregatedAnswersForQuestion,
+  AggregatedAnswerForQuestionWithLocation,
   DBAnswer,
   DBAnswerWithoutParticipant,
   ParticipatingHospital,
@@ -77,14 +77,14 @@ export async function getAggregatedAnswersForSurvey(
   dbClient: AppSupabaseClient,
   surveyId: string,
   locations: string[] | null = null,
-): Promise<AggregatedAnswersForQuestion[]> {
+): Promise<AggregatedAnswerForQuestionWithLocation[]> {
   const query = dbClient.rpc("get_aggregate_answers", {
     survey_id_to_find: surveyId,
     locations_to_find: locations,
   });
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);
-  return dbResult.data.map(toCamel<AggregatedAnswersForQuestion>);
+  return dbResult.data.map(toCamel<AggregatedAnswerForQuestionWithLocation>);
 }
 
 /** Delete the answers with the provided ids */
