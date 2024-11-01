@@ -1,5 +1,6 @@
 import {
   AggregatedAnswersForQuestions,
+  AggregatedAnswerWithLocationForQuestion,
   ParticipatingHospital,
   Question,
   SurveySummary,
@@ -10,6 +11,7 @@ type SurveyReviewerReducerState = {
   surveyId: string;
   summary: SurveySummary;
   questions: Question[];
+  allAnswers: AggregatedAnswerWithLocationForQuestion[];
   answers: AggregatedAnswersForQuestions;
   activeQuestionNumber: number;
   activeQuestion: Question;

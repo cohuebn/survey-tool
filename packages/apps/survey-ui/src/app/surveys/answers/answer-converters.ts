@@ -2,8 +2,9 @@ import groupBy from "just-group-by";
 
 import {
   AggregatedAnswerForQuestion,
-  AggregatedAnswerForQuestionWithLocation,
+  AggregatedAnswerWithLocationForQuestion,
   AggregatedAnswersForQuestions,
+  AggregatedAnswersWithLocationForQuestions,
   AnswersForQuestions,
   DBAnswer,
 } from "../types";
@@ -29,18 +30,32 @@ export function dbAnswersToAnswers(dbAnswers: DBAnswer[]): AnswersForQuestions {
   );
 }
 
-function getAnswerKey(answer: AggregatedAnswerForQuestionWithLocation): string {
+/**
+ * Convert DB answers (1 row per answer string)
+ * into answers for the application (1 row per question with 1 or more aggregated answers beneath it).
+ * Note this function combines answers from multiple locations by adding counts together.
+ * @param dbAnswers The full answer objects from the database
+ * @returns A record mapping question IDs to aggregated answers. Answers will be returned as an array of objects
+ */
+export function dbAggregatedAnswersToAnswers(
+  dbAnswers: AggregatedAnswerWithLocationForQuestion[],
+): AggregatedAnswersWithLocationForQuestions {
+  return groupBy(dbAnswers, (x) => x.questionId);
+}
+
+function getAnswerKey(answer: AggregatedAnswerWithLocationForQuestion): string {
   return `${answer.questionId}-${answer.answer}`;
 }
 
 /**
  * Combine a answers include location into location-agnostic answers by adding
- * counts together for the same answer.
+ * counts together for the same answer. This also convertes an array of answers
+ * into answers for the application (1 entry per question with 1 or more aggregated answers beneath it).
  */
-function combineByLocationAnswers(
-  answersByLocation: AggregatedAnswerForQuestionWithLocation[],
-): AggregatedAnswerForQuestion[] {
-  const aggregatedAnswerMap = answersByLocation.reduce<
+export function combineAnswersFromMultipleLocations(
+  answersWithLocation: AggregatedAnswerWithLocationForQuestion[],
+): AggregatedAnswersForQuestions {
+  const aggregatedAnswerMap = answersWithLocation.reduce<
     Record<string, AggregatedAnswerForQuestion>
   >((aggregateAnswers, answer) => {
     const answerKey = getAnswerKey(answer);
@@ -53,18 +68,9 @@ function combineByLocationAnswers(
     };
     return { ...aggregateAnswers, [answerKey]: updatedAnswer };
   }, {});
-  return Object.values(aggregatedAnswerMap);
-}
 
-/**
- * Convert DB answers (1 row per answer string)
- * into answers for the application (1 row per question with 1 or more aggregated answers beneath it).
- * Note this function combines answers from multiple locations by adding counts together.
- * @param dbAnswers The full answer objects from the database
- * @returns A record mapping question IDs to aggregated answers. Answers will be returned as an array of objects
- */
-export function dbAggregatedAnswersToAnswers(
-  dbAnswers: AggregatedAnswerForQuestionWithLocation[],
-): AggregatedAnswersForQuestions {
-  return groupBy(combineByLocationAnswers(dbAnswers), (x) => x.questionId);
+  return groupBy(
+    Object.values(aggregatedAnswerMap).flat(),
+    (x) => x.questionId,
+  );
 }

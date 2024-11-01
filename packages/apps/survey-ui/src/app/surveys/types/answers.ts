@@ -32,7 +32,7 @@ export type AggregatedAnswerForQuestion = {
   answerCount: number;
 };
 
-export type AggregatedAnswerForQuestionWithLocation =
+export type AggregatedAnswerWithLocationForQuestion =
   AggregatedAnswerForQuestion & {
     location: string;
   };
@@ -40,6 +40,11 @@ export type AggregatedAnswerForQuestionWithLocation =
 export type AggregatedAnswersForQuestions = Record<
   string,
   AggregatedAnswerForQuestion[]
+>;
+
+export type AggregatedAnswersWithLocationForQuestions = Record<
+  string,
+  AggregatedAnswerWithLocationForQuestion[]
 >;
 
 export type DBParticipatingHospital = {

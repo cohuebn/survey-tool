@@ -1,12 +1,19 @@
-import { ChangeEvent, useReducer, useState } from "react";
-import { Autocomplete, Pagination, TextField, Typography } from "@mui/material";
+import { ChangeEvent, useMemo, useReducer, useState } from "react";
+import {
+  Autocomplete,
+  Chip,
+  Pagination,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 import {
-  AggregatedAnswersForQuestions,
+  AggregatedAnswerWithLocationForQuestion,
   ParticipatingHospital,
   Question,
   SurveySummary,
 } from "../types";
+import { combineAnswersFromMultipleLocations } from "../answers/answer-converters";
 
 import { surveyReviewerReducer } from "./survey-reviewer-reducer";
 import styles from "./styles.module.css";
@@ -16,7 +23,7 @@ type SurveyReviewerProps = {
   surveyId: string;
   summary: SurveySummary;
   questions: Question[];
-  answers: AggregatedAnswersForQuestions;
+  allAnswers: AggregatedAnswerWithLocationForQuestion[];
   initialQuestionNumber: number;
   participatingHospitals: ParticipatingHospital[];
 };
@@ -25,17 +32,32 @@ export function SurveyReviewer({
   surveyId,
   summary,
   questions,
-  answers,
+  allAnswers,
   initialQuestionNumber,
   participatingHospitals,
 }: SurveyReviewerProps) {
   const activeQuestion = questions[initialQuestionNumber - 1];
+  const [filteredHospitals, setFilteredHospitals] = useState<
+    ParticipatingHospital[]
+  >([]);
+  const relevantLocationIds = useMemo(() => {
+    return filteredHospitals.map((hospital) => hospital.hospital.id);
+  }, [filteredHospitals]);
+  const answers = useMemo(() => {
+    const relevantAnswers = relevantLocationIds.length
+      ? allAnswers.filter((answer) =>
+          relevantLocationIds.includes(answer.location),
+        )
+      : allAnswers;
+    return combineAnswersFromMultipleLocations(relevantAnswers);
+  }, [allAnswers, relevantLocationIds]);
   const [surveyReviewerState, dispatch] = useReducer(surveyReviewerReducer, {
     surveyId,
     summary,
     questions,
     activeQuestionNumber: initialQuestionNumber,
     activeQuestion,
+    allAnswers,
     answers,
     participatingHospitals,
     onQuestionChange: (questionNumber: number) => {
@@ -46,9 +68,6 @@ export function SurveyReviewer({
       );
     },
   });
-  const [filteredHospitals, setFilteredHospitals] = useState<
-    ParticipatingHospital[]
-  >([]);
 
   return (
     <>
@@ -58,12 +77,26 @@ export function SurveyReviewer({
         </Typography>
         <Autocomplete
           multiple
+          fullWidth
           options={participatingHospitals}
           getOptionLabel={(option) => option.hospital.name}
           renderInput={(params) => <TextField {...params} label="Location" />}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => {
+              const { key, ...tagProps } = getTagProps({ index });
+              return (
+                <Chip
+                  variant={"outlined"}
+                  color={"primary"}
+                  size={"small"}
+                  key={key}
+                  label={option.hospital.name}
+                  {...tagProps}
+                />
+              );
+            })
+          }
           onChange={(_, newValue) => {
-            // eslint-disable-next-line no-console
-            console.log(newValue);
             setFilteredHospitals(newValue);
           }}
           value={filteredHospitals}

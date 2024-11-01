@@ -1,13 +1,13 @@
 import { isNullOrUndefined } from "@survey-tool/core";
 import { useEffect, useState } from "react";
 
-import { AggregatedAnswersForQuestions } from "../types";
+import { AggregatedAnswerWithLocationForQuestion } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 
 async function fetchAggregatedSurveyAnswers(
   accessToken: string | null,
   surveyId: string,
-): Promise<AggregatedAnswersForQuestions> {
+): Promise<AggregatedAnswerWithLocationForQuestion[]> {
   if (isNullOrUndefined(accessToken)) {
     throw new Error(
       "No access token associated with session; can't fetch answers",
@@ -21,14 +21,15 @@ async function fetchAggregatedSurveyAnswers(
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  const answers: AggregatedAnswersForQuestions = await response.json();
-  return answers;
+  return response.json();
 }
 
 export function useAggregatedSurveyAnswers(surveyId: string) {
   const { accessToken, accessTokenLoaded } = useAccessToken();
   const [answersLoaded, setAnswersLoaded] = useState(false);
-  const [answers, setAnswers] = useState<AggregatedAnswersForQuestions>({});
+  const [answers, setAnswers] = useState<
+    AggregatedAnswerWithLocationForQuestion[]
+  >([]);
 
   useEffect(() => {
     if (answersLoaded) return;

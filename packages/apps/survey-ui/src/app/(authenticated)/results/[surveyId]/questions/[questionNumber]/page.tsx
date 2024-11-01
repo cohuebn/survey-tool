@@ -34,7 +34,7 @@ export default function Page({ params }: PageProps) {
         surveyId={surveyId}
         summary={surveySummary}
         questions={questions}
-        answers={answers}
+        allAnswers={answers}
         participatingHospitals={participatingHospitals}
         initialQuestionNumber={parseInt(questionNumber, 10)}
       />
