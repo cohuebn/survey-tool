@@ -80,7 +80,9 @@ export function SurveyReviewer({
           fullWidth
           options={participatingHospitals}
           getOptionLabel={(option) => option.hospital.name}
-          renderInput={(params) => <TextField {...params} label="Location" />}
+          renderInput={(params) => (
+            <TextField {...params} label="Filter by location" />
+          )}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => {
               const { key, ...tagProps } = getTagProps({ index });

@@ -1,13 +1,12 @@
 "use client";
 
-import { CircularProgress, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { useState } from "react";
 import { Search } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
 import searchSurveysStyles from "@styles/search-surveys.module.css";
 
-import { useSurveySummaries } from "../../surveys";
-import { SurveysList } from "../../surveys/surveys-list/surveys-list";
+import { SurveysList, useSurveySummaries } from "../../surveys";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Page() {
@@ -34,8 +33,16 @@ export default function Page() {
       />
       <SurveysList
         surveys={filteredSurveySummaries}
-        linkText="Review survey results"
-        linkBuilder={(surveyId) => `/results/${surveyId}/questions/1`}
+        actionsBuilder={(survey) => (
+          <>
+            <Button href={`/results/${survey.id}/questions/1`}>
+              Review survey results
+            </Button>
+            <Button href={`/api/surveys/${survey.id}/answers/aggregated/csv`}>
+              Export results CSV
+            </Button>
+          </>
+        )}
       />
     </div>
   );

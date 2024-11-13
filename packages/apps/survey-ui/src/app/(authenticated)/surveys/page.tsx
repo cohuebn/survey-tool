@@ -7,7 +7,7 @@ import layoutStyles from "@styles/layout.module.css";
 import searchSurveysStyles from "@styles/search-surveys.module.css";
 
 import { useSurveySummaries } from "../../surveys";
-import { SurveysList } from "../../surveys/surveys-list/surveys-list";
+import { SingleActionSurveysList } from "../../surveys/surveys-list/single-action-surveys-list";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Page() {
@@ -32,7 +32,7 @@ export default function Page() {
           endAdornment: <Search />,
         }}
       />
-      <SurveysList
+      <SingleActionSurveysList
         surveys={filteredSurveySummaries}
         linkText="Take survey"
         linkBuilder={(surveyId) => `/surveys/${surveyId}/questions/1`}

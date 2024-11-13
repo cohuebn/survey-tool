@@ -1,27 +1,21 @@
 import { SurveySummary } from "../types";
 
-import { SurveyCard } from "./survey-card";
 import styles from "./styles.module.css";
+import { SurveyCard } from "./survey-card";
 
 type SurveysListProps = {
   surveys: SurveySummary[];
-  linkText: string;
-  linkBuilder: (surveyId: string) => string;
+  actionsBuilder: (survey: SurveySummary) => React.ReactNode;
 };
 
-export function SurveysList({
-  surveys,
-  linkText,
-  linkBuilder,
-}: SurveysListProps) {
+export function SurveysList({ surveys, actionsBuilder }: SurveysListProps) {
   return (
     <div className={styles.surveysList}>
       {surveys.map((survey) => (
         <SurveyCard
           key={survey.id}
           survey={survey}
-          linkText={linkText}
-          linkBuilder={linkBuilder}
+          actions={actionsBuilder(survey)}
         />
       ))}
     </div>

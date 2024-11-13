@@ -7,7 +7,7 @@ import layoutStyles from "@styles/layout.module.css";
 import buttonStyles from "@styles/buttons.module.css";
 import searchSurveysStyles from "@styles/search-surveys.module.css";
 
-import { useSurveySummaries, SurveysList } from "../../surveys";
+import { useSurveySummaries, SingleActionSurveysList } from "../../surveys";
 import { FileIssueLink } from "../../issues/file-issue-link";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
@@ -37,7 +37,7 @@ export default function Authoring() {
           }}
         />
         {filteredSurveySummaries.length ? (
-          <SurveysList
+          <SingleActionSurveysList
             surveys={surveySummaries}
             linkText="Author survey"
             linkBuilder={(surveyId) => `/authoring/${surveyId}`}

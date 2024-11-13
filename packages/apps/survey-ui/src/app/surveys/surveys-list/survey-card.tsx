@@ -1,10 +1,4 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import { Card, CardActions, CardContent, Typography } from "@mui/material";
 
 import { SurveySummary } from "../types";
 
@@ -12,11 +6,10 @@ import styles from "./styles.module.css";
 
 type SurveyCardProps = {
   survey: SurveySummary;
-  linkBuilder: (surveyId: string) => string;
-  linkText: string;
+  actions: React.ReactNode;
 };
 
-export function SurveyCard({ survey, linkBuilder, linkText }: SurveyCardProps) {
+export function SurveyCard({ survey, actions }: SurveyCardProps) {
   return (
     <Card className={styles.surveyCard}>
       <CardContent>
@@ -34,9 +27,7 @@ export function SurveyCard({ survey, linkBuilder, linkText }: SurveyCardProps) {
           </Typography>
         ) : null}
       </CardContent>
-      <CardActions>
-        <Button href={linkBuilder(survey.id)}>{linkText}</Button>
-      </CardActions>
+      <CardActions>{actions}</CardActions>
     </Card>
   );
 }

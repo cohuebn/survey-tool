@@ -1,5 +1,7 @@
 import { Typography } from "@mui/material";
 import { useMemo } from "react";
+import { PersonOff } from "@mui/icons-material";
+import layoutStyles from "@styles/layout.module.css";
 
 import { AggregatedAnswerForQuestion, Question } from "../../types";
 import styles from "../styles.module.css";
@@ -15,10 +17,10 @@ export function AnswersPieChart({ question, answers }: AnswersPieChartProps) {
     return {
       type: "doughnut" as const,
       data: {
-        labels: answers.map((answer) => answer.answer),
+        labels: answers?.map((answer) => answer.answer) ?? [],
         datasets: [
           {
-            data: answers.map((x) => x.answerCount),
+            data: answers?.map((x) => x.answerCount) ?? [],
           },
         ],
       },
@@ -35,7 +37,17 @@ export function AnswersPieChart({ question, answers }: AnswersPieChartProps) {
       <Typography variant="body1" className={styles.question}>
         Question: {question.question}
       </Typography>
-      {chartCanvas}
+      {answers?.length > 0 ? (
+        chartCanvas
+      ) : (
+        <Typography
+          variant="body1"
+          className={layoutStyles.verticallyCenteredContent}
+        >
+          <PersonOff />
+          No answers for this question yet
+        </Typography>
+      )}
     </div>
   );
 }
