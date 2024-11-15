@@ -55,11 +55,11 @@ function getNumericAnswerValue(
   return undefined;
 }
 
-/** Get the overall rating given the provided survey questions & answers */
-export function toOverallRating(
+/** Get the overall rating numeric value given the provided survey questions & answers */
+export function toOverallRatingValue(
   questions: Question[],
   answers: SavableAnswer[],
-) {
+): number {
   const questionsById = questions.reduce<Record<string, Question>>(
     (_questionsById, question) => {
       return { ..._questionsById, [question.id]: question };

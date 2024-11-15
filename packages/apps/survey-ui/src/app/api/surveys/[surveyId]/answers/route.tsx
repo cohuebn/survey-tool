@@ -13,7 +13,9 @@ import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-
 import { convertErrorToResponse } from "../../../utils/responses";
 import { User } from "../../../../users/types";
 import { AppSupabaseClient } from "../../../../supabase/supabase-context";
-import { toOverallRating } from "../../../../surveys/answers/to-overall-rating";
+import { toOverallRatingValue } from "../../../../surveys/answers/to-overall-rating";
+import { saveOverallRating } from "../../../../surveys/overall-ratings/database";
+import { SavableOverallRating } from "../../../../surveys/types/overall-ratings";
 
 const logger = createLogger("api/answers");
 
@@ -25,16 +27,6 @@ type SubmitAnswersRequest = {
 type PathParams = {
   surveyId: string;
 };
-
-async function saveUserAnswers(
-  dbClient: AppSupabaseClient,
-  surveyId: string,
-  answers: SavableAnswer[],
-  userProfile: User,
-) {
-  const participantId = getParticipantId(userProfile.userId, surveyId);
-  await updateParticipantAnswers(dbClient, participantId, surveyId, answers);
-}
 
 export async function POST(
   request: Request,
@@ -68,12 +60,27 @@ export async function POST(
       );
     }
 
+    const participantId = getParticipantId(userProfile.userId, surveyId);
     const savableAnswers = toSavableAnswers(surveyId, answers, userProfile);
-    const overallRating = toOverallRating(questions, savableAnswers);
-    logger.info({ overallRating }, "Would've set overall rating");
-    await saveUserAnswers(dbClient(), surveyId, savableAnswers, userProfile);
+    const overallRatingValue = toOverallRatingValue(questions, savableAnswers);
+    const overallRating: SavableOverallRating = {
+      surveyId,
+      participantId,
+      rating: overallRatingValue,
+      ratingTime: new Date(),
+    };
 
-    return Response.json({});
+    const [, savedOverallRating] = await Promise.all([
+      updateParticipantAnswers(
+        dbClient(),
+        participantId,
+        surveyId,
+        savableAnswers,
+      ),
+      saveOverallRating(dbClient(), overallRating),
+    ]);
+
+    return Response.json({ overallRating: savedOverallRating });
   } catch (err: unknown) {
     return convertErrorToResponse(err);
   }

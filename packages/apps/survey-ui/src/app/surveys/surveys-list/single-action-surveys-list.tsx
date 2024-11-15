@@ -19,7 +19,11 @@ export function SingleActionSurveysList({
 }: SurveysListProps) {
   const actionsBuilder = useCallback(
     (survey: SurveySummary) => {
-      return <Button href={linkBuilder(survey.id)}>{linkText}</Button>;
+      return (
+        <Button variant="contained" href={linkBuilder(survey.id)}>
+          {linkText}
+        </Button>
+      );
     },
     [linkText, linkBuilder],
   );

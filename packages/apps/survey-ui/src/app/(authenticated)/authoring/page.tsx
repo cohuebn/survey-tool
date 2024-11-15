@@ -35,11 +35,12 @@ export default function Authoring() {
           InputProps={{
             endAdornment: <Search />,
           }}
+          fullWidth
         />
         {filteredSurveySummaries.length ? (
           <SingleActionSurveysList
             surveys={surveySummaries}
-            linkText="Author survey"
+            linkText="Edit survey"
             linkBuilder={(surveyId) => `/authoring/${surveyId}`}
           />
         ) : (

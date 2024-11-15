@@ -104,6 +104,14 @@ export function SurveyTaker({
         })}
         <div className={clsx(buttonStyles.buttons, styles.buttons)}>
           <Button
+            className={buttonStyles.button}
+            disabled={!hasAllAnswers && hasAllAnswers}
+            variant="outlined"
+            onClick={() => saveSurvey()}
+          >
+            Save Answers
+          </Button>
+          <Button
             disabled={
               surveyTakerState.activeQuestionNumber ===
               surveyTakerState.questions.length
@@ -118,14 +126,6 @@ export function SurveyTaker({
             }
           >
             Next
-          </Button>
-          <Button
-            className={buttonStyles.button}
-            disabled={!hasAllAnswers && hasAllAnswers}
-            variant="contained"
-            onClick={() => saveSurvey()}
-          >
-            Save Answers
           </Button>
         </div>
       </div>

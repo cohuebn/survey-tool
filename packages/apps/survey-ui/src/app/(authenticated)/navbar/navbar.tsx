@@ -64,7 +64,7 @@ export function Navbar({ userScopes }: NavbarProps) {
               <NavbarLink
                 href="/authoring"
                 icon={<Edit fontSize="large" />}
-                text="Author surveys"
+                text="Edit surveys"
                 active={isActive("/authoring")}
               />
             </li>

@@ -35,7 +35,7 @@ export function AnswersPieChart({ question, answers }: AnswersPieChartProps) {
   return (
     <div>
       <Typography variant="body1" className={styles.question}>
-        Question: {question.question}
+        {question.question}
       </Typography>
       {answers?.length > 0 ? (
         chartCanvas

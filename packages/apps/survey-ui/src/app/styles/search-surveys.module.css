@@ -1,3 +1,4 @@
-.searchSurveys {
-  width: 35rem;
+div.searchSurveys {
+  max-width: 50rem;
+  margin-bottom: 1rem;
 }

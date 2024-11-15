@@ -22,6 +22,7 @@ export default function Page() {
   return (
     <div className={layoutStyles.centeredContent}>
       <TextField
+        fullWidth
         className={searchSurveysStyles.searchSurveys}
         type="text"
         value={surveySearch}
@@ -35,7 +36,10 @@ export default function Page() {
         surveys={filteredSurveySummaries}
         actionsBuilder={(survey) => (
           <>
-            <Button href={`/results/${survey.id}/questions/1`}>
+            <Button
+              variant="contained"
+              href={`/results/${survey.id}/questions/1`}
+            >
               Review survey results
             </Button>
             <Button href={`/api/surveys/${survey.id}/answers/aggregated/csv`}>

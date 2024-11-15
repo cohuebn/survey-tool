@@ -23,6 +23,7 @@ export default function Page() {
   return (
     <div className={layoutStyles.centeredContent}>
       <TextField
+        fullWidth
         className={searchSurveysStyles.searchSurveys}
         type="text"
         value={surveySearch}
