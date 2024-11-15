@@ -66,7 +66,7 @@ export function OverallRatings({ ratingStats }: OverallRatingsProps) {
                     {row.location.name}
                   </TableCell>
                   <TableCell align="right">
-                    <Rating value={row.averageRating} />
+                    <Rating readOnly value={row.averageRating} />
                   </TableCell>
                   <TableCell align="right">{row.participantCount}</TableCell>
                 </TableRow>
