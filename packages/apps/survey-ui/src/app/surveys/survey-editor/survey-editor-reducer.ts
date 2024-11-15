@@ -138,7 +138,7 @@ function addQuestionOption(editorState: SurveyEditorState, questionId: string) {
   });
 }
 
-function updateQuestionOption(
+function updateQuestionOptionText(
   editorState: SurveyEditorState,
   questionId: string,
   index: number,
@@ -146,9 +146,24 @@ function updateQuestionOption(
 ): SurveyEditorState {
   return updateQuestionDefinition(editorState, questionId, (definition) => {
     const options = getOptions(definition);
-    const updatedOptions = options.map((option, i) =>
-      i === index ? value : option,
-    );
+    const updatedOptions = Object.assign([], options, {
+      [index]: { ...options[index], value },
+    });
+    return { ...definition, options: updatedOptions };
+  });
+}
+
+function updateQuestionOptionRating(
+  editorState: SurveyEditorState,
+  questionId: string,
+  index: number,
+  numericValue: number,
+): SurveyEditorState {
+  return updateQuestionDefinition(editorState, questionId, (definition) => {
+    const options = getOptions(definition);
+    const updatedOptions = Object.assign([], options, {
+      [index]: { ...options[index], numericValue },
+    });
     return { ...definition, options: updatedOptions };
   });
 }
@@ -367,8 +382,15 @@ function getUnvalidatedSurveyState(
       );
     case "addQuestionOption":
       return addQuestionOption(editorState, action.questionId);
-    case "updateQuestionOption":
-      return updateQuestionOption(
+    case "updateQuestionOptionText":
+      return updateQuestionOptionText(
+        editorState,
+        action.questionId,
+        action.optionIndex,
+        action.value,
+      );
+    case "updateQuestionOptionRating":
+      return updateQuestionOptionRating(
         editorState,
         action.questionId,
         action.optionIndex,

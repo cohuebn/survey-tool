@@ -35,10 +35,16 @@ export type SurveyEditorAction =
       questionId: string;
     }
   | {
-      type: "updateQuestionOption";
+      type: "updateQuestionOptionText";
       questionId: string;
       optionIndex: number;
       value: string;
+    }
+  | {
+      type: "updateQuestionOptionRating";
+      questionId: string;
+      optionIndex: number;
+      value: number;
     }
   | {
       type: "deleteQuestionOption";

@@ -9,6 +9,7 @@ import {
   ValidatedSurveyEditorState,
   EditableQuestion,
   Question,
+  MultipleChoiceOption,
 } from "../types";
 
 function getSurveySummaryErrors(
@@ -26,8 +27,11 @@ function isSummaryValid(
   return !validationErrors.length;
 }
 
-function isOptionsList(options: unknown | undefined): options is string[] {
-  return Array.isArray(options);
+function isOptionsList(
+  options: unknown | undefined,
+): options is MultipleChoiceOption[] {
+  if (!Array.isArray(options)) return false;
+  return !options.length || "value" in options[0];
 }
 
 function getTopLevelQuestionErrors(
@@ -61,7 +65,7 @@ function getEmptyOptionErrors(
   if (!isOptionsList(options)) return [];
   return options.reduce<SurveyValidationError[]>(
     (_emptyOptions, option, optionIndex) => {
-      const isOptionEmpty = isNullOrUndefined(emptyToUndefined(option));
+      const isOptionEmpty = isNullOrUndefined(emptyToUndefined(option.value));
       return isOptionEmpty
         ? [
             ..._emptyOptions,

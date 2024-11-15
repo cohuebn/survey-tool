@@ -59,7 +59,7 @@ div.questionSubsection {
   gap: 0.5rem;
 }
 
-div.questionSubsection label {
+div.questionSubsection > label {
   font-size: 0.8rem;
 }
 
@@ -83,10 +83,22 @@ div.optionsSection {
   gap: 1rem;
 }
 
+div.options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 div.questionOption {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+div.questionOption .optionTextAndRating {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 div.toggledPermissions {

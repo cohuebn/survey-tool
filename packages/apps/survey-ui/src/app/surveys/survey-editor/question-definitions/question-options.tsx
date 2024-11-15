@@ -38,9 +38,10 @@ export function QuestionOptions({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-  const options = useMemo(
-    () => getOptions(definition).map((option) => option.value),
-    [definition],
+  const options = useMemo(() => getOptions(definition), [definition]);
+  const optionStrings = useMemo(
+    () => options.map((option) => option.value),
+    [options],
   );
 
   function handleDragStart(event: DragStartEvent) {
@@ -57,7 +58,9 @@ export function QuestionOptions({
         type: "moveOption",
         questionId,
         option: `${active.id}`,
-        targetIndex: options.findIndex((option) => option === `${over.id}`),
+        targetIndex: options.findIndex(
+          (option) => option.value === `${over.id}`,
+        ),
       });
     }
   }
@@ -71,16 +74,24 @@ export function QuestionOptions({
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext items={options} strategy={verticalListSortingStrategy}>
-          {options.map((option, index) => (
-            <QuestionOption
-              key={`${questionId}-option-${index}`}
-              questionId={questionId}
-              index={index}
-              option={option}
-              dispatch={dispatch}
-            />
-          ))}
+        <SortableContext
+          items={optionStrings}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className={styles.options}>
+            {options.map((option, index) => (
+              <QuestionOption
+                key={`${questionId}-option-${index}`}
+                questionId={questionId}
+                index={index}
+                option={option}
+                includeInOverallRating={Boolean(
+                  definition.includeInOverallRating,
+                )}
+                dispatch={dispatch}
+              />
+            ))}
+          </div>
         </SortableContext>
       </DndContext>
       <div className={layoutStyles.centeredContent}>
