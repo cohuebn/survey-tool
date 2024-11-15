@@ -3,13 +3,17 @@ import { createLogger } from "@survey-tool/core";
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
 import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
-import { AnswersForQuestions } from "../../../../surveys";
+import { AnswersForQuestions, SavableAnswer } from "../../../../surveys/types";
+import { getQuestionsForSurvey } from "../../../../surveys/questions";
 import { BadRequestError } from "../../../http-errors";
 import { getUserProfile } from "../../../../users/user-profiles";
 import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { getParticipantId } from "../../../../surveys/participant-ids";
 import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
 import { convertErrorToResponse } from "../../../utils/responses";
+import { User } from "../../../../users/types";
+import { AppSupabaseClient } from "../../../../supabase/supabase-context";
+import { toOverallRating } from "../../../../surveys/answers/to-overall-rating";
 
 const logger = createLogger("api/answers");
 
@@ -21,6 +25,16 @@ type SubmitAnswersRequest = {
 type PathParams = {
   surveyId: string;
 };
+
+async function saveUserAnswers(
+  dbClient: AppSupabaseClient,
+  surveyId: string,
+  answers: SavableAnswer[],
+  userProfile: User,
+) {
+  const participantId = getParticipantId(userProfile.userId, surveyId);
+  await updateParticipantAnswers(dbClient, participantId, surveyId, answers);
+}
 
 export async function POST(
   request: Request,
@@ -43,7 +57,10 @@ export async function POST(
     );
 
     const dbClient = await getServerSideSupabaseClient();
-    const userProfile = await getUserProfile(dbClient(), userId);
+    const [userProfile, questions] = await Promise.all([
+      getUserProfile(dbClient(), userId),
+      getQuestionsForSurvey(dbClient(), surveyId),
+    ]);
 
     if (!userProfile) {
       throw new Error(
@@ -51,20 +68,11 @@ export async function POST(
       );
     }
 
-    const dbAnswers = await toSavableAnswers(
-      userId,
-      surveyId,
-      answers,
-      userProfile,
-    );
-    const supabaseClient = await getServerSideSupabaseClient();
-    const participantId = getParticipantId(userId, surveyId);
-    await updateParticipantAnswers(
-      supabaseClient(),
-      participantId,
-      surveyId,
-      dbAnswers,
-    );
+    const savableAnswers = toSavableAnswers(surveyId, answers, userProfile);
+    const overallRating = toOverallRating(questions, savableAnswers);
+    logger.info({ overallRating }, "Would've set overall rating");
+    await saveUserAnswers(dbClient(), surveyId, savableAnswers, userProfile);
+
     return Response.json({});
   } catch (err: unknown) {
     return convertErrorToResponse(err);

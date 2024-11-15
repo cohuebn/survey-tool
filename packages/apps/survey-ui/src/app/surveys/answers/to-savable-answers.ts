@@ -1,5 +1,3 @@
-"use server";
-
 import {
   Answer,
   AnswersForQuestions,
@@ -42,19 +40,22 @@ function toSavableAnswer(
   };
 }
 
-// TODO - figure out if this needs to be async; doing it for now while
-// "use server" yells about non-async functions
 /** Get all answers with hashed PII to submit to the server */
-export async function toSavableAnswers(
-  userId: string,
+export function toSavableAnswers(
   surveyId: string,
   answers: AnswersForQuestions,
   userProfile: UserProfile,
-): Promise<SavableAnswer[]> {
+): SavableAnswer[] {
   return Object.entries(answers).flatMap(([questionId, answer]) => {
     const multiAnswers = toMultiAnswers(answer);
     return multiAnswers.map((singleAnswer) =>
-      toSavableAnswer(userId, surveyId, questionId, singleAnswer, userProfile),
+      toSavableAnswer(
+        userProfile.userId,
+        surveyId,
+        questionId,
+        singleAnswer,
+        userProfile,
+      ),
     );
   });
 }
