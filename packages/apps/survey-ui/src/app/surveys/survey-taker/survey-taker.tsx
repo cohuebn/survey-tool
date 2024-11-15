@@ -77,6 +77,7 @@ export function SurveyTaker({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
         Accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       },

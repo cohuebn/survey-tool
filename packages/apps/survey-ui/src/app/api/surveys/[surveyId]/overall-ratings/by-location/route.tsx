@@ -29,6 +29,7 @@ export async function GET(_: Request, { params }: { params: PathParams }) {
     supabaseClient(),
     surveyId,
   );
+
   const ratingsByLocation = overallRatings.reduce<
     Record<string, OverallRating[]>
   >((_ratingsByLocation, rating) => {

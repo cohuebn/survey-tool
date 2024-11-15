@@ -1,5 +1,6 @@
 import {
   Paper,
+  Rating,
   Table,
   TableBody,
   TableCell,
@@ -14,6 +15,8 @@ import { useMemo } from "react";
 
 import { RatingStatsWithLocation } from "../../../../surveys/types/overall-ratings";
 import { roundRatingStats } from "../../../../surveys/overall-ratings/rating-stat-rounding";
+
+import styles from "./styles.module.css";
 
 type OverallRatingsProps = {
   ratingStats: RatingStatsWithLocation[];
@@ -32,7 +35,7 @@ export function OverallRatings({ ratingStats }: OverallRatingsProps) {
         className={layoutStyles.verticallyCenteredContent}
       >
         <PersonOff />
-        No surveys have been completed yet
+        This survey has not been taken by anyone yet
       </Typography>
     );
   }
@@ -43,15 +46,13 @@ export function OverallRatings({ ratingStats }: OverallRatingsProps) {
         Overall ratings based on this survey&#39;s results
       </Typography>
 
-      <TableContainer component={Paper}>
+      <TableContainer className={styles.ratingsTable} component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Location</TableCell>
-              <TableCell align="right">Participant count</TableCell>
               <TableCell align="right">Average rating</TableCell>
-              <TableCell align="right">Worst rating</TableCell>
-              <TableCell align="right">Best rating</TableCell>
+              <TableCell align="right">Participant count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -64,10 +65,10 @@ export function OverallRatings({ ratingStats }: OverallRatingsProps) {
                   <TableCell component="th" scope="row">
                     {row.location.name}
                   </TableCell>
+                  <TableCell align="right">
+                    <Rating value={row.averageRating} />
+                  </TableCell>
                   <TableCell align="right">{row.participantCount}</TableCell>
-                  <TableCell align="right">{row.averageRating}</TableCell>
-                  <TableCell align="right">{row.worstRating}</TableCell>
-                  <TableCell align="right">{row.bestRating}</TableCell>
                 </TableRow>
               );
             })}

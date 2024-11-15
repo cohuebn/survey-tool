@@ -19,6 +19,7 @@ async function fetchOverallRatingsByLocation(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
         Accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
