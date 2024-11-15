@@ -3,7 +3,7 @@ import { createLogger } from "@survey-tool/core";
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
 import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
-import { AnswersForQuestions, SavableAnswer } from "../../../../surveys/types";
+import { AnswersForQuestions } from "../../../../surveys/types";
 import { getQuestionsForSurvey } from "../../../../surveys/questions";
 import { BadRequestError } from "../../../http-errors";
 import { getUserProfile } from "../../../../users/user-profiles";
@@ -11,8 +11,6 @@ import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers
 import { getParticipantId } from "../../../../surveys/participant-ids";
 import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
 import { convertErrorToResponse } from "../../../utils/responses";
-import { User } from "../../../../users/types";
-import { AppSupabaseClient } from "../../../../supabase/supabase-context";
 import { toOverallRatingValue } from "../../../../surveys/answers/to-overall-rating";
 import { saveOverallRating } from "../../../../surveys/overall-ratings/database";
 import { SavableOverallRating } from "../../../../surveys/types/overall-ratings";
@@ -68,6 +66,9 @@ export async function POST(
       participantId,
       rating: overallRatingValue,
       ratingTime: new Date(),
+      location: userProfile.location,
+      department: userProfile.department,
+      employmentType: userProfile.employmentType,
     };
 
     const [, savedOverallRating] = await Promise.all([

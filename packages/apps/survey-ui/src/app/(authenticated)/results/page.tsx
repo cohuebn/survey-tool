@@ -40,9 +40,18 @@ export default function Page() {
               variant="contained"
               href={`/results/${survey.id}/questions/1`}
             >
-              Review survey results
+              Survey answers
             </Button>
-            <Button href={`/api/surveys/${survey.id}/answers/aggregated/csv`}>
+            <Button
+              variant="outlined"
+              href={`/results/${survey.id}/overall-ratings/`}
+            >
+              Overall ratings
+            </Button>
+            <Button
+              variant="outlined"
+              href={`/api/surveys/${survey.id}/answers/aggregated/csv`}
+            >
               Export results CSV
             </Button>
           </>
