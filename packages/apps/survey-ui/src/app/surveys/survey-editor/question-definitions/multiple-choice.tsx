@@ -38,6 +38,23 @@ export function MultipleChoiceEditor({
           <ToggleButton value={singleAnswer}>Single answer</ToggleButton>
           <ToggleButton value={multipleAnswers}>Multiple answers</ToggleButton>
         </ToggleButtonGroup>
+        <FormLabel>Include in overall rating</FormLabel>
+        <ToggleButtonGroup
+          aria-label="Include in overall rating"
+          color="primary"
+          exclusive
+          value={definition.includeInOverallRating ?? false}
+          onChange={(_, value) => {
+            dispatch({
+              type: "updateQuestionDefinition",
+              questionId,
+              value: { ...definition, includeInOverallRating: value },
+            });
+          }}
+        >
+          <ToggleButton value={false}>No</ToggleButton>
+          <ToggleButton value={true}>Yes</ToggleButton>
+        </ToggleButtonGroup>
       </div>
       <QuestionOptions
         questionId={questionId}

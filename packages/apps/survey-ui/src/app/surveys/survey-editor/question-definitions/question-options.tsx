@@ -13,7 +13,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
@@ -38,7 +38,10 @@ export function QuestionOptions({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-  const options = getOptions(definition);
+  const options = useMemo(
+    () => getOptions(definition).map((option) => option.value),
+    [definition],
+  );
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;

@@ -1,5 +1,7 @@
 import { isNullOrUndefined } from "@survey-tool/core";
 
+import { MultipleChoiceOption } from "../types";
+
 /**
  * Get the 'options' section from the given question definition.
  * If no 'options' section found, return an empty array.
@@ -8,7 +10,7 @@ import { isNullOrUndefined } from "@survey-tool/core";
  */
 export function getOptions(
   definition: Record<string, unknown> | undefined,
-): string[] {
+): MultipleChoiceOption[] {
   if (isNullOrUndefined(definition)) return [];
   const { options } = definition;
   return options && Array.isArray(options) ? options : [];

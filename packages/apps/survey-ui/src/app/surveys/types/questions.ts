@@ -63,3 +63,8 @@ export type FreeFormQuestion = Omit<BaseQuestion, "definition"> & {
     textLength?: FreeFormLength;
   };
 };
+
+export type MultipleChoiceOption = {
+  value: string;
+  numericValue: number;
+};

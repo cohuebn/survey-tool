@@ -134,7 +134,7 @@ function updateQuestionDefinition(
 function addQuestionOption(editorState: SurveyEditorState, questionId: string) {
   return updateQuestionDefinition(editorState, questionId, (definition) => {
     const options = getOptions(definition);
-    return { ...definition, options: [...options, ""] };
+    return { ...definition, options: [...options, { text: "", value: 0 }] };
   });
 }
 
@@ -193,7 +193,7 @@ function moveOption(
       `Invalid target index; can't move option. Index: ${targetIndex}, Option count: ${questions.length}`,
     );
   }
-  const existingIndex = options.indexOf(option);
+  const existingIndex = options.map((x) => x.value).indexOf(option);
   if (existingIndex < 0) {
     throw new Error(`Option ${option} not found in question ${questionId}`);
   }
