@@ -45,7 +45,7 @@ export type EditableQuestion = Omit<Partial<Question>, "id" | "surveyId"> & {
 export type MultipleChoiceType = "singleAnswer" | "multipleAnswers";
 export type MultipleChoiceQuestion = Omit<BaseQuestion, "definition"> & {
   definition: {
-    options: string[];
+    options: MultipleChoiceOption[];
     multipleChoiceType?: MultipleChoiceType;
   };
 };

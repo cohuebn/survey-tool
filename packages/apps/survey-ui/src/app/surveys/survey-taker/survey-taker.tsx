@@ -49,7 +49,7 @@ export function SurveyTaker({
       window.history.pushState(
         null,
         "",
-        `/surveys/${surveyId}/results/${questionNumber}`,
+        `/surveys/${surveyId}/questions/${questionNumber}`,
       );
     },
   });

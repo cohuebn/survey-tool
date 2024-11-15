@@ -54,10 +54,10 @@ function SingleAllowedAnswers({
       {question.definition.options.map((option, index) => (
         <ToggleButton
           key={`question-${question.id}-option-${index}`}
-          value={option}
+          value={option.value}
           className={styles.answerOption}
         >
-          {option}
+          {option.value}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>
@@ -90,10 +90,10 @@ function MultipleAllowedAnswers({
       {question.definition.options.map((option, index) => (
         <ToggleButton
           key={`question-${question.id}-option-${index}`}
-          value={option}
+          value={option.value}
           className={styles.answerOption}
         >
-          {option}
+          {option.value}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>
