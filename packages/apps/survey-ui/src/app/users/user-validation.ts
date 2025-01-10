@@ -1,6 +1,6 @@
 import { toSnake } from "convert-keys";
 
-import { AppSupabaseClient } from "../supabase/supabase-context";
+import { AppSupabaseClient } from "../supabase/types";
 import { asPostgresError } from "../errors/postgres-error";
 
 import { DBUserValidation, UserValidation } from "./types";

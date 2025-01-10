@@ -1,4 +1,4 @@
-import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { AppSupabaseClient } from "../../supabase/types";
 import {
   deleteDepartmentRestrictionsForSurvey,
   deleteLocationRestrictionsForSurvey,

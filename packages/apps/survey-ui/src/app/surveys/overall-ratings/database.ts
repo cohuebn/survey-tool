@@ -1,7 +1,7 @@
 import { toSnake } from "convert-keys";
 
 import { OverallRating, SavableOverallRating } from "../types/overall-ratings";
-import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { AppSupabaseClient } from "../../supabase/types";
 import { asPostgresError } from "../../errors/postgres-error";
 
 export async function saveOverallRating(

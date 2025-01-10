@@ -11,16 +11,12 @@ import { ReactNode, createContext, useEffect, useState } from "react";
 const logger = createLogger("supabase-app-context");
 
 /** Get a Supabase client using config from the API */
-async function getSupabaseClient() {
+export async function getSupabaseClient() {
   logger.debug("Getting Supabase app using config from API");
   const configResponse = await fetch("/api/config");
   const config: SupabaseConfig = await configResponse.json();
   return getLazyLoadedSupabaseClient(config);
 }
-
-export type AppSupabaseClient = ReturnType<
-  Awaited<ReturnType<typeof getSupabaseClient>>
->;
 
 const sharedSupabaseClient = lazyLoad(getSupabaseClient);
 

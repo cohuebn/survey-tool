@@ -11,7 +11,7 @@ import { SingleActionSurveysList } from "../../surveys/surveys-list/single-actio
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Page() {
-  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({});
+  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries();
   const [surveySearch, setSurveySearch] = useState<string>("");
   const filteredSurveySummaries = useFilteredSurveys(
     surveySummaries,

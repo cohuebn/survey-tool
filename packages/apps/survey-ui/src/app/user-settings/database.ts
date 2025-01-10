@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "@survey-tool/core";
 
 import { asPostgresError } from "../errors/postgres-error";
-import { AppSupabaseClient } from "../supabase/supabase-context";
+import { AppSupabaseClient } from "../supabase/types";
 import { UserSettings } from "../surveys/types/user-settings";
 
 const defaultUserSettings: UserSettings = {

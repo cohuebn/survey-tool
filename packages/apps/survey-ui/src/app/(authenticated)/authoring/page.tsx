@@ -12,7 +12,9 @@ import { FileIssueLink } from "../../issues/file-issue-link";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Authoring() {
-  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries();
+  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({
+    authoring: true,
+  });
   const [surveySearch, setSurveySearch] = useState<string>("");
   const filteredSurveySummaries = useFilteredSurveys(
     surveySummaries,

@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 
-import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { AppSupabaseClient } from "../../supabase/types";
 import { DBAnswer, SavableAnswer } from "../types";
 
 import {

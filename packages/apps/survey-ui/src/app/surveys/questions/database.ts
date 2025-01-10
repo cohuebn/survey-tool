@@ -1,6 +1,6 @@
 import { toCamel } from "convert-keys";
 
-import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { AppSupabaseClient } from "../../supabase/types";
 import { asPostgresError } from "../../errors/postgres-error";
 import { DBQuestion, Question, QuestionType } from "../types";
 

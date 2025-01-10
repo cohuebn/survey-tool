@@ -1,7 +1,7 @@
 import { toCamel } from "convert-keys";
 
 import { asPostgresError } from "../errors/postgres-error";
-import { AppSupabaseClient } from "../supabase/supabase-context";
+import { AppSupabaseClient } from "../supabase/types";
 
 import { Hospital } from "./types";
 

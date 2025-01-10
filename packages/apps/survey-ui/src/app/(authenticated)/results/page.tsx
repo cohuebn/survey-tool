@@ -10,7 +10,9 @@ import { SurveysList, useSurveySummaries } from "../../surveys";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
 export default function Page() {
-  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({});
+  const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({
+    reviewing: true,
+  });
   const [surveySearch, setSurveySearch] = useState<string>("");
   const filteredSurveySummaries = useFilteredSurveys(
     surveySummaries,

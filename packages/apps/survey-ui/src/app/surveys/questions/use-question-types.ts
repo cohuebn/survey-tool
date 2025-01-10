@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useSupabaseDb } from "../../supabase/use-supabase-db";
 import { QuestionType } from "../types";
-import { AppSupabaseClient } from "../../supabase/supabase-context";
+import { AppSupabaseClient } from "../../supabase/types";
 
 import { getQuestionTypes } from "./question-types";
 
