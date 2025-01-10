@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { isNullOrUndefined } from "@survey-tool/core";
 
-import { useSupabaseDb } from "../../supabase/use-supabase-db";
 import { SurveySummary } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 
@@ -40,23 +39,16 @@ export function useSurveySummaries(options: UseSurveySummariesOptions = {}) {
   const { accessToken, accessTokenLoaded } = useAccessToken();
   const [surveySummariesLoaded, setSurveySummariesLoaded] = useState(false);
   const [surveySummaries, setSurveySummaries] = useState<SurveySummary[]>([]);
-  const supabaseDb = useSupabaseDb();
 
   useEffect(() => {
     if (surveySummariesLoaded) return;
-    if (!supabaseDb.clientLoaded || !accessTokenLoaded) return;
+    if (!accessTokenLoaded) return;
 
     fetchSurveySummaries(accessToken, options).then((loadedSurveys) => {
       setSurveySummaries(loadedSurveys);
       setSurveySummariesLoaded(true);
     });
-  }, [
-    supabaseDb,
-    surveySummariesLoaded,
-    accessTokenLoaded,
-    accessToken,
-    options,
-  ]);
+  }, [surveySummariesLoaded, accessTokenLoaded, accessToken, options]);
 
   return { surveySummaries, surveySummariesLoaded };
 }

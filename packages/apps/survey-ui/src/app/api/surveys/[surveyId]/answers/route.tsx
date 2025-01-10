@@ -14,6 +14,7 @@ import { convertErrorToResponse } from "../../../utils/responses";
 import { toOverallRatingValue } from "../../../../surveys/answers/to-overall-rating";
 import { saveOverallRating } from "../../../../surveys/overall-ratings/database";
 import { SavableOverallRating } from "../../../../surveys/types/overall-ratings";
+import { doesUserHaveSurveyTakingPermission } from "../../../../surveys/summaries/database";
 
 const logger = createLogger("api/answers");
 
@@ -41,12 +42,25 @@ export async function POST(
       );
     }
 
+    const dbClient = await getServerSideSupabaseClient();
+    const userHasPermission = await doesUserHaveSurveyTakingPermission(
+      dbClient(),
+      userId,
+      surveyId,
+    );
+
+    if (!userHasPermission) {
+      return Response.json(
+        { error: "User does not have permission to take this survey" },
+        { status: 403 },
+      );
+    }
+
     logger.info(
       { surveyId },
       `Handling answer submission for survey ${surveyId}`,
     );
 
-    const dbClient = await getServerSideSupabaseClient();
     const [userProfile, questions] = await Promise.all([
       getUserProfile(dbClient(), userId),
       getQuestionsForSurvey(dbClient(), surveyId),

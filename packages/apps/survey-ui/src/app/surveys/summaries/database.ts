@@ -1,4 +1,5 @@
 import { toCamel, toSnake } from "convert-keys";
+import { omitUndefinedAndNullProperties } from "@survey-tool/core";
 
 import { AppSupabaseClient } from "../../supabase/types";
 import { asPostgresError } from "../../errors/postgres-error";
@@ -44,13 +45,32 @@ export async function getSurveySummaries(
 export async function getUserRestrictedSurveySummaries(
   dbClient: AppSupabaseClient,
   userId: string,
+  surveyId?: string,
 ): Promise<SurveySummary[]> {
-  const query = dbClient.rpc("get_survey_summaries_for_user", {
-    user_id_to_find: userId,
-  });
+  const query = dbClient.rpc(
+    "get_survey_summaries_for_user",
+    omitUndefinedAndNullProperties({
+      user_id_to_find: userId,
+      survey_id_to_find: surveyId,
+    }),
+  );
   const dbResult = await query;
   if (dbResult.error) throw asPostgresError(dbResult.error);
   return dbResult.data.map(toCamel<SurveySummary>);
+}
+
+/** Determine if the given user has permission to take the given survey */
+export async function doesUserHaveSurveyTakingPermission(
+  dbClient: AppSupabaseClient,
+  userId: string,
+  surveyId: string,
+): Promise<boolean> {
+  const surveySearchResult = await getUserRestrictedSurveySummaries(
+    dbClient,
+    userId,
+    surveyId,
+  );
+  return surveySearchResult.length > 0;
 }
 
 export async function getSurveySummary(
