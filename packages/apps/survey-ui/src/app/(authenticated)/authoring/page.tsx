@@ -41,7 +41,7 @@ export default function Authoring() {
         />
         {filteredSurveySummaries.length ? (
           <SingleActionSurveysList
-            surveys={surveySummaries}
+            surveys={filteredSurveySummaries}
             linkText="Edit survey"
             linkBuilder={(surveyId) => `/authoring/${surveyId}`}
           />
