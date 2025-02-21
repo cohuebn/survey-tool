@@ -2,6 +2,7 @@
 
 import {
   Autocomplete,
+  Box,
   Button,
   CircularProgress,
   FormControlLabel,
@@ -16,20 +17,14 @@ import buttonStyles from "@styles/buttons.module.css";
 import layoutStyles from "@styles/layout.module.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { toSnake } from "convert-keys";
 import { Help } from "@mui/icons-material";
-import { isNullOrUndefined } from "@survey-tool/core";
+import { isNotNullOrUndefined, isNullOrUndefined } from "@survey-tool/core";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
 import { employmentTypeOptions } from "../../hospitals/employment-type-options";
-import {
-  DBUserValidation,
-  UserProfile,
-  UserValidation,
-} from "../../users/types";
+import { UserProfile, UserValidation } from "../../users/types";
 import { useSupabaseDb } from "../../supabase/use-supabase-db";
-import { asPostgresError } from "../../errors/postgres-error";
 import { parseError } from "../../errors/parse-error";
 import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
@@ -38,6 +33,7 @@ import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
 import { DepartmentAutocomplete } from "../../hospitals/department-autocomplete";
 import { saveUserSettings as coreSaveUserSettings } from "../../user-settings/database";
 import { useUserSettings } from "../../user-settings/use-user-settings";
+import { saveUserValidation as coreSaveUserValidation } from "../../users/user-validation";
 
 import styles from "./styles.module.css";
 
@@ -73,7 +69,8 @@ export default function Page() {
   );
 
   const userValidationSection = useMemo(() => {
-    return loading || userProfile?.validatedTimestamp ? null : (
+    return loading ||
+      isNotNullOrUndefined(userProfile?.validatedTimestamp) ? null : (
       <TextField
         className={styles.input}
         type="number"
@@ -149,13 +146,7 @@ export default function Page() {
       submittedTimestamp: new Date(),
     };
     const loadedDbClient = getLoadedDBClient();
-    const dbUserValidation = toSnake<DBUserValidation>(updatedUserValidation);
-    const validationSaveResult = await loadedDbClient
-      .from("user_validation")
-      .upsert(dbUserValidation);
-    if (validationSaveResult.error) {
-      throw asPostgresError(validationSaveResult.error);
-    }
+    await coreSaveUserValidation(loadedDbClient, updatedUserValidation);
   }, [getLoadedDBClient, getValidatedUserId, npiNumber, userSession]);
 
   const saveUserProfile = useCallback(async () => {
@@ -224,6 +215,10 @@ export default function Page() {
           <TextField {...params} label="Employment type" />
         )}
       />
+      {userValidationSection}
+      <Box className={styles.inputContainer}>
+        <div className={layoutStyles.centeredText}>Additional Roles</div>
+      </Box>
       <div className={styles.autoAdvanceSetting}>
         <Tooltip
           title={
@@ -247,7 +242,6 @@ export default function Page() {
           />
         </Tooltip>
       </div>
-      {userValidationSection}
       <Button
         className={buttonStyles.button}
         variant="contained"

@@ -1,6 +1,13 @@
-.input {
+.input,
+.inputContainer {
   max-width: 30rem;
   width: 100%;
+}
+
+.inputContainer {
+  box-sizing: border-box;
+  border: solid 1px var(--border-color);
+  padding: 1rem;
 }
 
 li.locationAutocompleteOption {
