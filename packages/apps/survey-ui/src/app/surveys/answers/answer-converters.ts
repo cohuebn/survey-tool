@@ -7,7 +7,17 @@ import {
   AggregatedAnswersWithLocationForQuestions,
   AnswersForQuestions,
   DBAnswer,
+  MultipleChoiceType,
+  Question,
 } from "../types";
+
+function allowsMultipleAnswers(question: Question): boolean {
+  const multipleAnswersType: MultipleChoiceType = "multipleAnswers";
+  return (
+    question.questionType.questionType === "Multiple choice" &&
+    question.definition.multipleChoiceType === multipleAnswersType
+  );
+}
 
 /**
  * Convert DB answers (1 row per answer string)
@@ -16,14 +26,20 @@ import {
  * @returns A record mapping question IDs to answers. If a question has multiple answers, they are returned as an array.
  * If a question has only one answer, it is returned as a string.
  */
-export function dbAnswersToAnswers(dbAnswers: DBAnswer[]): AnswersForQuestions {
+export function dbAnswersToAnswers(
+  dbQuestions: Question[],
+  dbAnswers: DBAnswer[],
+): AnswersForQuestions {
   const dbAnswersByQuestion = groupBy(dbAnswers, (x) => x.questionId);
   return Object.entries(dbAnswersByQuestion).reduce<AnswersForQuestions>(
     (questionsAndAnswers, [questionId, dbAnswersForQuestion]) => {
+      const question = dbQuestions.find((x) => x.id === questionId);
+      // If a question is deleted, skip it's answers in the response
+      if (!question) return questionsAndAnswers;
       const answers = dbAnswersForQuestion.map((x) => x.answer);
       return {
         ...questionsAndAnswers,
-        [questionId]: answers.length === 1 ? answers[0] : answers,
+        [questionId]: allowsMultipleAnswers(question) ? answers : answers[0],
       };
     },
     {},
