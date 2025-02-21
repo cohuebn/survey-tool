@@ -3,6 +3,7 @@ import { getServerSideSupabaseClient } from "../../../../../supabase/supbase-ser
 import { getParticipantId } from "../../../../../surveys/participant-ids";
 import { getParticipantAnswersForSurvey } from "../../../../../surveys/answers/database";
 import { dbAnswersToAnswers } from "../../../../../surveys/answers/answer-converters";
+import { getQuestionsForSurvey } from "../../../../../surveys/questions/database";
 
 type PathParams = {
   surveyId: string;
@@ -16,11 +17,12 @@ export async function GET(
   const userId = getUserIdFromAuthorizationJwt(request);
   const participantId = getParticipantId(userId, surveyId);
   const supabaseClient = await getServerSideSupabaseClient();
+  const dbQuestions = await getQuestionsForSurvey(supabaseClient(), surveyId);
   const dbAnswers = await getParticipantAnswersForSurvey(
     supabaseClient(),
     surveyId,
     participantId,
   );
-  const answers = dbAnswersToAnswers(dbAnswers);
+  const answers = dbAnswersToAnswers(dbQuestions, dbAnswers);
   return Response.json(answers);
 }
