@@ -14,8 +14,16 @@ function shouldForwardProp(prop: PropertyKey): boolean {
 export const ColoredToggleButton = styled(ToggleButton, {
   shouldForwardProp,
 })<ColoredToggleButtonProps>(({ textColor, backgroundColor }) => ({
-  "&.Mui-selected, &.Mui-selected:hover": omitUndefinedAndNullProperties({
+  " .icon": {
     color: textColor,
+  },
+
+  "&.Mui-selected, :hover": omitUndefinedAndNullProperties({
+    color: "white",
     backgroundColor,
+
+    "& .icon": {
+      color: "white",
+    },
   }),
 }));

@@ -1,12 +1,16 @@
 import { ToggleButtonGroup, Typography } from "@mui/material";
 import { range } from "@survey-tool/core";
-import { useMemo } from "react";
-import { Star } from "@mui/icons-material";
+import { useCallback, useMemo } from "react";
+import { StarBorderOutlined } from "@mui/icons-material";
 import clsx from "clsx";
 
 import { QuestionProps } from "../../types/survey-taking";
 import styles from "../styles.module.css";
 import { ColoredToggleButton } from "../../../core-components/colored-toggle-button";
+import {
+  asRgbaCssString,
+  getSimpleGradient,
+} from "../../../utils/color-generator";
 
 import { assertSingleAnswer } from "./answer-assertions";
 import { autoAdvanceIfDesired } from "./auto-advance-question";
@@ -34,23 +38,29 @@ export function RatingQuestion({
     defaultMaximumRating,
   );
 
-  function deriveStyle(value: number, maxValue: number) {
-    const distanceFromMax = (maxValue - value) / maxValue;
-    const hue = ((1 - distanceFromMax) * 120).toString(10);
-    const color = `hsl(${hue},100%,50%)`;
-    const backgroundColor = `hsl(${hue},100%,98%)`;
-    return { color, backgroundColor };
-  }
+  const deriveStyle = useCallback(
+    (rating: number) => {
+      const steps = maximumRating - minimumRating;
+      const colors = getSimpleGradient(steps + 1);
+      const rgbaParts = colors[rating - minimumRating];
+      return {
+        color: asRgbaCssString(rgbaParts),
+        backgroundColor: asRgbaCssString({ ...rgbaParts, alpha: 0.9 }),
+      };
+    },
+    [minimumRating, maximumRating],
+  );
+
   const ratingRange = useMemo(() => {
     const ascendingRatings = range(minimumRating, maximumRating).map(
       (value) => ({
-        ...deriveStyle(value, maximumRating),
+        ...deriveStyle(value),
         value,
         label: `${value}`,
       }),
     );
     return ascendingRatings.slice().reverse();
-  }, [minimumRating, maximumRating]);
+  }, [deriveStyle, maximumRating, minimumRating]);
 
   assertSingleAnswer(question.id, activeAnswer);
 
@@ -79,6 +89,7 @@ export function RatingQuestion({
         {ratingRange.map((option, index) => (
           <ColoredToggleButton
             backgroundColor={option.backgroundColor}
+            textColor={option.color}
             key={`question-${question.id}-option-${index}`}
             value={option.label}
             className={styles.answerOption}
@@ -87,7 +98,7 @@ export function RatingQuestion({
               {option.label}
             </span>
             <span className={clsx(styles.centeredContent, styles.minimizeSize)}>
-              <Star style={{ color: option.color }} />
+              <StarBorderOutlined className="icon" />
             </span>
           </ColoredToggleButton>
         ))}
