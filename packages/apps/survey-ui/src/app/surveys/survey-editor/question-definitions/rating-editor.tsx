@@ -31,6 +31,7 @@ export function RatingEditor({
       <div className={styles.minMaxRatingContainer}>
         <TextField
           type="number"
+          InputProps={{ inputProps: { min: 1, max: 5 } }}
           placeholder="The minimum rating allowed"
           label="Minimum rating"
           value={definition?.minRating ?? ""}
@@ -47,6 +48,7 @@ export function RatingEditor({
         />
         <TextField
           type="number"
+          InputProps={{ inputProps: { min: 1, max: 5 } }}
           placeholder="The maximum rating allowed"
           label="Maximum rating"
           value={definition?.maxRating ?? ""}
