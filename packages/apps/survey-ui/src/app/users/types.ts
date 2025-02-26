@@ -56,3 +56,24 @@ export type DBDeniedUser = {
   department?: string;
   employment_type?: string;
 };
+
+export type DBPhysicianRole = {
+  user_id: string;
+  hospital_location?: string;
+  hospital_name?: string;
+  hospital_city?: string;
+  hospital_state?: string;
+  department?: string;
+  employment_type?: string;
+  created_timestamp: Date;
+  validated_timestamp: Date;
+};
+
+export type PhysicianRole = {
+  userId: string;
+  hospital?: Hospital;
+  department?: string;
+  employmentType?: string;
+  createdTimestamp: Date;
+  validatedTimestamp?: Date;
+};

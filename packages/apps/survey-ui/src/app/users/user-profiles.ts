@@ -34,7 +34,7 @@ export async function getUserProfile(
           user_id,
           validated_timestamp,
           location,
-          hospitals(id, name, city, state),
+          hospitals!users_location_fkey(id, name, city, state),
           department,
           employment_type
         `,

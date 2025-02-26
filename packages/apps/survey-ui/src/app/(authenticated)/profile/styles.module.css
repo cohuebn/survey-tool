@@ -1,13 +1,30 @@
-.input,
-.inputContainer {
-  max-width: 30rem;
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  max-width: 40rem;
+}
+
+.physicianRole {
   width: 100%;
 }
 
-.inputContainer {
+.physicianRole {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settingsSection {
   box-sizing: border-box;
   border: solid 1px var(--border-color);
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-radius: 0.25rem;
+  width: 100%;
 }
 
 li.locationAutocompleteOption {
@@ -30,4 +47,10 @@ li.locationAutocompleteOption:hover {
 .autoAdvanceSetting {
   display: flex;
   align-items: center;
+}
+
+h3.subheader {
+  text-align: center;
+  font-weight: 300;
+  font-size: 2rem;
 }

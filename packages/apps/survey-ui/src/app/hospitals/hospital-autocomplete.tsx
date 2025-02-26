@@ -66,10 +66,12 @@ export function HospitalAutocomplete({
         />
       )}
       renderOption={(props, option) => {
+        const spreadableProps = { ...props };
+        if ("key" in spreadableProps) delete spreadableProps.key;
         return (
           <li
-            {...props}
             key={`${option.id}-${option.city}-${option.state}`}
+            {...spreadableProps}
             className={styles.locationAutocompleteOption}
           >
             {option.name}

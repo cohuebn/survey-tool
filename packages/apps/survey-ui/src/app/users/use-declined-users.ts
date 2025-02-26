@@ -1,34 +1,11 @@
 import { useEffect, useState } from "react";
-import { toCamel } from "convert-keys";
-import { isNullOrUndefined } from "@survey-tool/core";
-import { CamelCasedPropertiesDeep } from "type-fest";
 
 import { useUserScopes } from "../auth/use-user-scopes";
 import { useSupabaseDb } from "../supabase/use-supabase-db";
-import { Hospital } from "../hospitals/types";
 import { adminScope } from "../auth/scopes";
+import { getHospitalFromDatabaseResult } from "../hospitals/transformations";
 
 import { DBDeniedUser, UserWithValidationData } from "./types";
-
-function getHospital(dbUser: DBDeniedUser): Hospital | undefined {
-  const { hospitalLocation, hospitalName, hospitalCity, hospitalState } =
-    toCamel<CamelCasedPropertiesDeep<DBDeniedUser>>(dbUser);
-  if (
-    isNullOrUndefined(hospitalLocation) ||
-    isNullOrUndefined(hospitalName) ||
-    isNullOrUndefined(hospitalCity) ||
-    isNullOrUndefined(hospitalState)
-  ) {
-    return undefined;
-  }
-
-  return {
-    id: hospitalLocation,
-    name: hospitalName,
-    city: hospitalCity,
-    state: hospitalState,
-  };
-}
 
 function toUserWithValidationData(
   dbUser: DBDeniedUser,
@@ -36,7 +13,7 @@ function toUserWithValidationData(
   return {
     userId: dbUser.user_id,
     validatedTimestamp: undefined,
-    hospitals: getHospital(dbUser),
+    hospitals: getHospitalFromDatabaseResult(dbUser),
     department: dbUser.department,
     employmentType: dbUser.employment_type,
     userValidation: {
