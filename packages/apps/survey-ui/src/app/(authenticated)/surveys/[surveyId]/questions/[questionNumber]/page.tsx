@@ -8,6 +8,7 @@ import { useQuestions, useSurveySummary } from "../../../../../surveys";
 import { SurveyTaker } from "../../../../../surveys/survey-taker/survey-taker";
 import { useCurrentUserSurveyAnswers } from "../../../../../surveys/answers/use-participant-survey-answers";
 import { useSurveyTakingPermission } from "../../../../../surveys/survey-taker/use-survey-taking-permission";
+import { usePhysicianRoles } from "../../../../../users/use-physician-roles";
 
 type PageProps = {
   params: { surveyId: string; questionNumber: string };
@@ -19,6 +20,7 @@ export default function Page({ params }: PageProps) {
   const { surveySummary } = useSurveySummary(surveyId);
   const { questions, questionsLoaded } = useQuestions(surveyId);
   const { answers, answersLoaded } = useCurrentUserSurveyAnswers(surveyId);
+  const { physicianRoles, physicianRolesLoaded } = usePhysicianRoles(userId);
   const { surveyTakingPermission, surveyTakingPermissionLoaded } =
     useSurveyTakingPermission(surveyId);
 
@@ -27,7 +29,8 @@ export default function Page({ params }: PageProps) {
     !surveySummary ||
     !questionsLoaded ||
     !answersLoaded ||
-    !surveyTakingPermissionLoaded
+    !surveyTakingPermissionLoaded ||
+    !physicianRolesLoaded
   ) {
     return <CircularProgress />;
   }
@@ -44,6 +47,7 @@ export default function Page({ params }: PageProps) {
     <div className={layoutStyles.centeredContent}>
       <SurveyTaker
         userId={userId}
+        physicianRoles={physicianRoles}
         surveyId={surveySummary?.id}
         summary={surveySummary}
         questions={questions}

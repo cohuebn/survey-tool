@@ -10,17 +10,21 @@ import { ChangeEvent, useMemo, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
 import { toast } from "react-toastify";
+import { isNullOrUndefined } from "@survey-tool/core";
 
 import { Answer, Question, SurveySummary } from "../types";
 import { useUserSettings } from "../../user-settings/use-user-settings";
 import { useAccessToken } from "../../users/use-access-token";
+import { PhysicianRole } from "../../users/types";
 
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
 import { renderQuestion } from "./question-types";
+import { PhysicianRoleSelection } from "./physician-role-selection/physician-role-selection";
 
 type SurveyTakerProps = {
   userId: string;
+  physicianRoles: PhysicianRole[];
   surveyId: string;
   summary: SurveySummary;
   questions: Question[];
@@ -30,6 +34,7 @@ type SurveyTakerProps = {
 
 export function SurveyTaker({
   userId,
+  physicianRoles,
   surveyId,
   summary,
   questions,
@@ -39,6 +44,8 @@ export function SurveyTaker({
   const activeQuestion = questions[initialQuestionNumber - 1];
   const [surveyTakerState, dispatch] = useReducer(surveyTakerReducer, {
     surveyId,
+    selectedPhysicianRole:
+      physicianRoles.length === 1 ? physicianRoles[0] : null,
     questions,
     summary,
     activeQuestionNumber: initialQuestionNumber,
@@ -64,6 +71,17 @@ export function SurveyTaker({
   const { accessToken, accessTokenLoaded } = useAccessToken();
   if (!userSettingsLoaded || !accessTokenLoaded) {
     return <CircularProgress />;
+  }
+
+  if (isNullOrUndefined(surveyTakerState.selectedPhysicianRole)) {
+    return (
+      <PhysicianRoleSelection
+        physicianRoles={physicianRoles}
+        onChange={(role) => {
+          dispatch({ type: "setPhysicianRole", role });
+        }}
+      />
+    );
   }
 
   const saveSurvey = async () => {
@@ -95,6 +113,9 @@ export function SurveyTaker({
       <div className={styles.questionContent}>
         <Typography className={styles.surveyTitle} variant="h2">
           {summary.name}
+        </Typography>
+        <Typography className={styles.selectedRoleSubheading} variant="h3">
+          {`Role: ${surveyTakerState.selectedPhysicianRole.hospital?.name} - ${surveyTakerState.selectedPhysicianRole.department}`}
         </Typography>
         {renderQuestion({
           userId,
