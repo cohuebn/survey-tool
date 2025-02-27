@@ -15,12 +15,20 @@ import {
 } from "@mui/material";
 import buttonStyles from "@styles/buttons.module.css";
 import layoutStyles from "@styles/layout.module.css";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
 import { Add, Help, Save } from "@mui/icons-material";
 import { isNotNullOrUndefined, isNullOrUndefined } from "@survey-tool/core";
 import clsx from "clsx";
 import compare from "just-compare";
+import { v4 as uuidV4 } from "uuid";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
@@ -31,16 +39,17 @@ import {
 } from "../../users/types";
 import { useSupabaseDb } from "../../supabase/use-supabase-db";
 import { parseError } from "../../errors/parse-error";
-import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
 import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profiles";
 import { saveUserSettings as coreSaveUserSettings } from "../../user-settings/database";
 import { useUserSettings } from "../../user-settings/use-user-settings";
 import { saveUserValidation as coreSaveUserValidation } from "../../users/user-validation";
 import { usePhysicianRoles } from "../../users/use-physician-roles";
+import { savePhysicianRoles as coreSavePhysicianRoles } from "../../users/database";
 
 import styles from "./styles.module.css";
 import { PhysicianRole } from "./physician-role";
+import { physicianRolesReducer } from "./physician-roles-reducer";
 
 export default function Page() {
   const { userSession, userId } = useUserSession();
@@ -48,16 +57,17 @@ export default function Page() {
   const { userValidation, userValidationLoaded } =
     useUserValidationData(userId);
   const { userSettings, userSettingsLoaded } = useUserSettings(userId);
-  const { physicianRoles: existingPhysicianRoles, physicianRolesLoaded } =
+  const { physicianRoles: initialPhysicianRoles, physicianRolesLoaded } =
     usePhysicianRoles(userId);
-  const [location, setLocation] = useState<Hospital | null>(null);
-  const [department, setDepartment] = useState<string | null>(null);
-  const [employmentType, setEmploymentType] = useState<string | null>(null);
   const [npiNumber, setNpiNumber] = useState<string | null>(null);
-  const [physicianRoles, setPhysicianRoles] = useState<PhysicianRoleModel[]>(
-    [],
-  );
   const [autoAdvance, setAutoAdvance] = useState(true);
+  const [physicianRolesState, physicianRolesDispatch] = useReducer(
+    physicianRolesReducer,
+    {
+      physicianRoles: initialPhysicianRoles,
+      allRolesValid: true,
+    },
+  );
 
   const dbClient = useSupabaseDb();
 
@@ -109,19 +119,6 @@ export default function Page() {
   }, [loading, userProfile?.validatedTimestamp, npiNumber]);
 
   useEffect(() => {
-    if (userProfile?.department) {
-      setDepartment(userProfile?.department);
-    }
-    if (userProfile?.employmentType) {
-      setEmploymentType(userProfile?.employmentType);
-    }
-    const loadedLocation = userProfile?.hospitals;
-    if (loadedLocation) {
-      setLocation(loadedLocation);
-    }
-  }, [userProfile]);
-
-  useEffect(() => {
     if (userValidation?.npiNumber) {
       setNpiNumber(userValidation.npiNumber);
     }
@@ -132,8 +129,11 @@ export default function Page() {
   }, [userSettings]);
 
   useEffect(() => {
-    if (!compare(physicianRoles, existingPhysicianRoles)) {
-      setPhysicianRoles(existingPhysicianRoles);
+    if (!compare(physicianRolesState.physicianRoles, initialPhysicianRoles)) {
+      physicianRolesDispatch({
+        type: "setPhysicianRoles",
+        value: initialPhysicianRoles,
+      });
     }
     // We only want initial database loading of physician roles; don't reload them
     // when they differ from the existing roles or that'd cause live changes to
@@ -177,19 +177,18 @@ export default function Page() {
   const saveUserProfile = useCallback(async () => {
     const validatedUserId = getValidatedUserId();
 
+    const firstPhysicianRole = physicianRolesState.physicianRoles[0];
     const updatedProfile: UserProfile = {
       userId: validatedUserId,
-      location: location?.id ?? undefined,
-      department: department ?? undefined,
-      employmentType: employmentType ?? undefined,
+      location: firstPhysicianRole.hospital?.id,
+      department: firstPhysicianRole.department,
+      employmentType: firstPhysicianRole.employmentType,
     };
     await coreSaveUserProfile(getLoadedDBClient(), updatedProfile);
   }, [
-    department,
-    employmentType,
+    physicianRolesState.physicianRoles,
     getLoadedDBClient,
     getValidatedUserId,
-    location?.id,
   ]);
 
   const saveUserSettings = useCallback(async () => {
@@ -201,31 +200,41 @@ export default function Page() {
     );
   }, [autoAdvance, getLoadedDBClient, getValidatedUserId]);
 
+  const savePhysicianRoles = useCallback(async () => {
+    if (!physicianRolesState.allRolesValid) {
+      throw new Error("Cannot save physician roles; some roles are invalid");
+    }
+    const roles = physicianRolesState.physicianRoles;
+    await coreSavePhysicianRoles(getLoadedDBClient(), roles);
+  }, [getLoadedDBClient, physicianRolesState]);
+
   const saveAllChanges = useCallback(async () => {
     try {
       // User profile must be saved before validation due to foreign key constraint
       await saveUserProfile();
-      await Promise.all([saveUserValidation(), saveUserSettings()]);
+      await Promise.all([
+        saveUserValidation(),
+        saveUserSettings(),
+        savePhysicianRoles(),
+      ]);
       toast("Profile saved successfully", { type: "success" });
     } catch (err: unknown) {
       toast(parseError(err), { type: "error" });
     }
-  }, [saveUserProfile, saveUserSettings, saveUserValidation]);
+  }, [
+    saveUserProfile,
+    saveUserSettings,
+    saveUserValidation,
+    savePhysicianRoles,
+  ]);
 
-  const addPhysicianRole = () => {
+  const addNewPhysicianRole = () => {
     const newRole: PhysicianRoleModel = {
+      id: uuidV4(),
       userId: getValidatedUserId(),
       createdTimestamp: new Date(),
     };
-    const updatedRoles = [...physicianRoles, newRole];
-    setPhysicianRoles(updatedRoles);
-  };
-
-  const deleteRole = (roleIndex: number) => {
-    const updatedRoles = physicianRoles.filter(
-      (_, index) => index !== roleIndex,
-    );
-    setPhysicianRoles(updatedRoles);
+    physicianRolesDispatch({ type: "addPhysicianRole", value: newRole });
   };
 
   if (loading) {
@@ -279,17 +288,12 @@ export default function Page() {
           >
             Roles
           </Typography>
-          {physicianRoles.map((role, index) => (
+          {physicianRolesState.physicianRoles.map((role, index) => (
             <Fragment key={`physician-role-section-${index}`}>
               <PhysicianRole
-                initialHospital={role.hospital}
-                department={role.department}
-                employmentType={role.employmentType}
                 roleIndex={index}
-                onHospitalChange={() => {}}
-                onDepartmentChange={() => {}}
-                onEmploymentTypeChange={() => {}}
-                onDelete={() => deleteRole(index)}
+                physicianRole={role}
+                dispatch={physicianRolesDispatch}
               />
               <Divider />
             </Fragment>
@@ -298,8 +302,9 @@ export default function Page() {
             <Fab
               variant="extended"
               color="secondary"
+              disabled={!physicianRolesState.allRolesValid}
               className={buttonStyles.actionButton}
-              onClick={() => addPhysicianRole()}
+              onClick={() => addNewPhysicianRole()}
             >
               <Add className={buttonStyles.actionButtonIcon} />
               Add another role
@@ -322,6 +327,7 @@ export default function Page() {
           variant="extended"
           color="primary"
           className={buttonStyles.actionButton}
+          disabled={!physicianRolesState.allRolesValid}
           onClick={saveAllChanges}
         >
           <Save className={buttonStyles.actionButtonIcon} />
@@ -331,25 +337,3 @@ export default function Page() {
     </div>
   );
 }
-
-// {
-//   /* <HospitalAutocomplete
-//         initialHospital={initialHospital}
-//         className={styles.input}
-//         onChange={setLocation}
-//       />
-//       <DepartmentAutocomplete
-//         className={styles.input}
-//         initialDepartment={department}
-//         onChange={setDepartment}
-//       />
-//       <Autocomplete
-//         value={employmentType}
-//         onChange={(_, newValue) => setEmploymentType(newValue)}
-//         options={employmentTypeOptions}
-//         className={styles.input}
-//         renderInput={(params) => (
-//           <TextField {...params} label="Employment type" />
-//         )}
-//       /> */
-// }

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Autocomplete, TextField, Typography } from "@mui/material";
 
+import { getSpreadableOptionProps } from "../utils/autocompletes";
+
 import { useHospitalSearch } from "./use-hospital-search";
 import { Hospital } from "./types";
 import styles from "./hospital-autocomplete.module.css";
@@ -66,8 +68,7 @@ export function HospitalAutocomplete({
         />
       )}
       renderOption={(props, option) => {
-        const spreadableProps = { ...props };
-        if ("key" in spreadableProps) delete spreadableProps.key;
+        const spreadableProps = getSpreadableOptionProps(props);
         return (
           <li
             key={`${option.id}-${option.city}-${option.state}`}

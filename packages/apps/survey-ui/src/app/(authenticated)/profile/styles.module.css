@@ -54,3 +54,7 @@ h3.subheader {
   font-weight: 300;
   font-size: 2rem;
 }
+
+.roleLabel {
+  flex-grow: 1;
+}
