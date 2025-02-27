@@ -1,11 +1,14 @@
-import { createLogger } from "@survey-tool/core";
+import {
+  createLogger,
+  isNotNullOrUndefined,
+  isNullOrUndefined,
+} from "@survey-tool/core";
 
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
 import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
 import { AnswersForQuestions } from "../../../../surveys/types";
 import { getQuestionsForSurvey } from "../../../../surveys/questions";
-import { BadRequestError } from "../../../http-errors";
 import { getUserProfile } from "../../../../users/user-profiles";
 import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { getParticipantId } from "../../../../surveys/participant-ids";
@@ -19,13 +22,17 @@ import { doesUserHaveSurveyTakingPermission } from "../../../../surveys/summarie
 const logger = createLogger("api/answers");
 
 type SubmitAnswersRequest = {
-  userId: string;
+  roleId: string;
   answers: AnswersForQuestions;
 };
 
 type PathParams = {
   surveyId: string;
 };
+
+function validateRequiredParameter(value: unknown, label: string) {
+  return isNullOrUndefined(value) ? label : null;
+}
 
 export async function POST(
   request: Request,
@@ -35,10 +42,23 @@ export async function POST(
     const { surveyId } = params;
     const userId = getUserIdFromAuthorizationJwt(request);
     const payload = await request.json();
-    const { answers }: SubmitAnswersRequest = payload;
-    if (!userId || !surveyId || !answers) {
-      throw BadRequestError.withStatusPrefix(
-        "Expected user id, survey id, and answers",
+    const { answers, roleId }: SubmitAnswersRequest = payload;
+
+    const requiredParameters = [
+      { value: userId, label: "userId" },
+      { value: roleId, label: "roleId" },
+      { value: surveyId, label: "surveyId" },
+      { value: answers, label: "answers" },
+    ];
+    const missingParameters = requiredParameters
+      .map(({ value, label }) => validateRequiredParameter(value, label))
+      .filter(isNotNullOrUndefined);
+    if (missingParameters.length) {
+      return Response.json(
+        {
+          error: `Missing required parameters: ${missingParameters.join(", ")}`,
+        },
+        { status: 400 },
       );
     }
 

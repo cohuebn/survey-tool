@@ -40,11 +40,15 @@ function toSavableDbPhysicianRole(role: PhysicianRole): SavableDBPhysicianRole {
 export async function getPhysicianRolesForUser(
   dbClient: AppSupabaseClient,
   userId: string | undefined,
+  roleId?: string,
 ): Promise<PhysicianRole[]> {
   if (isNullOrUndefined(userId)) return [];
 
   const dbResult = await dbClient
-    .rpc("get_physician_roles_for_user", { user_id_to_find: userId })
+    .rpc("get_physician_roles_for_user", {
+      user_id_to_find: userId,
+      id_to_find: roleId,
+    })
     .select(
       `
       id,

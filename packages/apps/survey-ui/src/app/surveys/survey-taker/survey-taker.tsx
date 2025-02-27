@@ -16,6 +16,7 @@ import { Answer, Question, SurveySummary } from "../types";
 import { useUserSettings } from "../../user-settings/use-user-settings";
 import { useAccessToken } from "../../users/use-access-token";
 import { PhysicianRole } from "../../users/types";
+import { parseError } from "../../errors/parse-error";
 
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
@@ -104,7 +105,8 @@ export function SurveyTaker({
     if (response.ok) {
       toast.success("Survey saved");
     } else {
-      toast.error(`Failed to submit survey: ${response.statusText}`);
+      const parsedError = await parseError(response);
+      toast.error(`Failed to submit survey: ${parsedError}`);
     }
   };
 

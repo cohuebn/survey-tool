@@ -51,7 +51,8 @@ export default function Page() {
         router.push("/auth/login");
       } catch (err: unknown) {
         logger.error({ err }, "Error sending recovery message");
-        toast(parseError(err), { type: "error" });
+        const parsedError = await parseError(err);
+        toast(parsedError, { type: "error" });
       } finally {
         setSendingRecoveryMessage(false);
       }

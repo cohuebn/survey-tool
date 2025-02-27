@@ -219,7 +219,8 @@ export default function Page() {
       ]);
       toast("Profile saved successfully", { type: "success" });
     } catch (err: unknown) {
-      toast(parseError(err), { type: "error" });
+      const parsedError = await parseError(err);
+      toast(parsedError, { type: "error" });
     }
   }, [
     saveUserProfile,

@@ -52,8 +52,9 @@ export default function Page() {
         toast("Password changed successfully", { type: "success" });
         router.push("/auth/login");
       } catch (err: unknown) {
-        logger.error({ err }, "Error sending recovery message");
-        toast(parseError(err), { type: "error" });
+        logger.error({ err }, "Error sending password changed message");
+        const parsedError = await parseError(err);
+        toast(parsedError, { type: "error" });
       } finally {
         setChangingPassword(false);
       }
