@@ -1,8 +1,10 @@
+import { PhysicianRole } from "../../users/types";
 import { Answer, Question, SurveySummary } from "../types";
 import { SurveyTakerAction } from "../types/survey-taker-action";
 
 type SurveyTakerReducerState = {
   surveyId: string;
+  selectedRole: PhysicianRole | null;
   questions: Question[];
   summary: SurveySummary;
   activeQuestionNumber: number;
@@ -63,6 +65,8 @@ export function surveyTakerReducer(
     case "changeAnswer": {
       return changeAnswer(state, action.questionId, action.answer);
     }
+    case "setPhysicianRole":
+      return { ...state, selectedPhysicianRole: action.role };
     default:
       return state;
   }

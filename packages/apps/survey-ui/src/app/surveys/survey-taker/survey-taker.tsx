@@ -10,10 +10,13 @@ import { ChangeEvent, useMemo, useReducer } from "react";
 import buttonStyles from "@styles/buttons.module.css";
 import clsx from "clsx";
 import { toast } from "react-toastify";
+import { isNullOrUndefined } from "@survey-tool/core";
 
 import { Answer, Question, SurveySummary } from "../types";
 import { useUserSettings } from "../../user-settings/use-user-settings";
 import { useAccessToken } from "../../users/use-access-token";
+import { PhysicianRole } from "../../users/types";
+import { parseError } from "../../errors/parse-error";
 
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
@@ -21,6 +24,7 @@ import { renderQuestion } from "./question-types";
 
 type SurveyTakerProps = {
   userId: string;
+  selectedRole: PhysicianRole | null;
   surveyId: string;
   summary: SurveySummary;
   questions: Question[];
@@ -30,6 +34,7 @@ type SurveyTakerProps = {
 
 export function SurveyTaker({
   userId,
+  selectedRole,
   surveyId,
   summary,
   questions,
@@ -39,6 +44,7 @@ export function SurveyTaker({
   const activeQuestion = questions[initialQuestionNumber - 1];
   const [surveyTakerState, dispatch] = useReducer(surveyTakerReducer, {
     surveyId,
+    selectedRole,
     questions,
     summary,
     activeQuestionNumber: initialQuestionNumber,
@@ -62,7 +68,7 @@ export function SurveyTaker({
 
   const { userSettings, userSettingsLoaded } = useUserSettings(userId);
   const { accessToken, accessTokenLoaded } = useAccessToken();
-  if (!userSettingsLoaded || !accessTokenLoaded) {
+  if (!userSettingsLoaded || !accessTokenLoaded || !selectedRole) {
     return <CircularProgress />;
   }
 
@@ -71,6 +77,10 @@ export function SurveyTaker({
       throw new Error(
         "No access token associated with session; can't save survey",
       );
+    }
+    const roleId = selectedRole?.id;
+    if (isNullOrUndefined(roleId)) {
+      throw new Error("Cannot save answers without a selected role id");
     }
 
     const response = await fetch(`/api/surveys/${surveyId}/answers/`, {
@@ -81,12 +91,13 @@ export function SurveyTaker({
         Accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ answers: surveyTakerState.answers, userId }),
+      body: JSON.stringify({ answers: surveyTakerState.answers, roleId }),
     });
     if (response.ok) {
       toast.success("Survey saved");
     } else {
-      toast.error(`Failed to submit survey: ${response.statusText}`);
+      const parsedError = await parseError(response);
+      toast.error(`Failed to submit survey: ${parsedError}`);
     }
   };
 
@@ -95,6 +106,9 @@ export function SurveyTaker({
       <div className={styles.questionContent}>
         <Typography className={styles.surveyTitle} variant="h2">
           {summary.name}
+        </Typography>
+        <Typography className={styles.selectedRoleSubheading} variant="h3">
+          {`Role: ${selectedRole?.hospital?.name} - ${selectedRole?.department}`}
         </Typography>
         {renderQuestion({
           userId,

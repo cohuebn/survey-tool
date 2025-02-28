@@ -1,0 +1,1 @@
+alter table ${flyway:defaultSchema}.alternative_roles rename to physician_roles;

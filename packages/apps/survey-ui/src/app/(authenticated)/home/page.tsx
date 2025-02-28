@@ -4,6 +4,7 @@ import { Alert, CircularProgress, Typography } from "@mui/material";
 import layoutStyles from "@styles/layout.module.css";
 import { useMemo } from "react";
 import { isNotNullOrUndefined } from "@survey-tool/core";
+import { redirect } from "next/navigation";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
@@ -55,22 +56,18 @@ export default function Page() {
     );
   }
 
+  if (userProfile.validatedTimestamp) {
+    return redirect("/surveys");
+  }
   return (
     <div className={layoutStyles.centeredContent}>
-      <Typography variant="h2">Home</Typography>
-      {userProfile?.validatedTimestamp ? (
-        <Typography variant="body1">
-          Welcome back. You can participate in surveys using the navigation
-          menu.
-        </Typography>
-      ) : (
-        <Typography variant="body1">
-          It looks like your profile is still pending validation. Please give us
-          a little time to review your information; we&apos;ll send you an email
-          once your account is validated. Once validated, you can start
-          participating in surveys.
-        </Typography>
-      )}
+      <Typography variant="h2">Account Pending Validation</Typography>
+      <Typography variant="body1">
+        It looks like your profile is still pending validation. Please give us a
+        little time to review your information; we&apos;ll send you an email
+        once your account is validated. Once validated, you can start
+        participating in surveys.
+      </Typography>
     </div>
   );
 }

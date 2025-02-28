@@ -50,7 +50,8 @@ export default function Page() {
         router.push("/home");
       } catch (err: unknown) {
         logger.error({ err }, "Error logging in");
-        toast(parseError(err), { type: "error" });
+        const parsedError = await parseError(err);
+        toast(parsedError, { type: "error" });
       } finally {
         setSigningIn(false);
       }

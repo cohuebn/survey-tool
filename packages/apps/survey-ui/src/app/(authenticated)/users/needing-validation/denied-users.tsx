@@ -38,8 +38,8 @@ export function DeniedUsers({ deniedUsers }: DeniedUsersProps) {
                   {user.userValidation.emailAddress}
                 </Link>
               </TableCell>
-              <TableCell>{user.hospitals?.name}</TableCell>
-              <TableCell>{`${user.hospitals?.city}, ${user.hospitals?.state}`}</TableCell>
+              <TableCell>{user.hospital?.name}</TableCell>
+              <TableCell>{`${user.hospital?.city}, ${user.hospital?.state}`}</TableCell>
               <TableCell>{`${user.userValidation.deniedTimestamp}`}</TableCell>
             </TableRow>
           ))}

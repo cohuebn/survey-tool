@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 
 import { useSupabaseDb } from "../supabase/use-supabase-db";
 
-import { User } from "./types";
 import { getUserProfile } from "./user-profiles";
+import { UserProfile } from "./types";
 
 export function useUserProfile(userId: string | undefined) {
   const [userProfileLoaded, setUserProfileLoaded] = useState(false);
-  const [userProfile, setUserProfile] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const supabaseDb = useSupabaseDb();
 
   useEffect(() => {

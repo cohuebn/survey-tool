@@ -49,7 +49,8 @@ export default function Page() {
         router.push("/auth/login");
       } catch (err: unknown) {
         logger.error({ err }, "Error signing up");
-        toast(parseError(err), { type: "error" });
+        const parsedError = await parseError(err);
+        toast(parsedError, { type: "error" });
       } finally {
         setSigningUp(false);
       }

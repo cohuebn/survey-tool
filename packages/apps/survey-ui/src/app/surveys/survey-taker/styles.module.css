@@ -1,6 +1,12 @@
 h2.surveyTitle {
   font-size: 2rem;
+}
+
+h3.selectedRoleSubheading {
+  font-weight: 300;
+  font-size: 1.3rem;
   margin-bottom: 2rem;
+  color: var(--subheading-color);
 }
 
 div.questionContent {
@@ -47,4 +53,21 @@ button.answerOption span.maximizeSize {
 
 button.answerOption span.minimizeSize {
   flex-shrink: 0;
+}
+
+li.roleOption {
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+li.roleOption:hover {
+  cursor: pointer;
+  background-color: var(--hover-highlight);
+}
+
+p.roleSelectionDescription {
+  margin-bottom: 1rem;
 }

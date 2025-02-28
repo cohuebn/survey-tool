@@ -1,12 +1,14 @@
-import { createLogger } from "@survey-tool/core";
+import {
+  createLogger,
+  isNotNullOrUndefined,
+  isNullOrUndefined,
+} from "@survey-tool/core";
 
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
 import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
 import { AnswersForQuestions } from "../../../../surveys/types";
 import { getQuestionsForSurvey } from "../../../../surveys/questions";
-import { BadRequestError } from "../../../http-errors";
-import { getUserProfile } from "../../../../users/user-profiles";
 import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { getParticipantId } from "../../../../surveys/participant-ids";
 import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
@@ -15,17 +17,22 @@ import { toOverallRatingValue } from "../../../../surveys/answers/to-overall-rat
 import { saveOverallRating } from "../../../../surveys/overall-ratings/database";
 import { SavableOverallRating } from "../../../../surveys/types/overall-ratings";
 import { doesUserHaveSurveyTakingPermission } from "../../../../surveys/summaries/database";
+import { getPhysicianRolesForUser } from "../../../../users/database";
 
 const logger = createLogger("api/answers");
 
 type SubmitAnswersRequest = {
-  userId: string;
+  roleId: string;
   answers: AnswersForQuestions;
 };
 
 type PathParams = {
   surveyId: string;
 };
+
+function validateRequiredParameter(value: unknown, label: string) {
+  return isNullOrUndefined(value) ? label : null;
+}
 
 export async function POST(
   request: Request,
@@ -35,10 +42,23 @@ export async function POST(
     const { surveyId } = params;
     const userId = getUserIdFromAuthorizationJwt(request);
     const payload = await request.json();
-    const { answers }: SubmitAnswersRequest = payload;
-    if (!userId || !surveyId || !answers) {
-      throw BadRequestError.withStatusPrefix(
-        "Expected user id, survey id, and answers",
+    const { answers, roleId }: SubmitAnswersRequest = payload;
+
+    const requiredParameters = [
+      { value: userId, label: "userId" },
+      { value: roleId, label: "roleId" },
+      { value: surveyId, label: "surveyId" },
+      { value: answers, label: "answers" },
+    ];
+    const missingParameters = requiredParameters
+      .map(({ value, label }) => validateRequiredParameter(value, label))
+      .filter(isNotNullOrUndefined);
+    if (missingParameters.length) {
+      return Response.json(
+        {
+          error: `Missing required parameters: ${missingParameters.join(", ")}`,
+        },
+        { status: 400 },
       );
     }
 
@@ -61,28 +81,32 @@ export async function POST(
       `Handling answer submission for survey ${surveyId}`,
     );
 
-    const [userProfile, questions] = await Promise.all([
-      getUserProfile(dbClient(), userId),
+    const [physicianRoles, questions] = await Promise.all([
+      getPhysicianRolesForUser(dbClient(), userId, roleId),
       getQuestionsForSurvey(dbClient(), surveyId),
     ]);
 
-    if (!userProfile) {
-      throw new Error(
-        `User profile not found for user ${userId}. Cannot save answers.`,
+    if (!physicianRoles.length) {
+      return Response.json(
+        {
+          error: `No role found with id ${roleId} for user ${userId}. Cannot save answers.`,
+        },
+        { status: 400 },
       );
     }
+    const physicianRole = physicianRoles[0];
 
-    const participantId = getParticipantId(userProfile.userId, surveyId);
-    const savableAnswers = toSavableAnswers(surveyId, answers, userProfile);
+    const participantId = getParticipantId(userId, physicianRole.id, surveyId);
+    const savableAnswers = toSavableAnswers(surveyId, answers, physicianRole);
     const overallRatingValue = toOverallRatingValue(questions, savableAnswers);
     const overallRating: SavableOverallRating = {
       surveyId,
       participantId,
       rating: overallRatingValue,
       ratingTime: new Date(),
-      location: userProfile.location,
-      department: userProfile.department,
-      employmentType: userProfile.employmentType,
+      location: physicianRole.hospital?.id,
+      department: physicianRole.department,
+      employmentType: physicianRole.employmentType,
     };
 
     const [, savedOverallRating] = await Promise.all([

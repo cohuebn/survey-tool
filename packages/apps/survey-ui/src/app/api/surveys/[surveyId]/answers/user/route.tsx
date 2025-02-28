@@ -1,3 +1,5 @@
+import { NextRequest } from "next/server";
+
 import { getUserIdFromAuthorizationJwt } from "../../../../utils/jwts";
 import { getServerSideSupabaseClient } from "../../../../../supabase/supbase-server-side-client";
 import { getParticipantId } from "../../../../../surveys/participant-ids";
@@ -10,12 +12,19 @@ type PathParams = {
 };
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: PathParams },
 ) {
   const { surveyId } = params;
+  const roleId = request.nextUrl.searchParams.get("roleId");
+  if (!roleId) {
+    return Response.json(
+      { error: "Missing required parameter: roleId" },
+      { status: 400 },
+    );
+  }
   const userId = getUserIdFromAuthorizationJwt(request);
-  const participantId = getParticipantId(userId, surveyId);
+  const participantId = getParticipantId(userId, roleId, surveyId);
   const supabaseClient = await getServerSideSupabaseClient();
   const dbQuestions = await getQuestionsForSurvey(supabaseClient(), surveyId);
   const dbAnswers = await getParticipantAnswersForSurvey(

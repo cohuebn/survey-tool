@@ -1,9 +1,10 @@
 "use client";
 
 import {
-  Autocomplete,
-  Button,
+  Box,
   CircularProgress,
+  Divider,
+  Fab,
   FormControlLabel,
   InputAdornment,
   Link,
@@ -14,32 +15,41 @@ import {
 } from "@mui/material";
 import buttonStyles from "@styles/buttons.module.css";
 import layoutStyles from "@styles/layout.module.css";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
-import { toSnake } from "convert-keys";
-import { Help } from "@mui/icons-material";
-import { isNullOrUndefined } from "@survey-tool/core";
+import { Add, Help, Save } from "@mui/icons-material";
+import { isNotNullOrUndefined, isNullOrUndefined } from "@survey-tool/core";
+import clsx from "clsx";
+import compare from "just-compare";
+import { v4 as uuidV4 } from "uuid";
 
 import { useUserSession } from "../../auth/use-user-session";
 import { useUserProfile } from "../../users/use-user-profile";
-import { employmentTypeOptions } from "../../hospitals/employment-type-options";
 import {
-  DBUserValidation,
+  PhysicianRole as PhysicianRoleModel,
   UserProfile,
   UserValidation,
 } from "../../users/types";
 import { useSupabaseDb } from "../../supabase/use-supabase-db";
-import { asPostgresError } from "../../errors/postgres-error";
 import { parseError } from "../../errors/parse-error";
-import { Hospital } from "../../hospitals/types";
 import { useUserValidationData } from "../../users/use-user-validation-data";
 import { saveUserProfile as coreSaveUserProfile } from "../../users/user-profiles";
-import { HospitalAutocomplete } from "../../hospitals/hospital-autocomplete";
-import { DepartmentAutocomplete } from "../../hospitals/department-autocomplete";
 import { saveUserSettings as coreSaveUserSettings } from "../../user-settings/database";
 import { useUserSettings } from "../../user-settings/use-user-settings";
+import { saveUserValidation as coreSaveUserValidation } from "../../users/user-validation";
+import { usePhysicianRoles } from "../../users/use-physician-roles";
+import { savePhysicianRoles as coreSavePhysicianRoles } from "../../users/database";
 
 import styles from "./styles.module.css";
+import { PhysicianRole } from "./physician-role";
+import { physicianRolesReducer } from "./physician-roles-reducer";
 
 export default function Page() {
   const { userSession, userId } = useUserSession();
@@ -47,12 +57,17 @@ export default function Page() {
   const { userValidation, userValidationLoaded } =
     useUserValidationData(userId);
   const { userSettings, userSettingsLoaded } = useUserSettings(userId);
-  const [location, setLocation] = useState<Hospital | null>(null);
-  const [department, setDepartment] = useState<string | null>(null);
-  const [employmentType, setEmploymentType] = useState<string | null>(null);
+  const { physicianRoles: initialPhysicianRoles, physicianRolesLoaded } =
+    usePhysicianRoles(userId);
   const [npiNumber, setNpiNumber] = useState<string | null>(null);
-  const [initialHospital, setInitialHospital] = useState<Hospital | null>(null);
   const [autoAdvance, setAutoAdvance] = useState(true);
+  const [physicianRolesState, physicianRolesDispatch] = useReducer(
+    physicianRolesReducer,
+    {
+      physicianRoles: initialPhysicianRoles,
+      allRolesValid: true,
+    },
+  );
 
   const dbClient = useSupabaseDb();
 
@@ -62,52 +77,46 @@ export default function Page() {
       !userProfile ||
       !userValidationLoaded ||
       !dbClient.clientLoaded ||
-      !userSettingsLoaded,
+      !userSettingsLoaded ||
+      !physicianRolesLoaded,
     [
       dbClient.clientLoaded,
       userProfile,
       userSession.loggedIn,
       userValidationLoaded,
       userSettingsLoaded,
+      physicianRolesLoaded,
     ],
   );
 
   const userValidationSection = useMemo(() => {
-    return loading || userProfile?.validatedTimestamp ? null : (
-      <TextField
-        className={styles.input}
-        type="number"
-        label="NPI Number"
-        value={npiNumber ?? ""}
-        onChange={(event) => setNpiNumber(event.target.value)}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Tooltip title="Why is NPI being asked for? Click here for more details.">
-                <Link href="/faq?expandedTab=why-npi" target="__blank">
-                  <Help className={styles.helpIcon} />
-                </Link>
-              </Tooltip>
-            </InputAdornment>
-          ),
-        }}
-      />
+    return loading ||
+      isNotNullOrUndefined(userProfile?.validatedTimestamp) ? null : (
+      <Box className={styles.settingsSection}>
+        <Typography variant="h3" className={styles.subheader}>
+          Validation
+        </Typography>
+        <TextField
+          className={styles.input}
+          type="number"
+          label="NPI Number"
+          value={npiNumber ?? ""}
+          onChange={(event) => setNpiNumber(event.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title="Why is NPI being asked for? Click here for more details.">
+                  <Link href="/faq?expandedTab=why-npi" target="__blank">
+                    <Help className={styles.helpIcon} />
+                  </Link>
+                </Tooltip>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
     );
   }, [loading, userProfile?.validatedTimestamp, npiNumber]);
-
-  useEffect(() => {
-    if (userProfile?.department) {
-      setDepartment(userProfile?.department);
-    }
-    if (userProfile?.employmentType) {
-      setEmploymentType(userProfile?.employmentType);
-    }
-    const loadedLocation = userProfile?.hospitals;
-    if (loadedLocation) {
-      setInitialHospital(loadedLocation);
-      setLocation(loadedLocation);
-    }
-  }, [userProfile]);
 
   useEffect(() => {
     if (userValidation?.npiNumber) {
@@ -118,6 +127,19 @@ export default function Page() {
   useEffect(() => {
     setAutoAdvance(userSettings.autoAdvance ?? true); // Default auto-advance to true
   }, [userSettings]);
+
+  useEffect(() => {
+    if (!compare(physicianRolesState.physicianRoles, initialPhysicianRoles)) {
+      physicianRolesDispatch({
+        type: "setPhysicianRoles",
+        value: initialPhysicianRoles,
+      });
+    }
+    // We only want initial database loading of physician roles; don't reload them
+    // when they differ from the existing roles or that'd cause live changes to
+    // be overwritten
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [physicianRolesLoaded]);
 
   const getValidatedUserId = useCallback(() => {
     if (!userId) {
@@ -149,32 +171,15 @@ export default function Page() {
       submittedTimestamp: new Date(),
     };
     const loadedDbClient = getLoadedDBClient();
-    const dbUserValidation = toSnake<DBUserValidation>(updatedUserValidation);
-    const validationSaveResult = await loadedDbClient
-      .from("user_validation")
-      .upsert(dbUserValidation);
-    if (validationSaveResult.error) {
-      throw asPostgresError(validationSaveResult.error);
-    }
+    await coreSaveUserValidation(loadedDbClient, updatedUserValidation);
   }, [getLoadedDBClient, getValidatedUserId, npiNumber, userSession]);
 
   const saveUserProfile = useCallback(async () => {
     const validatedUserId = getValidatedUserId();
 
-    const updatedProfile: UserProfile = {
-      userId: validatedUserId,
-      location: location?.id ?? undefined,
-      department: department ?? undefined,
-      employmentType: employmentType ?? undefined,
-    };
+    const updatedProfile: UserProfile = { userId: validatedUserId };
     await coreSaveUserProfile(getLoadedDBClient(), updatedProfile);
-  }, [
-    department,
-    employmentType,
-    getLoadedDBClient,
-    getValidatedUserId,
-    location?.id,
-  ]);
+  }, [getLoadedDBClient, getValidatedUserId]);
 
   const saveUserSettings = useCallback(async () => {
     const settings = { autoAdvance };
@@ -185,83 +190,141 @@ export default function Page() {
     );
   }, [autoAdvance, getLoadedDBClient, getValidatedUserId]);
 
+  const savePhysicianRoles = useCallback(async () => {
+    if (!physicianRolesState.allRolesValid) {
+      throw new Error("Cannot save physician roles; some roles are invalid");
+    }
+    const roles = physicianRolesState.physicianRoles;
+    await coreSavePhysicianRoles(getLoadedDBClient(), roles);
+  }, [getLoadedDBClient, physicianRolesState]);
+
   const saveAllChanges = useCallback(async () => {
     try {
       // User profile must be saved before validation due to foreign key constraint
       await saveUserProfile();
-      await Promise.all([saveUserValidation(), saveUserSettings()]);
+      await Promise.all([
+        saveUserValidation(),
+        saveUserSettings(),
+        savePhysicianRoles(),
+      ]);
       toast("Profile saved successfully", { type: "success" });
     } catch (err: unknown) {
-      toast(parseError(err), { type: "error" });
+      const parsedError = await parseError(err);
+      toast(parsedError, { type: "error" });
     }
-  }, [saveUserProfile, saveUserSettings, saveUserValidation]);
+  }, [
+    saveUserProfile,
+    saveUserSettings,
+    saveUserValidation,
+    savePhysicianRoles,
+  ]);
+
+  const addNewPhysicianRole = () => {
+    const newRole: PhysicianRoleModel = {
+      id: uuidV4(),
+      userId: getValidatedUserId(),
+      createdTimestamp: new Date(),
+    };
+    physicianRolesDispatch({ type: "addPhysicianRole", value: newRole });
+  };
 
   if (loading) {
     return <CircularProgress />;
   }
 
   return (
-    <div className={layoutStyles.centeredContent}>
+    <div className={clsx(layoutStyles.centeredContent)}>
       <Typography className={layoutStyles.centeredText} variant="h2">
         Your profile
       </Typography>
-      <HospitalAutocomplete
-        initialHospital={initialHospital}
-        className={styles.input}
-        onChange={setLocation}
-      />
-      <DepartmentAutocomplete
-        className={styles.input}
-        initialDepartment={department}
-        onChange={setDepartment}
-      />
-      <Autocomplete
-        value={employmentType}
-        onChange={(_, newValue) => setEmploymentType(newValue)}
-        options={employmentTypeOptions}
-        className={styles.input}
-        renderInput={(params) => (
-          <TextField {...params} label="Employment type" />
-        )}
-      />
-      <div className={styles.autoAdvanceSetting}>
-        <Tooltip
-          title={
-            <Typography variant="body1">
-              If enabled, some question types (single-choice, rating, etc.) will
-              automatically progress after an answer is selected. When this
-              setting is disabled, you just need to explicitly hit the Next
-              button after selecting a choice. If using a screen reader or other
-              accessibility device, disabling this setting is recommended.
-            </Typography>
-          }
-        >
-          <FormControlLabel
-            control={
-              <Switch
-                checked={autoAdvance}
-                onChange={(event) => setAutoAdvance(event.target.checked)}
+      <div className={styles.profile}>
+        {userValidationSection}
+        <Box className={styles.settingsSection}>
+          <Typography
+            className={clsx(layoutStyles.centeredText, styles.subheader)}
+            variant="h3"
+          >
+            Survey Settings
+          </Typography>
+          <div className={styles.autoAdvanceSetting}>
+            <Tooltip
+              title={
+                <Typography variant="body1">
+                  If enabled, some question types (single-choice, rating, etc.)
+                  will automatically progress after an answer is selected. When
+                  this setting is disabled, you just need to explicitly hit the
+                  Next button after selecting a choice. If using a screen reader
+                  or other accessibility device, disabling this setting is
+                  recommended.
+                </Typography>
+              }
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    id="auto-advance-switch"
+                    checked={autoAdvance}
+                    onChange={(event) => setAutoAdvance(event.target.checked)}
+                  />
+                }
+                label="Auto-advance to next question when question supports it?"
               />
-            }
-            label="Auto-advance to next question when question supports it?"
-          />
-        </Tooltip>
+            </Tooltip>
+          </div>
+        </Box>
+        <Box className={styles.settingsSection}>
+          <Typography
+            className={clsx(layoutStyles.centeredText, styles.subheader)}
+            variant="h3"
+          >
+            Roles
+          </Typography>
+          {physicianRolesState.physicianRoles.map((role, index) => (
+            <Fragment key={`physician-role-section-${index}`}>
+              <PhysicianRole
+                roleIndex={index}
+                physicianRole={role}
+                dispatch={physicianRolesDispatch}
+              />
+              <Divider />
+            </Fragment>
+          ))}
+          <div className={clsx("buttonGroup", layoutStyles.centeredContent)}>
+            <Fab
+              variant="extended"
+              color="secondary"
+              disabled={!physicianRolesState.allRolesValid}
+              className={buttonStyles.actionButton}
+              onClick={() => addNewPhysicianRole()}
+            >
+              <Add className={buttonStyles.actionButtonIcon} />
+              Add another role
+            </Fab>
+          </div>
+          <Typography variant="body1">
+            Is something missing from our hospital or department lists? Let us
+            know by{" "}
+            <a
+              href="https://github.com/cohuebn/survey-tool/issues"
+              target="_blank"
+            >
+              filing a new issue here
+            </a>
+          </Typography>
+        </Box>
       </div>
-      {userValidationSection}
-      <Button
-        className={buttonStyles.button}
-        variant="contained"
-        onClick={saveAllChanges}
-      >
-        Save
-      </Button>
-      <Typography variant="body1">
-        Is something missing from our hospital or department lists? Let us know
-        by{" "}
-        <a href="https://github.com/cohuebn/survey-tool/issues" target="_blank">
-          filing a new issue here
-        </a>
-      </Typography>
+      <div className="buttonGroup">
+        <Fab
+          variant="extended"
+          color="primary"
+          className={buttonStyles.actionButton}
+          disabled={!physicianRolesState.allRolesValid}
+          onClick={saveAllChanges}
+        >
+          <Save className={buttonStyles.actionButtonIcon} />
+          Save
+        </Fab>
+      </div>
     </div>
   );
 }
