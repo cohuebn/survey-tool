@@ -32,11 +32,7 @@ export async function getUserProfile(
     .select(
       `
           user_id,
-          validated_timestamp,
-          location,
-          hospitals!users_location_fkey(id, name, city, state),
-          department,
-          employment_type
+          validated_timestamp
         `,
     )
     .eq("user_id", userId)

@@ -12,7 +12,6 @@ export type DBUserProfile = SnakeCasedPropertiesDeep<UserProfile>;
 export type DBUser = {
   user_id: string;
   validated_timestamp?: Date;
-  employment_type?: string;
 };
 
 export type UserValidation = {
