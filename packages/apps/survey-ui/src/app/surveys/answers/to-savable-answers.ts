@@ -6,7 +6,7 @@ import {
   SingleAnswer,
 } from "../types";
 import { getParticipantId } from "../participant-ids";
-import { UserProfile } from "../../users/types";
+import { PhysicianRole } from "../../users/types";
 
 /**
  * Standardize answers (single or multi) into an array of answers
@@ -25,7 +25,7 @@ function toSavableAnswer(
   surveyId: string,
   questionId: string,
   answer: SingleAnswer,
-  userProfile: UserProfile,
+  role: PhysicianRole,
 ): SavableAnswer {
   const participantId = getParticipantId(userId, surveyId);
   return {
@@ -34,9 +34,9 @@ function toSavableAnswer(
     questionId,
     answer,
     answerTime: new Date(),
-    location: userProfile.location,
-    department: userProfile.department,
-    employmentType: userProfile.employmentType,
+    location: role.hospital?.id,
+    department: role.department,
+    employmentType: role.employmentType,
   };
 }
 
@@ -44,18 +44,12 @@ function toSavableAnswer(
 export function toSavableAnswers(
   surveyId: string,
   answers: AnswersForQuestions,
-  userProfile: UserProfile,
+  role: PhysicianRole,
 ): SavableAnswer[] {
   return Object.entries(answers).flatMap(([questionId, answer]) => {
     const multiAnswers = toMultiAnswers(answer);
     return multiAnswers.map((singleAnswer) =>
-      toSavableAnswer(
-        userProfile.userId,
-        surveyId,
-        questionId,
-        singleAnswer,
-        userProfile,
-      ),
+      toSavableAnswer(role.userId, surveyId, questionId, singleAnswer, role),
     );
   });
 }

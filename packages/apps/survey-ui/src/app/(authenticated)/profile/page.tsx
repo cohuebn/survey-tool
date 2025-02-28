@@ -177,19 +177,9 @@ export default function Page() {
   const saveUserProfile = useCallback(async () => {
     const validatedUserId = getValidatedUserId();
 
-    const firstPhysicianRole = physicianRolesState.physicianRoles[0];
-    const updatedProfile: UserProfile = {
-      userId: validatedUserId,
-      location: firstPhysicianRole.hospital?.id,
-      department: firstPhysicianRole.department,
-      employmentType: firstPhysicianRole.employmentType,
-    };
+    const updatedProfile: UserProfile = { userId: validatedUserId };
     await coreSaveUserProfile(getLoadedDBClient(), updatedProfile);
-  }, [
-    physicianRolesState.physicianRoles,
-    getLoadedDBClient,
-    getValidatedUserId,
-  ]);
+  }, [getLoadedDBClient, getValidatedUserId]);
 
   const saveUserSettings = useCallback(async () => {
     const settings = { autoAdvance };

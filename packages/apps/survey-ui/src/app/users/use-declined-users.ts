@@ -13,7 +13,7 @@ function toUserWithValidationData(
   return {
     userId: dbUser.user_id,
     validatedTimestamp: undefined,
-    hospitals: getHospitalFromDatabaseResult(dbUser),
+    hospital: getHospitalFromDatabaseResult(dbUser),
     department: dbUser.department,
     employmentType: dbUser.employment_type,
     userValidation: {

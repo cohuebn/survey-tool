@@ -22,11 +22,11 @@ import { useUserProfile } from "../../../../users/use-user-profile";
 import { useSupabaseDb } from "../../../../supabase/use-supabase-db";
 import { UserProfile } from "../../../../users/types";
 import { saveUserProfile } from "../../../../users/user-profiles";
-import { convertUserToProfile } from "../../../../users/convert-user-to-profile";
 import {
   deleteUserValidation,
   saveUserValidation,
 } from "../../../../users/user-validation";
+import { usePhysicianRoles } from "../../../../users/use-physician-roles";
 
 import styles from "./styles.module.css";
 import ValidationField from "./validation-field";
@@ -40,6 +40,7 @@ export default function Page({ params }: PageProps) {
   const { userValidation, userValidationLoaded } =
     useUserValidationData(userId);
   const userProfile = useUserProfile(userId);
+  const { physicianRoles, physicianRolesLoaded } = usePhysicianRoles(userId);
   const dbClient = useSupabaseDb();
   const userAlreadyDenied = isNotNullOrUndefined(
     userValidation?.deniedTimestamp,
@@ -50,7 +51,7 @@ export default function Page({ params }: PageProps) {
   const approveUser = useCallback(async () => {
     if (!dbClient.clientLoaded || !userProfile) return;
     const updatedProfile: UserProfile = {
-      ...convertUserToProfile(userProfile),
+      ...userProfile,
       validatedTimestamp: new Date(),
     };
     await saveUserProfile(dbClient.client, updatedProfile);
@@ -77,7 +78,12 @@ export default function Page({ params }: PageProps) {
     toast("User denied", { type: "success" });
   }, [dbClient, userId, deniedReason, userValidation]);
 
-  if (!userValidationLoaded || !userProfile || !dbClient.clientLoaded) {
+  if (
+    !userValidationLoaded ||
+    !userProfile ||
+    !physicianRolesLoaded ||
+    !dbClient.clientLoaded
+  ) {
     return <CircularProgress />;
   }
 
@@ -89,17 +95,23 @@ export default function Page({ params }: PageProps) {
           <ValidationField label="Email" value={userValidation?.emailAddress} />
           <ValidationField
             label="Hospital"
-            value={userProfile?.hospitals?.name}
+            value={physicianRoles[0].hospital?.name}
           />
-          <ValidationField label="City" value={userProfile?.hospitals?.city} />
+          <ValidationField
+            label="City"
+            value={physicianRoles[0].hospital?.city}
+          />
           <ValidationField
             label="State"
-            value={userProfile?.hospitals?.state}
+            value={physicianRoles[0].hospital?.state}
           />
-          <ValidationField label="Department" value={userProfile.department} />
+          <ValidationField
+            label="Department"
+            value={physicianRoles[0].department}
+          />
           <ValidationField
             label="Employment type"
-            value={userProfile.employmentType}
+            value={physicianRoles[0].employmentType}
           />
           <ValidationField
             label="NPI number"

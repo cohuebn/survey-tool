@@ -91,6 +91,10 @@ export function SurveyTaker({
         "No access token associated with session; can't save survey",
       );
     }
+    const roleId = surveyTakerState.selectedPhysicianRole?.id;
+    if (isNullOrUndefined(roleId)) {
+      throw new Error("Cannot save answers without a selected role id");
+    }
 
     const response = await fetch(`/api/surveys/${surveyId}/answers/`, {
       method: "POST",
@@ -100,7 +104,7 @@ export function SurveyTaker({
         Accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ answers: surveyTakerState.answers, userId }),
+      body: JSON.stringify({ answers: surveyTakerState.answers, roleId }),
     });
     if (response.ok) {
       toast.success("Survey saved");

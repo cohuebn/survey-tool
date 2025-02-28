@@ -9,7 +9,6 @@ import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
 import { AnswersForQuestions } from "../../../../surveys/types";
 import { getQuestionsForSurvey } from "../../../../surveys/questions";
-import { getUserProfile } from "../../../../users/user-profiles";
 import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { getParticipantId } from "../../../../surveys/participant-ids";
 import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
@@ -18,6 +17,7 @@ import { toOverallRatingValue } from "../../../../surveys/answers/to-overall-rat
 import { saveOverallRating } from "../../../../surveys/overall-ratings/database";
 import { SavableOverallRating } from "../../../../surveys/types/overall-ratings";
 import { doesUserHaveSurveyTakingPermission } from "../../../../surveys/summaries/database";
+import { getPhysicianRolesForUser } from "../../../../users/database";
 
 const logger = createLogger("api/answers");
 
@@ -81,28 +81,32 @@ export async function POST(
       `Handling answer submission for survey ${surveyId}`,
     );
 
-    const [userProfile, questions] = await Promise.all([
-      getUserProfile(dbClient(), userId),
+    const [physicianRoles, questions] = await Promise.all([
+      getPhysicianRolesForUser(dbClient(), userId, roleId),
       getQuestionsForSurvey(dbClient(), surveyId),
     ]);
 
-    if (!userProfile) {
-      throw new Error(
-        `User profile not found for user ${userId}. Cannot save answers.`,
+    if (!physicianRoles.length) {
+      return Response.json(
+        {
+          error: `No role found with id ${roleId} for user ${userId}. Cannot save answers.`,
+        },
+        { status: 400 },
       );
     }
+    const physicianRole = physicianRoles[0];
 
-    const participantId = getParticipantId(userProfile.userId, surveyId);
-    const savableAnswers = toSavableAnswers(surveyId, answers, userProfile);
+    const participantId = getParticipantId(userId, surveyId);
+    const savableAnswers = toSavableAnswers(surveyId, answers, physicianRole);
     const overallRatingValue = toOverallRatingValue(questions, savableAnswers);
     const overallRating: SavableOverallRating = {
       surveyId,
       participantId,
       rating: overallRatingValue,
       ratingTime: new Date(),
-      location: userProfile.location,
-      department: userProfile.department,
-      employmentType: userProfile.employmentType,
+      location: physicianRole.hospital?.id,
+      department: physicianRole.department,
+      employmentType: physicianRole.employmentType,
     };
 
     const [, savedOverallRating] = await Promise.all([

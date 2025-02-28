@@ -3,7 +3,7 @@ import { toCamel, toSnake } from "convert-keys";
 import { AppSupabaseClient } from "../supabase/types";
 import { asPostgresError } from "../errors/postgres-error";
 
-import { DBUser, DBUserProfile, User, UserProfile } from "./types";
+import { DBUser, DBUserProfile, UserProfile } from "./types";
 
 export async function saveUserProfile(
   dbClient: AppSupabaseClient,
@@ -19,7 +19,7 @@ export async function saveUserProfile(
 function dbUserToUserProfile(
   userId: string,
   dbUser: DBUser | null,
-): User | null {
+): UserProfile | null {
   return toCamel({ ...dbUser, userId });
 }
 

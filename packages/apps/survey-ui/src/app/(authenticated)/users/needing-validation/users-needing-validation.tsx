@@ -42,8 +42,8 @@ export function UsersNeedingValidation({
                   {user.userValidation.emailAddress}
                 </Link>
               </TableCell>
-              <TableCell>{user.hospitals?.name}</TableCell>
-              <TableCell>{`${user.hospitals?.city}, ${user.hospitals?.state}`}</TableCell>
+              <TableCell>{user.hospital?.name}</TableCell>
+              <TableCell>{`${user.hospital?.city}, ${user.hospital?.state}`}</TableCell>
               <TableCell>{user.department}</TableCell>
               <TableCell>{user.employmentType}</TableCell>
               <TableCell align="right">
