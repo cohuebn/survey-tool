@@ -42,7 +42,7 @@ export function OverallRatings({ ratingStats }: OverallRatingsProps) {
 
   return (
     <>
-      <Typography variant="h5">
+      <Typography variant="h3" className={styles.subheading}>
         Overall ratings based on this survey&#39;s results
       </Typography>
 
