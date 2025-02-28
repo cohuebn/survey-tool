@@ -15,7 +15,7 @@ type UseSurveyPermissionsWithDetailsResults = {
 };
 
 export function useSurveyPermissionsWithDetails(
-  surveyId: string,
+  surveyId: string | null,
 ): UseSurveyPermissionsWithDetailsResults {
   const { permissions, permissionsLoaded } = useSurveyPermissions(surveyId);
   const initialPermissions = useMemo(() => {
@@ -25,6 +25,7 @@ export function useSurveyPermissionsWithDetails(
     useLocationRestrictions(surveyId);
   const { departmentRestrictions, departmentRestrictionsLoaded } =
     useDepartmentRestrictions(surveyId);
+
   const permissionDetailsLoaded = useMemo(
     () =>
       permissionsLoaded &&
