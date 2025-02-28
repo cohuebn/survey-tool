@@ -102,3 +102,32 @@ export async function saveSurveySummary(
   const dbResult = await dbClient.from("surveys").upsert(dbSummary);
   if (dbResult.error) throw asPostgresError(dbResult.error);
 }
+
+/** Delete the given survey along with all dependencies of that survey */
+export async function deleteSurvey(
+  dbClient: AppSupabaseClient,
+  surveyId: string,
+) {
+  const dependencies = await Promise.all([
+    dbClient.from("answers").delete().eq("survey_id", surveyId),
+    dbClient.from("overall_ratings").delete().eq("survey_id", surveyId),
+    dbClient
+      .from("survey_department_restrictions")
+      .delete()
+      .eq("survey_id", surveyId),
+    dbClient
+      .from("survey_location_restrictions")
+      .delete()
+      .eq("survey_id", surveyId),
+    dbClient.from("survey_permissions").delete().eq("survey_id", surveyId),
+    dbClient.from("survey_questions").delete().eq("survey_id", surveyId),
+  ]);
+  const surveyDeletion = await dbClient
+    .from("surveys")
+    .delete()
+    .eq("id", surveyId);
+  const error =
+    dependencies.find((dependency) => dependency.error)?.error ||
+    surveyDeletion.error;
+  if (error) throw asPostgresError(error);
+}

@@ -1,3 +1,10 @@
 div.ratingsTable {
   max-width: 40rem;
 }
+
+h3.subheading {
+  font-weight: 300;
+  font-size: 1.9rem;
+  color: var(--subheading-color);
+  margin-bottom: 1rem;
+}
