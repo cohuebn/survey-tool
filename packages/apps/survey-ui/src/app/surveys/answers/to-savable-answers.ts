@@ -27,7 +27,7 @@ function toSavableAnswer(
   answer: SingleAnswer,
   role: PhysicianRole,
 ): SavableAnswer {
-  const participantId = getParticipantId(userId, surveyId);
+  const participantId = getParticipantId(userId, role.id, surveyId);
   return {
     participantId,
     surveyId,

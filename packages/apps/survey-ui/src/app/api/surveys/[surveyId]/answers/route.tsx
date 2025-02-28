@@ -96,7 +96,7 @@ export async function POST(
     }
     const physicianRole = physicianRoles[0];
 
-    const participantId = getParticipantId(userId, surveyId);
+    const participantId = getParticipantId(userId, physicianRole.id, surveyId);
     const savableAnswers = toSavableAnswers(surveyId, answers, physicianRole);
     const overallRatingValue = toOverallRatingValue(questions, savableAnswers);
     const overallRating: SavableOverallRating = {

@@ -4,7 +4,7 @@ import { SurveyTakerAction } from "../types/survey-taker-action";
 
 type SurveyTakerReducerState = {
   surveyId: string;
-  selectedPhysicianRole: PhysicianRole | null;
+  selectedRole: PhysicianRole | null;
   questions: Question[];
   summary: SurveySummary;
   activeQuestionNumber: number;

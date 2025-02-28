@@ -21,11 +21,10 @@ import { parseError } from "../../errors/parse-error";
 import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
 import { renderQuestion } from "./question-types";
-import { PhysicianRoleSelection } from "./physician-role-selection/physician-role-selection";
 
 type SurveyTakerProps = {
   userId: string;
-  physicianRoles: PhysicianRole[];
+  selectedRole: PhysicianRole | null;
   surveyId: string;
   summary: SurveySummary;
   questions: Question[];
@@ -35,7 +34,7 @@ type SurveyTakerProps = {
 
 export function SurveyTaker({
   userId,
-  physicianRoles,
+  selectedRole,
   surveyId,
   summary,
   questions,
@@ -45,8 +44,7 @@ export function SurveyTaker({
   const activeQuestion = questions[initialQuestionNumber - 1];
   const [surveyTakerState, dispatch] = useReducer(surveyTakerReducer, {
     surveyId,
-    selectedPhysicianRole:
-      physicianRoles.length === 1 ? physicianRoles[0] : null,
+    selectedRole,
     questions,
     summary,
     activeQuestionNumber: initialQuestionNumber,
@@ -70,19 +68,8 @@ export function SurveyTaker({
 
   const { userSettings, userSettingsLoaded } = useUserSettings(userId);
   const { accessToken, accessTokenLoaded } = useAccessToken();
-  if (!userSettingsLoaded || !accessTokenLoaded) {
+  if (!userSettingsLoaded || !accessTokenLoaded || !selectedRole) {
     return <CircularProgress />;
-  }
-
-  if (isNullOrUndefined(surveyTakerState.selectedPhysicianRole)) {
-    return (
-      <PhysicianRoleSelection
-        physicianRoles={physicianRoles}
-        onChange={(role) => {
-          dispatch({ type: "setPhysicianRole", role });
-        }}
-      />
-    );
   }
 
   const saveSurvey = async () => {
@@ -91,7 +78,7 @@ export function SurveyTaker({
         "No access token associated with session; can't save survey",
       );
     }
-    const roleId = surveyTakerState.selectedPhysicianRole?.id;
+    const roleId = selectedRole?.id;
     if (isNullOrUndefined(roleId)) {
       throw new Error("Cannot save answers without a selected role id");
     }
@@ -121,7 +108,7 @@ export function SurveyTaker({
           {summary.name}
         </Typography>
         <Typography className={styles.selectedRoleSubheading} variant="h3">
-          {`Role: ${surveyTakerState.selectedPhysicianRole.hospital?.name} - ${surveyTakerState.selectedPhysicianRole.department}`}
+          {`Role: ${selectedRole?.hospital?.name} - ${selectedRole?.department}`}
         </Typography>
         {renderQuestion({
           userId,
