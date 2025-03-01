@@ -5,6 +5,8 @@ import { AnswersForQuestions } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 import { PhysicianRole } from "../../users/types";
 
+export const revalidate = 60;
+
 async function fetchSurveyAnswers(
   accessToken: string | null,
   surveyId: string,

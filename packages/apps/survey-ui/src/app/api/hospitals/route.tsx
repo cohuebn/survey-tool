@@ -6,6 +6,8 @@ import { getHospitalsByIds } from "../../hospitals/database";
 
 const logger = createLogger("api/locations");
 
+export const revalidate = 60;
+
 export async function GET(request: NextRequest) {
   const locationIds = request.nextUrl.searchParams.getAll("locationId");
   if (locationIds.length === 0) {

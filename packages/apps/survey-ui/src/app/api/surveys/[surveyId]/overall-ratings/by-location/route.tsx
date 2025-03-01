@@ -22,6 +22,8 @@ function toRatingStats(ratings: OverallRating[]): RatingStats {
   };
 }
 
+export const revalidate = 60;
+
 export async function GET(_: Request, { params }: { params: PathParams }) {
   const { surveyId } = params;
   const supabaseClient = await getServerSideSupabaseClient();

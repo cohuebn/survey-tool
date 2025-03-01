@@ -10,6 +10,8 @@ import { ReactNode, createContext, useEffect, useState } from "react";
 
 const logger = createLogger("supabase-app-context");
 
+export const revalidate = 60;
+
 /** Get a Supabase client using config from the API */
 export async function getSupabaseClient() {
   logger.debug("Getting Supabase app using config from API");

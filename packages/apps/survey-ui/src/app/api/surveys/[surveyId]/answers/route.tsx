@@ -34,6 +34,8 @@ function validateRequiredParameter(value: unknown, label: string) {
   return isNullOrUndefined(value) ? label : null;
 }
 
+export const revalidate = 60;
+
 export async function POST(
   request: Request,
   { params }: { params: PathParams },

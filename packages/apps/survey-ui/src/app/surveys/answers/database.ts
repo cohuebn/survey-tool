@@ -11,6 +11,8 @@ import {
 
 import { toParticipatingHospital } from "./participating-hospitals";
 
+export const revalidate = 60;
+
 /**
  * Get all answers for the given survey for the given participant id
  * @param dbClient The Supabase client

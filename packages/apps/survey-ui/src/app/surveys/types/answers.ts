@@ -34,7 +34,7 @@ export type AggregatedAnswerForQuestion = {
 
 export type AggregatedAnswerWithLocationForQuestion =
   AggregatedAnswerForQuestion & {
-    location: string;
+    locationId: string;
   };
 
 export type AggregatedAnswersForQuestions = Record<
