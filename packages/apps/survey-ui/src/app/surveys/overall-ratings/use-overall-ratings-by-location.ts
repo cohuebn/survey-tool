@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useAccessToken } from "../../users/use-access-token";
 import { RatingStatsByLocationId } from "../types/overall-ratings";
 
+export const revalidate = 60;
+
 async function fetchOverallRatingsByLocation(
   accessToken: string | null,
   surveyId: string,

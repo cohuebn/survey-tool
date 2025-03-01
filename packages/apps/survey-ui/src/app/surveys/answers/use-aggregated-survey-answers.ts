@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { AggregatedAnswerWithLocationForQuestion } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 
+export const revalidate = 60;
+
 async function fetchAggregatedSurveyAnswers(
   accessToken: string | null,
   surveyId: string,

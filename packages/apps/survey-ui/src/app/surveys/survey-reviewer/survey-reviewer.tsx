@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useReducer, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useReducer, useState } from "react";
 import {
   Autocomplete,
   Chip,
@@ -46,11 +46,12 @@ export function SurveyReviewer({
   const answers = useMemo(() => {
     const relevantAnswers = relevantLocationIds.length
       ? allAnswers.filter((answer) =>
-          relevantLocationIds.includes(answer.location),
+          relevantLocationIds.includes(answer.locationId),
         )
       : allAnswers;
     return combineAnswersFromMultipleLocations(relevantAnswers);
   }, [allAnswers, relevantLocationIds]);
+
   const [surveyReviewerState, dispatch] = useReducer(surveyReviewerReducer, {
     surveyId,
     summary,
@@ -68,6 +69,10 @@ export function SurveyReviewer({
       );
     },
   });
+
+  useEffect(() => {
+    dispatch({ type: "setAnswers", answers });
+  }, [answers]);
 
   return (
     <>

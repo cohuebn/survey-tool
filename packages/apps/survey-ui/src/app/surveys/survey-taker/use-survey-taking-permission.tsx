@@ -5,6 +5,8 @@ import { isNullOrUndefined } from "@survey-tool/core";
 
 import { useAccessToken } from "../../users/use-access-token";
 
+export const revalidate = 60;
+
 async function fetchSurveyTakingPermission(
   accessToken: string | null,
   surveyId: string,

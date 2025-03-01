@@ -9,6 +9,8 @@ import searchSurveysStyles from "@styles/search-surveys.module.css";
 import { SurveysList, useSurveySummaries } from "../../surveys";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
 
+export const revalidate = 60;
+
 export default function Page() {
   const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({
     reviewing: true,

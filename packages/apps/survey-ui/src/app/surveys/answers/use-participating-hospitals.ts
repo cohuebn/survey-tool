@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import { ParticipatingHospital } from "../types";
 
+export const revalidate = 60;
+
 type HookResult = {
   participatingHospitals: ParticipatingHospital[];
   participatingHospitalsLoaded: boolean;

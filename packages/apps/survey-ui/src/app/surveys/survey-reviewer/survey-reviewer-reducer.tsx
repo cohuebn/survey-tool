@@ -5,7 +5,6 @@ import {
   Question,
   SurveySummary,
 } from "../types";
-import { SurveyTakerAction } from "../types/survey-taker-action";
 
 type SurveyReviewerReducerState = {
   surveyId: string;
@@ -18,6 +17,11 @@ type SurveyReviewerReducerState = {
   participatingHospitals: ParticipatingHospital[];
   onQuestionChange: (questionNumber: number) => void;
 };
+
+type SurveyReviewerAction =
+  | { type: "setQuestionNumber"; value: number }
+  | { type: "moveToNextQuestion" }
+  | { type: "setAnswers"; answers: AggregatedAnswersForQuestions };
 
 function changeQuestion(
   state: SurveyReviewerReducerState,
@@ -35,7 +39,7 @@ function changeQuestion(
 
 export function surveyReviewerReducer(
   state: SurveyReviewerReducerState,
-  action: SurveyTakerAction,
+  action: SurveyReviewerAction,
 ) {
   switch (action.type) {
     case "setQuestionNumber":
@@ -44,6 +48,8 @@ export function surveyReviewerReducer(
       return state.activeQuestionNumber === state.questions.length
         ? state
         : changeQuestion(state, state.activeQuestionNumber + 1);
+    case "setAnswers":
+      return { ...state, answers: action.answers };
     default:
       return state;
   }

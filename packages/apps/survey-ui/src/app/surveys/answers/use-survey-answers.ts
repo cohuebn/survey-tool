@@ -4,6 +4,8 @@ import { isNullOrUndefined } from "@survey-tool/core";
 import { DBAnswerWithoutParticipant } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 
+export const revalidate = 60;
+
 async function fetchSurveyAnswers(
   accessToken: string | null,
   surveyId: string,

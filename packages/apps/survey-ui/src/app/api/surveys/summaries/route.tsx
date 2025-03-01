@@ -24,6 +24,8 @@ async function getSurveySummariesForRequest(
     : getSurveySummaries(supabaseClient(), {});
 }
 
+export const revalidate = 60;
+
 export async function GET(request: NextRequest) {
   const userId = getUserIdFromAuthorizationJwt(request);
   const authoring = queryStringToBoolean(

@@ -9,6 +9,8 @@ type PathParams = {
   surveyId: string;
 };
 
+export const revalidate = 60;
+
 export async function GET(_: Request, { params }: { params: PathParams }) {
   const { surveyId } = params;
   logger.info({ surveyId }, "Fetching participating hospitals for survey");

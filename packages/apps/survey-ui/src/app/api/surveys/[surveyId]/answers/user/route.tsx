@@ -11,6 +11,8 @@ type PathParams = {
   surveyId: string;
 };
 
+export const revalidate = 60;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: PathParams },

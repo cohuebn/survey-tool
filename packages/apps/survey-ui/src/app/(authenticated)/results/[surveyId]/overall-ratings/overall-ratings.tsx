@@ -18,6 +18,8 @@ import { roundRatingStats } from "../../../../surveys/overall-ratings/rating-sta
 
 import styles from "./styles.module.css";
 
+export const revalidate = 60;
+
 type OverallRatingsProps = {
   ratingStats: RatingStatsWithLocation[];
 };

@@ -22,6 +22,8 @@ import styles from "./styles.module.css";
 import { surveyTakerReducer } from "./survey-taker-reducer";
 import { renderQuestion } from "./question-types";
 
+export const revalidate = 60;
+
 type SurveyTakerProps = {
   userId: string;
   selectedRole: PhysicianRole | null;

@@ -6,6 +6,8 @@ import { isNullOrUndefined } from "@survey-tool/core";
 import { SurveySummary } from "../types";
 import { useAccessToken } from "../../users/use-access-token";
 
+export const revalidate = 60;
+
 type UseSurveySummariesOptions = {
   authoring?: boolean;
   reviewing?: boolean;

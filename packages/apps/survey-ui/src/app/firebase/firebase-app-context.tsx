@@ -7,6 +7,8 @@ import { ReactNode, createContext, useEffect, useState } from "react";
 
 const logger = createLogger("firebase-app-context");
 
+export const revalidate = 60;
+
 /** Get a Firebase app using config from the API */
 async function getFirebaseApp() {
   logger.debug("Getting Firebase app using config from API");
