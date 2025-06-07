@@ -55,11 +55,17 @@ function getNumericAnswerValue(
   return undefined;
 }
 
-/** Get the overall rating numeric value given the provided survey questions & answers */
+/**
+ * Get the overall rating numeric value given the provided survey questions & answers
+ * @param questions The questions for the survey
+ * @param answers The user's answers for the survey
+ * @returns An overall rating if any answers should be included in the overall rating;
+ * if no answers should be included in the overall rating, return undefined
+ */
 export function toOverallRatingValue(
   questions: Question[],
   answers: SavableAnswer[],
-): number {
+): number | undefined {
   const questionsById = questions.reduce<Record<string, Question>>(
     (_questionsById, question) => {
       return { ..._questionsById, [question.id]: question };
@@ -73,5 +79,5 @@ export function toOverallRatingValue(
     })
     .filter(isNotNullOrUndefined);
 
-  return mean(numericAnswerValues);
+  return numericAnswerValues.length ? mean(numericAnswerValues) : undefined;
 }

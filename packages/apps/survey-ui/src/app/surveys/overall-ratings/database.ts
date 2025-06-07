@@ -20,6 +20,19 @@ export async function saveOverallRating(
   return data[0];
 }
 
+export async function deleteOverallRating(
+  dbClient: AppSupabaseClient,
+  surveyId: string,
+  participantId: string,
+): Promise<void> {
+  const { error } = await dbClient
+    .from("overall_ratings")
+    .delete()
+    .eq("surveyId", surveyId)
+    .eq("participantId", participantId);
+  if (error) throw asPostgresError(error);
+}
+
 /**
  * Get all overall ratings for the given survey
  * @param dbClient The Supabase client

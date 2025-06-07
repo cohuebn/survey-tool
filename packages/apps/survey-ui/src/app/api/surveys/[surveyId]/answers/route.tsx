@@ -7,17 +7,25 @@ import {
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
 import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
-import { UserProvidedAnswersForQuestions } from "../../../../surveys/types";
+import {
+  Question,
+  SavableAnswer,
+  UserProvidedAnswersForQuestions,
+} from "../../../../surveys/types";
 import { getQuestionsForSurvey } from "../../../../surveys/questions";
 import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { getParticipantId } from "../../../../surveys/participant-ids";
 import { updateParticipantAnswers } from "../../../../surveys/answers/db-answer-updates";
 import { convertErrorToResponse } from "../../../utils/responses";
 import { toOverallRatingValue } from "../../../../surveys/answers/to-overall-rating";
-import { saveOverallRating } from "../../../../surveys/overall-ratings/database";
+import {
+  saveOverallRating,
+  deleteOverallRating,
+} from "../../../../surveys/overall-ratings/database";
 import { SavableOverallRating } from "../../../../surveys/types/overall-ratings";
 import { doesUserHaveSurveyTakingPermission } from "../../../../surveys/summaries/database";
 import { getPhysicianRolesForUser } from "../../../../users/database";
+import { PhysicianRole } from "../../../../users/types";
 
 const logger = createLogger("api/answers");
 
@@ -32,6 +40,27 @@ type PathParams = {
 
 function validateRequiredParameter(value: unknown, label: string) {
   return isNullOrUndefined(value) ? label : null;
+}
+
+function toOverallRating(
+  surveyId: string,
+  participantId: string,
+  physicianRole: PhysicianRole,
+  questions: Question[],
+  answers: SavableAnswer[],
+): SavableOverallRating | undefined {
+  const overallRatingValue = toOverallRatingValue(questions, answers);
+  return isNullOrUndefined(overallRatingValue)
+    ? undefined
+    : {
+        surveyId,
+        participantId,
+        rating: overallRatingValue,
+        ratingTime: new Date(),
+        location: physicianRole.hospital?.id,
+        department: physicianRole.department,
+        employmentType: physicianRole.employmentType,
+      };
 }
 
 export const revalidate = 60;
@@ -100,25 +129,27 @@ export async function POST(
 
     const participantId = getParticipantId(userId, physicianRole.id, surveyId);
     const savableAnswers = toSavableAnswers(surveyId, answers, physicianRole);
-    const overallRatingValue = toOverallRatingValue(questions, savableAnswers);
-    const overallRating: SavableOverallRating = {
+    const overallRating = toOverallRating(
       surveyId,
       participantId,
-      rating: overallRatingValue,
-      ratingTime: new Date(),
-      location: physicianRole.hospital?.id,
-      department: physicianRole.department,
-      employmentType: physicianRole.employmentType,
-    };
+      physicianRole,
+      questions,
+      savableAnswers,
+    );
+
+    const participantAnswersUpdate = updateParticipantAnswers(
+      dbClient(),
+      participantId,
+      surveyId,
+      savableAnswers,
+    );
+    const overallRatingUpdate = isNullOrUndefined(overallRating)
+      ? deleteOverallRating(dbClient(), surveyId, participantId)
+      : saveOverallRating(dbClient(), overallRating);
 
     const [, savedOverallRating] = await Promise.all([
-      updateParticipantAnswers(
-        dbClient(),
-        participantId,
-        surveyId,
-        savableAnswers,
-      ),
-      saveOverallRating(dbClient(), overallRating),
+      participantAnswersUpdate,
+      overallRatingUpdate,
     ]);
 
     return Response.json({ overallRating: savedOverallRating });
