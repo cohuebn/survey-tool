@@ -28,8 +28,8 @@ export async function deleteOverallRating(
   const { error } = await dbClient
     .from("overall_ratings")
     .delete()
-    .eq("surveyId", surveyId)
-    .eq("participantId", participantId);
+    .eq("survey_id", surveyId)
+    .eq("participant_id", participantId);
   if (error) throw asPostgresError(error);
 }
 
