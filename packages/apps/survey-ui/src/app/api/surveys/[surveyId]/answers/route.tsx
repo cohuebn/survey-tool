@@ -7,7 +7,7 @@ import {
 import { getServerSideSupabaseClient } from "../../../../supabase/supbase-server-side-client";
 import { getAnswersForSurvey } from "../../../../surveys/answers/database";
 import { getUserIdFromAuthorizationJwt } from "../../../utils/jwts";
-import { AnswersForQuestions } from "../../../../surveys/types";
+import { UserProvidedAnswersForQuestions } from "../../../../surveys/types";
 import { getQuestionsForSurvey } from "../../../../surveys/questions";
 import { toSavableAnswers } from "../../../../surveys/answers/to-savable-answers";
 import { getParticipantId } from "../../../../surveys/participant-ids";
@@ -23,7 +23,7 @@ const logger = createLogger("api/answers");
 
 type SubmitAnswersRequest = {
   roleId: string;
-  answers: AnswersForQuestions;
+  answers: UserProvidedAnswersForQuestions;
 };
 
 type PathParams = {
