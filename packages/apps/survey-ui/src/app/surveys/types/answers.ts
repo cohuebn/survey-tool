@@ -25,6 +25,11 @@ export type DBAnswer = SavableAnswer & {
 export type DBAnswerWithoutParticipant = Omit<DBAnswer, "participantId">;
 
 export type AnswersForQuestions = Record<string, Answer>;
+/** User provided answers might also include null or undefined when deselecting a previously chosen answer */
+export type UserProvidedAnswersForQuestions = Record<
+  string,
+  Answer | null | undefined
+>;
 
 export type AggregatedAnswerForQuestion = {
   questionId: string;

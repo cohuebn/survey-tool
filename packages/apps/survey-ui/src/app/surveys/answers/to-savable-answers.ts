@@ -1,6 +1,8 @@
+import { isNotNullOrUndefined } from "@survey-tool/core";
+
 import {
   Answer,
-  AnswersForQuestions,
+  UserProvidedAnswersForQuestions,
   MultiAnswer,
   SavableAnswer,
   SingleAnswer,
@@ -10,14 +12,16 @@ import { PhysicianRole } from "../../users/types";
 
 /**
  * Standardize answers (single or multi) into an array of answers
- * to allow for more consistent processing.
+ * to allow for more consistent processing. This method takes care of filtering out
+ * unselected answers (null or undefined)
  * A single answer will be converted into an array of one answer
  * A multi answer will be returned as is
  * @param answer The answer to convert
  * @returns An array of answers
  */
-function toMultiAnswers(answer: Answer): MultiAnswer {
-  return Array.isArray(answer) ? answer : [answer];
+function toMultiAnswers(answer: Answer | null | undefined): MultiAnswer {
+  const possibleAnswers = Array.isArray(answer) ? answer : [answer];
+  return possibleAnswers.filter(isNotNullOrUndefined);
 }
 
 function toSavableAnswer(
@@ -43,7 +47,7 @@ function toSavableAnswer(
 /** Get all answers with hashed PII to submit to the server */
 export function toSavableAnswers(
   surveyId: string,
-  answers: AnswersForQuestions,
+  answers: UserProvidedAnswersForQuestions,
   role: PhysicianRole,
 ): SavableAnswer[] {
   return Object.entries(answers).flatMap(([questionId, answer]) => {
