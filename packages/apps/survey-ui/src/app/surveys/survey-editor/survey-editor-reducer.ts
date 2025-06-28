@@ -12,6 +12,7 @@ import {
   SurveyPermissionDetails,
   SurveyAllowedLocation,
   SurveyAllowedDepartment,
+  MultipleChoiceOption,
 } from "../types";
 import { getOptions } from "../questions/definitions";
 import { Hospital } from "../../hospitals/types";
@@ -134,7 +135,9 @@ function updateQuestionDefinition(
 function addQuestionOption(editorState: SurveyEditorState, questionId: string) {
   return updateQuestionDefinition(editorState, questionId, (definition) => {
     const options = getOptions(definition);
-    return { ...definition, options: [...options, { text: "", value: 0 }] };
+    const option: MultipleChoiceOption = { value: "", numericValue: 0 };
+    const updatedOptions = [...options, option];
+    return { ...definition, options: updatedOptions };
   });
 }
 
