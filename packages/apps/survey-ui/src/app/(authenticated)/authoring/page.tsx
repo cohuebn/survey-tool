@@ -76,19 +76,6 @@ export default function Authoring() {
                 >
                   Duplicate Survey
                 </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => setSurveyToDelete(survey.id)}
-                >
-                  Delete Survey
-                </Button>
-                <DeleteSurveyDialog
-                  surveyId={survey.id}
-                  title={survey.name}
-                  open={openDeleteDialog}
-                  onClose={() => handleSurveyDeletion(survey.id)}
-                />
               </>
             )}
           />
