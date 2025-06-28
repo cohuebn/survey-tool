@@ -6,11 +6,14 @@ import { Create, Search } from "@mui/icons-material";
 import layoutStyles from "@styles/layout.module.css";
 import buttonStyles from "@styles/buttons.module.css";
 import searchSurveysStyles from "@styles/search-surveys.module.css";
+import { isNotNullOrUndefined } from "@survey-tool/core";
 import compare from "just-compare";
 
 import { useSurveySummaries, SurveysList, SurveySummary } from "../../surveys";
 import { FileIssueLink } from "../../issues/file-issue-link";
 import { useFilteredSurveys } from "../../surveys/surveys-list/use-filtered-surveys";
+
+import { DeleteSurveyDialog } from "./delete-survey-dialog";
 
 export default function Authoring() {
   const { surveySummaries, surveySummariesLoaded } = useSurveySummaries({
@@ -22,6 +25,10 @@ export default function Authoring() {
     surveySearch,
   );
   const [viewableSurveys, setViewableSurveys] = useState<SurveySummary[]>([]);
+  const [surveyToDelete, setSurveyToDelete] = useState<SurveySummary | null>(
+    null,
+  );
+  const openDeleteDialog = isNotNullOrUndefined(surveyToDelete);
 
   useEffect(() => {
     const surveyIds = filteredSurveySummaries.map((x) => x.id);
@@ -34,6 +41,15 @@ export default function Authoring() {
 
   if (!surveySummariesLoaded) {
     return <CircularProgress />;
+  }
+
+  function handleSurveyDeletionDialogClose(surveyId: string, deleted: boolean) {
+    if (deleted) {
+      setViewableSurveys((previousViewableSurveys) =>
+        previousViewableSurveys.filter((x) => x.id !== surveyId),
+      );
+    }
+    setSurveyToDelete(null);
   }
 
   return (
@@ -64,6 +80,13 @@ export default function Authoring() {
                 >
                   Duplicate Survey
                 </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setSurveyToDelete(survey)}
+                >
+                  Delete Survey
+                </Button>
               </>
             )}
           />
@@ -86,6 +109,16 @@ export default function Authoring() {
           Create a survey
         </Fab>
       </div>
+      {isNotNullOrUndefined(surveyToDelete) ? (
+        <DeleteSurveyDialog
+          surveyId={surveyToDelete.id}
+          title={surveyToDelete.name}
+          open={openDeleteDialog}
+          onClose={(deleted: boolean) =>
+            handleSurveyDeletionDialogClose(surveyToDelete.id, deleted)
+          }
+        />
+      ) : null}
     </>
   );
 }
