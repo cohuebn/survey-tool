@@ -16,7 +16,7 @@ type DeleteSurveyDialogProps = {
   surveyId: string;
   title: string;
   open: boolean;
-  onClose: () => void;
+  onClose: (deleted: boolean) => void;
 };
 
 export function DeleteSurveyDialog({
@@ -41,7 +41,7 @@ export function DeleteSurveyDialog({
         type: "error",
       });
     }
-    onClose();
+    onClose(true);
   };
 
   return (
@@ -61,7 +61,7 @@ export function DeleteSurveyDialog({
         <Button variant="contained" color="error" onClick={onDelete}>
           Delete
         </Button>
-        <Button variant="outlined" onClick={onClose} autoFocus>
+        <Button variant="outlined" onClick={() => onClose(false)} autoFocus>
           Cancel
         </Button>
       </DialogActions>
